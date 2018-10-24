@@ -48,5 +48,7 @@ socket          = /tmp/mysql.sock
 * `bash --login`
 * `gem install bundler`
 * `bundle install`
+* `rails db:create`
 * `rails db:migrate`
+* `rails db:seed`
 * `rails server`
