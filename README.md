@@ -1,23 +1,15 @@
 # Endpoints:
 
 # Setup
-
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+* Install mysql2, set the password for root user to be `digixtest` https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-16-04
+* Add these lines to `/etc/mysql/my.cnf`:
+```
+[mysqld]
+socket          = /tmp/mysql.sock
+```
+* Install rvm, following instructions at https://rvm.io/rvm/install
+* `bash --login`
+* `gem install bundler`
+* `bundle install`
+* `rails db:migrate`
+* `rails server`
