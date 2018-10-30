@@ -14,4 +14,6 @@ Rails.application.routes.draw do
   # get '/token', to: "proposals#test_token"
   get '/get_challenge', to: "authentication#challenge"
   get '/prove', to: "authentication#prove"
+
+  post '/transactions/confirmed', to: "transactions#confirmed"
 end
