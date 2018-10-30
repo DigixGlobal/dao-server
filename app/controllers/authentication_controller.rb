@@ -24,7 +24,7 @@ class AuthenticationController < ApplicationController
 
   def prove
     message = params[:message]
-    challenge_id = params[:challenge_id]
+    challenge_id = params[:challenge_id].to_i
     signature = params[:signature]
     address = params[:address].downcase
     unless message and signature and address and challenge_id
@@ -32,12 +32,12 @@ class AuthenticationController < ApplicationController
     end
 
     challenge = Challenge.find(challenge_id) or return render json: { errors: ['challengeNotFound'] }
-    challenge.user.address == address or return render json: { errors: ['addressNotMatch'] }
-    pub_key = Eth::Key.personal_recover(message, signature)
-    # TODO: checksum
-    address_from_pub_key = Eth::Utils.public_key_to_address(pub_key).downcase
-    puts "address_from_pub_key = #{address_from_pub_key}"
-    address_from_pub_key == address or return render json: { errors: ['challengeFailed'] }
+    # challenge.user.address == address or return render json: { errors: ['addressNotMatch'] }
+    # pub_key = Eth::Key.personal_recover(message, signature)
+    # # TODO: checksum
+    # address_from_pub_key = Eth::Utils.public_key_to_address(pub_key).downcase
+    # puts "address_from_pub_key = #{address_from_pub_key}"
+    # address_from_pub_key == address or return render json: { errors: ['challengeFailed'] }
 
     # login successfully
     sign_in(:user, challenge.user)
