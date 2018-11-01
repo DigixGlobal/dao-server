@@ -25,4 +25,30 @@ class TransactionsController < ApplicationController
       render json: { status: 403, msg: "wrong" }
     end
   end
+
+  def new
+    authenticate_user!
+    params[:txhash] or return error_response
+    params[:title] or return error_response
+    txhash = params[:txhash].downcase
+
+    return error_response('duplicateTxhash') if Transaction.find_by(txhash: txhash)
+    new_tx = Transaction.new(txhash: txhash, title: params[:title], user: current_user)
+    puts "new_tx = #{new_tx}"
+    new_tx.save
+    render json: { success: true, tx: new_tx }
+  end
+
+  def list
+    authenticate_user!
+    transactions = current_user.transactions
+    render json: { transactions: transactions }
+  end
+
+  def status
+    # TODO: sanitize
+    transaction = Transaction.find_by(txhash: params[:txhash])
+    transaction or return error_response('notFound')
+    render json: transaction
+  end
 end

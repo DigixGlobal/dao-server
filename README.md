@@ -24,7 +24,7 @@
 ```
 These info should be put into the headers for subsequent APIs to Dao Server
 
-* `/user/details`: (token authenticated) get a user details after login, to test if token authentication works
+* `/user/details`: [authenticated] get a user details after login, to test if token authentication works
 ```
 {
     "id": 1,
@@ -35,6 +35,52 @@ These info should be put into the headers for subsequent APIs to Dao Server
     "updated_at": "2018-10-24T15:07:33.000+08:00"
 }
 ```
+
+* `/transactions/new?txhash=<>&title=<>`: [authenticated] tell the dao server that we have just executed a tnx
+```
+{
+    "success": true,
+    "tx": {
+        "id": 1,
+        "title": "123123123",
+        "txhash": "0x0123",
+        "user_id": 1,
+        "created_at": "2018-11-01T11:56:53.000+08:00",
+        "updated_at": "2018-11-01T11:56:53.000+08:00"
+    }
+}
+```
+
+* `/transactions/list`: [authenticated] get the status of all transactions of current user
+```
+{
+    "transactions": [
+        {
+            "id": 1,
+            "title": "123123123",
+            "txhash": "0x0123",
+            "status": "pending",
+            "user_id": 1,
+            "created_at": "2018-11-01T12:00:02.000+08:00",
+            "updated_at": "2018-11-01T12:00:02.000+08:00"
+        }
+    ]
+}
+```
+
+* `/transactions/status?txhash=<>`: get status of a particular tnx
+```
+{
+    "id": 1,
+    "title": "123123123",
+    "txhash": "0x0123",
+    "status": "pending",
+    "user_id": 1,
+    "created_at": "2018-11-01T12:00:02.000+08:00",
+    "updated_at": "2018-11-01T12:00:02.000+08:00"
+}
+```
+
 
 
 # Setup
