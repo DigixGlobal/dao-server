@@ -1,3 +1,6 @@
+### SETUP INSTRUCTIONS
+Please refer [HERE](https://gist.github.com/roynalnaruto/52f2be795f256ed7b0f156666108f8fc). The DAO-server runs together with [DigixDAO contracts](https://github.com/DigixGlobal/dao-contracts/tree/dev-info-server) and [Info-server](https://github.com/DigixGlobal/info-server/tree/dev)
+
 # Endpoints:
 * `/get_challenge?address=<address>`: Get a challenge for logging into Dao Server
 ```
