@@ -38,7 +38,7 @@ class TransactionsController < ApplicationController
     new_tx = Transaction.new(txhash: txhash, title: params[:title], user: current_user)
     puts "new_tx = #{new_tx}"
     new_tx.save
-    notifyInfoServer txhash
+    notifyInfoServer([txhash])
     render json: { success: true, tx: new_tx }
   end
 
@@ -56,7 +56,7 @@ class TransactionsController < ApplicationController
   end
 
   private
-  def notifyInfoServer(txhash)
+  def notifyInfoServer(txhashes)
     # TODO: see if there can be more efficient way
     # something like, incrementAndGet
     currentNonce = Nonce.find_by(server: 'self')
@@ -67,7 +67,7 @@ class TransactionsController < ApplicationController
     digest = OpenSSL::Digest.new('sha256')
     # TODO: take this from environment variables
     serverSecret = 'this-is-a-secret-between-dao-and-info-server'
-    message = 'POST' + '/transactions/watch' + txhash + incrementedNonce.to_s
+    message = 'POST' + '/transactions/watch' + txhashes.join(",") + incrementedNonce.to_s
     signature = OpenSSL::HMAC.hexdigest(digest, serverSecret, message)
 
     # form uri
@@ -79,7 +79,7 @@ class TransactionsController < ApplicationController
       'ACCESS-SIGN' => signature,
       'ACCESS-NONCE' => incrementedNonce.to_s
     })
-    req.body = {:txns => txhash }.to_json
+    req.body = {:txns => txhashes }.to_json
     res = https.request(req)
 
     puts "response is #{res}"
