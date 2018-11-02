@@ -1,4 +1,7 @@
 require 'json'
+require 'uri'
+require 'net/http'
+require 'net/https'
 
 class TransactionsController < ApplicationController
   def confirmed
@@ -14,14 +17,13 @@ class TransactionsController < ApplicationController
 
     body = JSON.parse(request.raw_post)
 
-    # TODO: check for nonce also
     if computedSig === request.headers["ACCESS-SIGN"] && retrievedNonce > currentNonce.nonce
-      puts "hello correct signature"
-      # TODO: save the latest retrieved nonce
-      # TODO: use `body` and do the required changes to the pending transactions
+      Nonce.update(currentNonce.id, :nonce => retrievedNonce)
+      txhashes = body.map { |e| e["txhash"] }
+      Transaction.where(txhash: txhashes).update_all(status: 'confirmed')
+
       render json: { status: 200, msg: "correct" }
     else
-      puts "bye wrong signature"
       render json: { status: 403, msg: "wrong" }
     end
   end
@@ -36,6 +38,7 @@ class TransactionsController < ApplicationController
     new_tx = Transaction.new(txhash: txhash, title: params[:title], user: current_user)
     puts "new_tx = #{new_tx}"
     new_tx.save
+    notifyInfoServer txhash
     render json: { success: true, tx: new_tx }
   end
 
@@ -50,5 +53,35 @@ class TransactionsController < ApplicationController
     transaction = Transaction.find_by(txhash: params[:txhash])
     transaction or return error_response('notFound')
     render json: transaction
+  end
+
+  private
+  def notifyInfoServer(txhash)
+    # TODO: see if there can be more efficient way
+    # something like, incrementAndGet
+    currentNonce = Nonce.find_by(server: 'self')
+    incrementedNonce = currentNonce.nonce + 1
+    Nonce.update(currentNonce.id, :nonce => incrementedNonce)
+
+    # compute sig
+    digest = OpenSSL::Digest.new('sha256')
+    # TODO: take this from environment variables
+    serverSecret = 'this-is-a-secret-between-dao-and-info-server'
+    message = 'POST' + '/transactions/watch' + txhash + incrementedNonce.to_s
+    signature = OpenSSL::HMAC.hexdigest(digest, serverSecret, message)
+
+    # form uri
+    uri = URI.parse('http://localhost:3001/transactions/watch')
+    https = Net::HTTP.new(uri.host, uri.port)
+    # https.use_ssl = true
+    req = Net::HTTP::Post.new(uri.path, initheader = {
+      'Content-Type' => 'application/json',
+      'ACCESS-SIGN' => signature,
+      'ACCESS-NONCE' => incrementedNonce.to_s
+    })
+    req.body = {:txns => txhash }.to_json
+    res = https.request(req)
+
+    puts "response is #{res}"
   end
 end
