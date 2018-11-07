@@ -29,15 +29,16 @@ class TransactionsController < ApplicationController
   end
 
   def new
-    authenticate_user!
-    params[:txhash] or return error_response
-    params[:title] or return error_response
+    # authenticate_user!
+    check_transactions_params
     txhash = params[:txhash].downcase
 
     return error_response('duplicateTxhash') if Transaction.find_by(txhash: txhash)
-    new_tx = Transaction.new(txhash: txhash, title: params[:title], user: current_user)
-    puts "new_tx = #{new_tx}"
+    # new_tx = Transaction.new(txhash: txhash, title: params[:title], user: current_user)
+    new_tx = Transaction.new(txhash: txhash, title: params[:title], user: User.find(1))
     new_tx.save
+    puts "new_tx = #{new_tx}"
+
     notifyInfoServer([txhash])
     render json: { success: true, tx: new_tx }
   end
@@ -59,29 +60,14 @@ class TransactionsController < ApplicationController
   def notifyInfoServer(txhashes)
     # TODO: see if there can be more efficient way
     # something like, incrementAndGet
-    currentNonce = Nonce.find_by(server: 'self')
-    incrementedNonce = currentNonce.nonce + 1
-    Nonce.update(currentNonce.id, :nonce => incrementedNonce)
 
-    # compute sig
-    digest = OpenSSL::Digest.new('sha256')
-    # TODO: take this from environment variables
-    serverSecret = 'this-is-a-secret-between-dao-and-info-server'
-    message = 'POST' + '/transactions/watch' + txhashes.join(",") + incrementedNonce.to_s
-    signature = OpenSSL::HMAC.hexdigest(digest, serverSecret, message)
-
-    # form uri
-    uri = URI.parse('http://localhost:3001/transactions/watch')
-    https = Net::HTTP.new(uri.host, uri.port)
-    # https.use_ssl = true
-    req = Net::HTTP::Post.new(uri.path, initheader = {
-      'Content-Type' => 'application/json',
-      'ACCESS-SIGN' => signature,
-      'ACCESS-NONCE' => incrementedNonce.to_s
-    })
-    req.body = {:txns => txhashes }.to_json
-    res = https.request(req)
-
+    payload = { txns: txhashes }
+    res = request_info_server('/transactions/watch', payload)
     puts "response is #{res}"
+  end
+
+  def check_transactions_params
+  	params.require(:txhash)
+    params.permit(:title)
   end
 end
