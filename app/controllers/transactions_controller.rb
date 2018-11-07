@@ -8,9 +8,7 @@ class TransactionsController < ApplicationController
     message = request.method() + request.original_fullpath + request.raw_post + request.headers["ACCESS-NONCE"]
 
     digest = OpenSSL::Digest.new('sha256')
-    # TODO: take this from environment variables
-    serverSecret = 'this-is-a-secret-between-dao-and-info-server'
-    computedSig = OpenSSL::HMAC.hexdigest(digest, serverSecret, message)
+    computedSig = OpenSSL::HMAC.hexdigest(digest, SERVER_SECRET, message)
 
     currentNonce = Nonce.find_by(server: 'infoServer')
     retrievedNonce = Integer(request.headers["ACCESS-NONCE"])
@@ -63,7 +61,9 @@ class TransactionsController < ApplicationController
 
     payload = { txns: txhashes }
     res = request_info_server('/transactions/watch', payload)
-    puts "response is #{res}"
+    puts "response body is #{res["body"]}"
+    # TODO: check if there are confirmed txns in the response body
+    # if yes, set their status to be confirmed
   end
 
   def check_transactions_params
