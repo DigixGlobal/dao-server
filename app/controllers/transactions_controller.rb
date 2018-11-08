@@ -1,22 +1,10 @@
-require 'json'
-require 'uri'
-require 'net/http'
-require 'net/https'
-
 class TransactionsController < ApplicationController
   def confirmed
-    message = request.method() + request.original_fullpath + request.raw_post + request.headers["ACCESS-NONCE"]
-
-    digest = OpenSSL::Digest.new('sha256')
-    computedSig = OpenSSL::HMAC.hexdigest(digest, SERVER_SECRET, message)
-
-    currentNonce = Nonce.find_by(server: 'infoServer')
-    retrievedNonce = Integer(request.headers["ACCESS-NONCE"])
-
-    body = JSON.parse(request.raw_post)
-
-    if computedSig === request.headers["ACCESS-SIGN"] && retrievedNonce > currentNonce.nonce
+    if verify_info_server_request(request)
+      currentNonce = Nonce.find_by(server: 'infoServer')
+      retrievedNonce = Integer(request.headers["ACCESS-NONCE"])
       Nonce.update(currentNonce.id, :nonce => retrievedNonce)
+      body = JSON.parse(request.raw_post)
       txhashes = body.map { |e| e["txhash"] }
       Transaction.where(txhash: txhashes).update_all(status: 'confirmed')
 
@@ -27,15 +15,13 @@ class TransactionsController < ApplicationController
   end
 
   def new
-    # authenticate_user!
+    authenticate_user!
     check_transactions_params
     txhash = params[:txhash].downcase
 
     return error_response('duplicateTxhash') if Transaction.find_by(txhash: txhash)
-    # new_tx = Transaction.new(txhash: txhash, title: params[:title], user: current_user)
-    new_tx = Transaction.new(txhash: txhash, title: params[:title], user: User.find(1))
+    new_tx = Transaction.new(txhash: txhash, title: params[:title], user: current_user)
     new_tx.save
-    puts "new_tx = #{new_tx}"
 
     notifyInfoServer([txhash])
     render json: { success: true, tx: new_tx }
@@ -56,14 +42,13 @@ class TransactionsController < ApplicationController
 
   private
   def notifyInfoServer(txhashes)
-    # TODO: see if there can be more efficient way
-    # something like, incrementAndGet
-
     payload = { txns: txhashes }
     res = request_info_server('/transactions/watch', payload)
-    puts "response body is #{res["body"]}"
-    # TODO: check if there are confirmed txns in the response body
-    # if yes, set their status to be confirmed
+    completedTxns = JSON.parse(res.body)["result"]
+    if (completedTxns.length > 0)
+      txhashes = completedTxns.map { |e| e["txhash"] }
+      Transaction.where(txhash: txhashes).update_all(status: 'confirmed')
+    end
   end
 
   def check_transactions_params

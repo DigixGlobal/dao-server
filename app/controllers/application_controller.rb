@@ -1,3 +1,8 @@
+require 'json'
+require 'uri'
+require 'net/http'
+require 'net/https'
+
 class ApplicationController < ActionController::API
   include DeviseTokenAuth::Concerns::SetUserByToken
 
@@ -28,8 +33,8 @@ class ApplicationController < ActionController::API
         'ACCESS-NONCE' => new_nonce.to_s
       })
       req.body = { payload: payload }.to_json
-      puts "req.body is #{req.body}"
       res = https.request(req)
+      return res
     end
 
     def increase_self_nonce
@@ -39,4 +44,23 @@ class ApplicationController < ActionController::API
       incrementedNonce
     end
 
+    def verify_info_server_request(request)
+      message = form_message(request)
+
+      digest = OpenSSL::Digest.new('sha256')
+      computedSig = OpenSSL::HMAC.hexdigest(digest, SERVER_SECRET, message)
+
+      currentNonce = Nonce.find_by(server: 'infoServer')
+      retrievedNonce = Integer(request.headers["ACCESS-NONCE"])
+
+      if computedSig === request.headers["ACCESS-SIGN"] && retrievedNonce > currentNonce.nonce
+        return true
+      else
+        return false
+      end
+    end
+
+    def form_message(request)
+      return request.method() + request.original_fullpath + request.raw_post + request.headers["ACCESS-NONCE"]
+    end
 end
