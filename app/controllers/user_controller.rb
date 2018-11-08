@@ -11,7 +11,7 @@ class UserController < ApplicationController
       retrievedNonce = Integer(request.headers["ACCESS-NONCE"])
       Nonce.update(currentNonce.id, :nonce => retrievedNonce)
       body = JSON.parse(request.raw_post)
-      add_new_user(body["address"])
+      add_new_user(body["payload"]["address"])
 
       render json: { status: 200, msg: "correct" }
     else

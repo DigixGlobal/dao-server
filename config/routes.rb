@@ -17,6 +17,7 @@ Rails.application.routes.draw do
   get '/prove', to: "authentication#prove"
 
   post '/transactions/confirmed', to: "transactions#confirmed"
+  post '/transactions/latest', to: "transactions#latest"
   post '/transactions/new', to: "transactions#new"
   post '/transactions/list', to: "transactions#list"
   post '/transactions/status', to: "transactions#status"

@@ -4,6 +4,7 @@ class CreateTransactions < ActiveRecord::Migration[5.2]
       t.string :title
       t.string :txhash
       t.string :status, default: "pending"
+      t.integer :blockNumber
       t.references :user, foreign_key: true
       t.timestamps
     end

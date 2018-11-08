@@ -31,6 +31,7 @@ ActiveRecord::Schema.define(version: 2018_10_31_092845) do
     t.string "title"
     t.string "txhash"
     t.string "status", default: "pending"
+    t.integer "blockNumber"
     t.bigint "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

@@ -5,8 +5,26 @@ class TransactionsController < ApplicationController
       retrievedNonce = Integer(request.headers["ACCESS-NONCE"])
       Nonce.update(currentNonce.id, :nonce => retrievedNonce)
       body = JSON.parse(request.raw_post)
-      txhashes = body.map { |e| e["txhash"] }
+      txhashes = body["payload"].map { |e| e["txhash"] }
       Transaction.where(txhash: txhashes).update_all(status: 'confirmed')
+
+      render json: { status: 200, msg: "correct" }
+    else
+      render json: { status: 403, msg: "wrong" }
+    end
+  end
+
+  def latest
+    if verify_info_server_request(request)
+      currentNonce = Nonce.find_by(server: 'infoServer')
+      retrievedNonce = Integer(request.headers["ACCESS-NONCE"])
+      Nonce.update(currentNonce.id, :nonce => retrievedNonce)
+
+      body = JSON.parse(request.raw_post)
+      blockNumber = body["payload"]["blockNumber"]
+      latestTxns = body["payload"]["transactions"]
+      # update transactions (pending --> seen) (blockNumber)
+      Transaction.where(txhash: latestTxns).update_all(blockNumber: blockNumber, status: 'seen')
 
       render json: { status: 200, msg: "correct" }
     else

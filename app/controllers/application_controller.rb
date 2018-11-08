@@ -61,6 +61,9 @@ class ApplicationController < ActionController::API
     end
 
     def form_message(request)
-      return request.method() + request.original_fullpath + request.raw_post + request.headers["ACCESS-NONCE"]
+      return request.method() +
+        request.original_fullpath +
+        JSON.parse(request.raw_post)["payload"].to_json +
+        request.headers["ACCESS-NONCE"]
     end
 end
