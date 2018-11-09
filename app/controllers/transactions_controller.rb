@@ -24,7 +24,9 @@ class TransactionsController < ApplicationController
       blockNumber = body["payload"]["blockNumber"]
       latestTxns = body["payload"]["transactions"]
       # update transactions (pending --> seen) (blockNumber)
-      Transaction.where(txhash: latestTxns).update_all(blockNumber: blockNumber, status: 'seen')
+      if (latestTxns.length > 0)
+        Transaction.where(txhash: latestTxns).update_all(blockNumber: blockNumber, status: 'seen')
+      end
 
       render json: { status: 200, msg: "correct" }
     else
@@ -62,10 +64,17 @@ class TransactionsController < ApplicationController
   def notifyInfoServer(txhashes)
     payload = { txns: txhashes }
     res = request_info_server('/transactions/watch', payload)
-    completedTxns = JSON.parse(res.body)["result"]
-    if (completedTxns.length > 0)
-      txhashes = completedTxns.map { |e| e["txhash"] }
-      Transaction.where(txhash: txhashes).update_all(status: 'confirmed')
+    seenTxns = JSON.parse(res.body)["result"]["seen"]
+    confirmedTxns = JSON.parse(res.body)["result"]["confirmed"]
+    if (confirmedTxns.length > 0)
+      confirmedTxns.each do |txn|
+        Transaction.where(txhash: txn["txhash"]).update(status: 'confirmed', blockNumber: txn["blockNumber"])
+      end
+    end
+    if (seenTxns.length > 0)
+      seenTxns.each do |txn|
+        Transaction.where(txhash: txn["txhash"]).update(status: 'seen', blockNumber: txn["blockNumber"])
+      end
     end
   end
 
