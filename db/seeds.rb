@@ -47,5 +47,5 @@ end
 add_nonce('self', 0)
 add_nonce('infoServer', 0)
 
-add_pending_txns('title aaa', '0xaaa')
-add_pending_txns('title bbb', '0xbbb')
+# add_pending_txns('title aaa', '0xaaa')
+# add_pending_txns('title bbb', '0xbbb')
