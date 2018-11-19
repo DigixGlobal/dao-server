@@ -1,5 +1,5 @@
 set :stage, :staging
-server 'info01-dev', user: 'freebsd', roles: %w{app web db}
+server 'info01-dev', user: 'appuser', roles: %w{app web db}
 
 set :default_env, {
   histfile: "/dev/null",
