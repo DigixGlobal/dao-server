@@ -16,6 +16,7 @@ Rails.application.routes.draw do
   get '/get_challenge', to: "authentication#challenge"
   get '/prove', to: "authentication#prove"
 
+  get '/transactions/test_server', to: "transactions#test_server"
   post '/transactions/confirmed', to: "transactions#confirmed"
   post '/transactions/latest', to: "transactions#latest"
   post '/transactions/new', to: "transactions#new"
