@@ -60,6 +60,22 @@ class TransactionsController < ApplicationController
     render json: transaction
   end
 
+  def test_server
+    puts 'in test_server'
+    if verify_info_server_request(request)
+      currentNonce = Nonce.find_by(server: 'infoServer')
+      retrievedNonce = Integer(request.headers["ACCESS-NONCE"])
+      Nonce.update(currentNonce.id, :nonce => retrievedNonce)
+      body = JSON.parse(request.raw_post)
+
+      puts "body from test_server: #{body}"
+
+      render json: { status: 200, msg: "correct" }
+    else
+      render json: { status: 403, msg: "wrong" }
+    end
+  end
+
   private
   def notifyInfoServer(txhashes)
     payload = { txns: txhashes }
