@@ -27,6 +27,8 @@ class ApplicationController < ActionController::API
       uri = URI.parse("#{INFO_SERVER_URL}#{endpoint}")
       https = Net::HTTP.new(uri.host, uri.port)
       https.use_ssl = true
+      https.verify_mode = OpenSSL::SSL::VERIFY_NONE
+      
       req = Net::HTTP::Post.new(uri.path, initheader = {
         'Content-Type' => 'application/json',
         'ACCESS-SIGN' => signature,
