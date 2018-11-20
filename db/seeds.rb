@@ -24,12 +24,6 @@ def add_user(address)
   u.save
 end
 
-def add_nonce(server, nonce)
-  return if Nonce.find_by(server: server)
-  n = Nonce.new(server: server, nonce: nonce)
-  n.save
-end
-
 def add_pending_txns(title, txhash)
   return if Transaction.find_by(txhash: txhash)
   t = Transaction.new(title: title, txhash: txhash, user_id: '1')
@@ -44,8 +38,10 @@ end
 # add_user('0xcbe85e69eec80f29e9030233a757d49c68e75c8d')
 # add_user('0x355fbd38b3219fa3b7d0739eae142acd9ea832a1')
 
-add_nonce('self', 0)
-add_nonce('infoServer', 0)
+Nonce.seed()
+
+# add_nonce('self', 0)
+# add_nonce('infoServer', 0)
 
 # add_pending_txns('title aaa', '0xaaa')
 # add_pending_txns('title bbb', '0xbbb')
