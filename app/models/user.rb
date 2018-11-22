@@ -12,4 +12,11 @@ class User < ActiveRecord::Base
   def remove_tokens_after_password_reset
     # override this function in devise_token_auth
   end
+
+  validates :address,
+            presence: true,
+            uniqueness: true,
+            format: { with: /\A0x[a-fA-F0-9]{40}\Z/,
+                      message: 'only valid addresses' },
+            length: { is: 42 }
 end
