@@ -58,6 +58,7 @@ end
 group :test do
   gem 'factory_bot', '>= 4.0.0'
   gem 'factory_bot_rails', '>= 4.0.0'
+  gem 'simplecov', '>= 0.16.0', require: false
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

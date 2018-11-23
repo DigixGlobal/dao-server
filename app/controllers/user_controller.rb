@@ -9,15 +9,18 @@ class UserController < ApplicationController
   end
 
   def new_user
-    result, entity_or_error = add_new_user(user_params)
+    result, user_or_error = add_new_user(user_params)
 
     case result
     when :invalid_data, :database_error
-      render json: { errors: entity_or_error },
+      render json: { errors: user_or_error },
              status: :unprocessable_entity
-    else
+    when :ok
       render json: { result: result },
              status: :ok
+    else
+      render json: { error: :server_error },
+             status: :server_error
     end
   end
 
