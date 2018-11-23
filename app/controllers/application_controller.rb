@@ -73,12 +73,12 @@ class ApplicationController < ActionController::API
 
     unless request_signature == valid_signature
       raise InfoServer::InvalidRequest,
-            "Invalid signature provided. #{computed_signature} vs #{signature}"
+            'Invalid signature provided.'
     end
 
     unless request_nonce > valid_nonce
       raise  InfoServer::InvalidRequest,
-             "Invalid nonce provided. #{current_nonce} vs #{nonce}"
+             'Invalid nonce provided.'
     end
   end
 end

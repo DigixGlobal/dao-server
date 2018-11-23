@@ -14,10 +14,24 @@ class UserFlowsTest < ActionDispatch::IntegrationTest
     params = attributes_for(:user)
 
     post user_new_path,
-         params: { payload: params },
-         headers: info_server_headers(user_new_path, params)
+         params: { payload: params }.to_json,
+         headers: info_server_headers('POST', user_new_path, params)
 
     assert_response :success,
                     'should work'
+
+    post user_new_path,
+         params: { payload: params }.to_json,
+         headers: info_server_headers('POST', user_new_path, params)
+
+    assert_response :unprocessable_entity,
+                    'should not work with the same params'
+
+    post user_new_path,
+         params: {}.to_json,
+         headers: info_server_headers('POST', user_new_path, {})
+
+    assert_response :forbidden,
+                    'should not work with the empty params'
   end
 end
