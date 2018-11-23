@@ -1,4 +1,7 @@
+# frozen_string_literal: true
+
 class UserController < ApplicationController
+  before_action :check_info_server_request, only: [:new_user]
 
   def details
     authenticate_user!
@@ -6,39 +9,45 @@ class UserController < ApplicationController
   end
 
   def new_user
-    if verify_info_server_request(request)
-      currentNonce = Nonce.find_by(server: 'infoServer')
-      retrievedNonce = Integer(request.headers["ACCESS-NONCE"])
-      Nonce.update(currentNonce.id, :nonce => retrievedNonce)
-      body = JSON.parse(request.raw_post)
-      add_new_user(body["payload"]["address"])
+    result, entity_or_error = add_new_user(user_params)
 
-      render json: { status: 200, msg: "correct" }
+    case result
+    when :invalid_data, :database_error
+      render json: { errors: entity_or_error },
+             status: :unprocessable_entity
     else
-      render json: { status: 403, msg: "wrong" }
+      render json: { result: result },
+             status: :ok
     end
   end
 
   private
+
   def is_unique_uid(uid)
     if User.find_by(uid: uid)
-      return false
+      false
     else
-      return true
+      true
     end
   end
 
   def get_new_uid
-    uid = Random.rand(1000000)
-    while (!is_unique_uid(uid)) do
-      uid = Random.rand(1000000)
-    end
-    return uid
+    uid = Random.rand(1_000_000)
+    uid = Random.rand(1_000_000) until is_unique_uid(uid)
+    uid
   end
 
-  def add_new_user(userAddress)
-    uid = get_new_uid
-    u = User.new(address: userAddress, uid: uid)
-    u.save
+  def add_new_user(attrs)
+    user = User.new(attrs)
+    user.uid = get_new_uid
+
+    return [:invalid_data, user.errors] unless user.valid?
+    return [:database_error, user.errors] unless user.save
+
+    [:ok, user]
+  end
+
+  def user_params
+    params.require('payload').permit('address')
   end
 end

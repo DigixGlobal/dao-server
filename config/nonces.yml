@@ -1,0 +1,11 @@
+development: &default
+  info_server_name: infoServer
+  self_server_name: self
+
+test:
+  info_server_name: infoServer
+  self_server_name: self
+
+production:
+  info_server_name: infoServer
+  self_server_name: self
