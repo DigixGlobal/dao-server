@@ -7,7 +7,7 @@ class UserFlowsTest < ActionDispatch::IntegrationTest
     User.delete_all
     Nonce.delete_all
 
-    create(:server_nonce, server: 'infoServer')
+    create(:server_nonce, server: Rails.configuration.nonces['info_server_name'])
   end
 
   test 'create user should work' do
