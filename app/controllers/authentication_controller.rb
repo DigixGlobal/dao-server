@@ -18,15 +18,12 @@ class AuthenticationController < ApplicationController
 
     case result
     when :invalid_data, :database_error
-      render json: { errors: challenge_or_error },
-             status: :unprocessable_entity
+      render json: { errors: challenge_or_error }
     when :ok
       render json: { result: result,
-                     challenge: challenge_or_error },
-             status: :ok
+                     challenge: challenge_or_error }
     else
-      render json: { error: :server_error },
-             status: :server_error
+      render json: { error: :server_error }
     end
   end
 
