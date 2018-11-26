@@ -11,8 +11,6 @@ class AuthenticationController < ApplicationController
                     status: :not_found
     end
 
-    puts "Getting challenge for address #{address}"
-
     result, challenge_or_error = create_new_challenge(
       challenge: rand(36 * CHALLENGE_LENGTH).to_s(CHALLENGE_LENGTH),
       user: user
@@ -33,23 +31,45 @@ class AuthenticationController < ApplicationController
   end
 
   def prove
-    message = params[:message]
-    challenge_id = params[:challenge_id]
-    signature = params[:signature]
-    address = params[:address].downcase
-    unless message && signature && address && challenge_id
-      return render json: { errors: ['wrongParameters'] }
+    unless params.key?(:address) &&
+           params.key?(:challenge_id) &&
+           params.key?(:signature) &&
+           params.key?(:message)
+      return render json: { error: :invalid_data,
+                            errors: ['wrongParameters'] }
     end
 
-    (challenge = Challenge.find(challenge_id)) || (return render json: { errors: ['challengeNotFound'] })
-    (challenge.user.address == address) || (return render json: { errors: ['addressNotMatch'] })
-    pub_key = Eth::Key.personal_recover(message, signature)
-    # TODO: checksum
-    address_from_pub_key = Eth::Utils.public_key_to_address(pub_key).downcase
-    puts "address_from_pub_key = #{address_from_pub_key}"
-    (address_from_pub_key == address) || (return render json: { errors: ['challengeFailed'] })
+    challenge_id = params.fetch(:challenge_id, '')
+    unless (challenge = Challenge.find_by(id: challenge_id))
+      return render json: { error: :challenge_not_found,
+                            errors: ['challengeNotFound'] }
+    end
 
-    # login successfully
+    if challenge.proven?
+      return render json: { error: :challenge_already_proven,
+                            errors: ['challengeAlreadyProved'] }
+    end
+
+    address = params.fetch(:address, '').downcase
+    unless challenge.user.address == address
+      return render json: { error: :address_not_equal,
+                            errors: ['addressNotMatch'] }
+    end
+
+    recovered_address = recover_address(
+      params.fetch(:message, ''),
+      params.fetch(:signature, '')
+    )
+
+    puts "address_from_pub_key = #{recovered_address}"
+
+    unless recovered_address == address
+      return render json: { error: :challenge_failed,
+                            errors: ['challengeFailed'] }
+    end
+
+    prove_challenge(challenge)
+
     sign_in(:user, challenge.user)
     auth_token = challenge.user.create_new_auth_token
     render json: auth_token
@@ -64,5 +84,15 @@ class AuthenticationController < ApplicationController
     return [:database_error, challenge.errors] unless challenge.save
 
     [:ok, challenge]
+  end
+
+  def recover_address(message, signature)
+    Eth::Utils.public_key_to_address(
+      Eth::Key.personal_recover(message, signature)
+    ).downcase
+  end
+
+  def prove_challenge(challenge)
+    challenge.update(proven: true)
   end
 end

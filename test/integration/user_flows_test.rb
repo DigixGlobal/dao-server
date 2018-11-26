@@ -36,7 +36,7 @@ class UserFlowsTest < ActionDispatch::IntegrationTest
   end
 
   test 'user details should work' do
-    user = create(:user)
+    create(:user)
 
     get user_details_path,
         params: { payload: params }.to_json,
