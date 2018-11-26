@@ -6,6 +6,10 @@ require 'rails/test_help'
 
 require 'info_server'
 
+require 'simplecov'
+SimpleCov.start 'rails'
+puts 'Starting SimpleCov'
+
 class ActiveSupport::TestCase
   include FactoryBot::Syntax::Methods
 
@@ -22,5 +26,21 @@ class ActiveSupport::TestCase
         payload
       ),
       'CONTENT-TYPE': 'application/json' }
+  end
+
+  def auth_headers(eth_key)
+    user = User.find_by(address: eth_key.address.downcase)
+    challenge = create(:user_challenge, user_id: user.id)
+
+    params = {
+      address: user.address,
+      challenge_id: challenge.id,
+      signature: eth_key.personal_sign(challenge.challenge),
+      message: challenge.challenge
+    }
+
+    post prove_path, params: params
+
+    JSON.parse(@response.body)
   end
 end

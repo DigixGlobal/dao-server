@@ -36,13 +36,15 @@ class UserFlowsTest < ActionDispatch::IntegrationTest
   end
 
   test 'user details should work' do
-    create(:user)
+    key = Eth::Key.new
+    create(:user, address: key.address)
 
     get user_details_path,
-        params: { payload: params }.to_json,
-        headers: info_server_headers('POST', user_new_path, params)
+        headers: auth_headers(key)
 
     assert_response :success,
                     'should work'
+    assert_match 'uid', @response.body,
+                 'should work'
   end
 end
