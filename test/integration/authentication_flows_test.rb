@@ -49,18 +49,18 @@ class AuthenticationFlowsTest < ActionDispatch::IntegrationTest
       message: user_challenge
     }
 
-    get prove_path, params: params
+    post prove_path, params: params
 
     assert_response :success,
                     'should work'
     assert_match 'access-token', @response.body,
                  'response should contain access-token'
 
-    get prove_path, params: params
+    post prove_path, params: params
     assert_response :success,
                     'should fail on re-proving'
     assert_match 'challenge_already_proven', @response.body,
-                 'response should contain re-prove status '
+                 'response should contain re-prove status'
   end
 
   test 'prove challenge should fail safely' do
@@ -75,5 +75,33 @@ class AuthenticationFlowsTest < ActionDispatch::IntegrationTest
       signature: key.personal_sign(user_challenge),
       message: user_challenge
     }
+
+    post prove_path, params: {}
+
+    assert_response :success,
+                    'should fail with empty data'
+    assert_match 'invalid_data', @response.body,
+                 'response should contain invalid parameter status'
+
+    post prove_path, params: params.merge(challenge_id: :incorrect_id)
+
+    assert_response :success,
+                    'should fail with incorrect challenge id'
+    assert_match 'challenge_not_found', @response.body,
+                 'response should contain challenge not found status'
+
+    post prove_path, params: params.merge(address: :incorrect_address)
+
+    assert_response :success,
+                    'should fail with incorrect address'
+    assert_match 'address_not_equal', @response.body,
+                 'response should contain address not equal not status'
+
+    post prove_path, params: params.merge(message: :incorrect_challenge)
+
+    assert_response :success,
+                    'should fail with incorrect message'
+    assert_match 'challenge_failed', @response.body,
+                 'response should contain address challenge failed status'
   end
 end
