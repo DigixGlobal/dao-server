@@ -1,37 +1,29 @@
-class TransactionsController < ApplicationController
-  def confirmed
-    if verify_info_server_request(request)
-      currentNonce = Nonce.find_by(server: 'infoServer')
-      retrievedNonce = Integer(request.headers["ACCESS-NONCE"])
-      Nonce.update(currentNonce.id, :nonce => retrievedNonce)
-      body = JSON.parse(request.raw_post)
-      txhashes = body["payload"].map { |e| e["txhash"] }
-      Transaction.where(txhash: txhashes).update_all(status: 'confirmed')
+# frozen_string_literal: true
 
-      render json: { status: 200, msg: "correct" }
-    else
-      render json: { status: 403, msg: "wrong" }
-    end
+class TransactionsController < ApplicationController
+  before_action :check_info_server_request, only: %i[confirmed latest test_server]
+  after_action :update_info_server_nonce, only: %i[confirmed latest test_server]
+
+  def confirmed
+    body = JSON.parse(request.raw_post)
+    txhashes = body['payload'].map { |e| e['txhash'] }
+    Transaction.where(txhash: txhashes).update_all(status: 'confirmed')
+
+    render json: { result: :ok,
+                   msg: 'correct' }
   end
 
   def latest
-    if verify_info_server_request(request)
-      currentNonce = Nonce.find_by(server: 'infoServer')
-      retrievedNonce = Integer(request.headers["ACCESS-NONCE"])
-      Nonce.update(currentNonce.id, :nonce => retrievedNonce)
+    body = JSON.parse(request.raw_post)
+    blockNumber = body['payload']['blockNumber']
+    latestTxns = body['payload']['transactions']
 
-      body = JSON.parse(request.raw_post)
-      blockNumber = body["payload"]["blockNumber"]
-      latestTxns = body["payload"]["transactions"]
-      # update transactions (pending --> seen) (blockNumber)
-      if (latestTxns.length > 0)
-        Transaction.where(txhash: latestTxns).update_all(blockNumber: blockNumber, status: 'seen')
-      end
-
-      render json: { status: 200, msg: "correct" }
-    else
-      render json: { status: 403, msg: "wrong" }
+    unless latestTxns.empty?
+      Transaction.where(txhash: latestTxns).update_all(blockNumber: blockNumber, status: 'seen')
     end
+
+    render json: { result: :ok,
+                   msg: 'correct' }
   end
 
   def new
@@ -40,6 +32,7 @@ class TransactionsController < ApplicationController
     txhash = params[:txhash].downcase
 
     return error_response('duplicateTxhash') if Transaction.find_by(txhash: txhash)
+
     new_tx = Transaction.new(txhash: txhash, title: params[:title], user: current_user)
     new_tx.save
 
@@ -56,46 +49,39 @@ class TransactionsController < ApplicationController
   def status
     # TODO: sanitize
     transaction = Transaction.find_by(txhash: params[:txhash])
-    transaction or return error_response('notFound')
+    transaction || (return error_response('notFound'))
     render json: transaction
   end
 
   def test_server
-    puts 'in test_server'
-    if verify_info_server_request(request)
-      currentNonce = Nonce.find_by(server: 'infoServer')
-      retrievedNonce = Integer(request.headers["ACCESS-NONCE"])
-      Nonce.update(currentNonce.id, :nonce => retrievedNonce)
-      body = JSON.parse(request.raw_post)
+    body = JSON.parse(request.raw_post)
 
-      puts "body from test_server: #{body}"
+    puts "body from test_server: #{body}"
 
-      render json: { status: 200, msg: "correct" }
-    else
-      render json: { status: 403, msg: "wrong" }
-    end
+    render json: { status: 200, msg: 'correct' }
   end
 
   private
+
   def notifyInfoServer(txhashes)
     payload = { txns: txhashes }
     res = request_info_server('/transactions/watch', payload)
-    seenTxns = JSON.parse(res.body)["result"]["seen"]
-    confirmedTxns = JSON.parse(res.body)["result"]["confirmed"]
-    if (confirmedTxns.length > 0)
+    seenTxns = JSON.parse(res.body)['result']['seen']
+    confirmedTxns = JSON.parse(res.body)['result']['confirmed']
+    unless confirmedTxns.empty?
       confirmedTxns.each do |txn|
-        Transaction.where(txhash: txn["txhash"]).update(status: 'confirmed', blockNumber: txn["blockNumber"])
+        Transaction.where(txhash: txn['txhash']).update(status: 'confirmed', blockNumber: txn['blockNumber'])
       end
     end
-    if (seenTxns.length > 0)
+    unless seenTxns.empty?
       seenTxns.each do |txn|
-        Transaction.where(txhash: txn["txhash"]).update(status: 'seen', blockNumber: txn["blockNumber"])
+        Transaction.where(txhash: txn['txhash']).update(status: 'seen', blockNumber: txn['blockNumber'])
       end
     end
   end
 
   def check_transactions_params
-  	params.require(:txhash)
+    params.require(:txhash)
     params.permit(:title)
   end
 end

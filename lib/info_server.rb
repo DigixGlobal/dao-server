@@ -20,6 +20,12 @@ class InfoServer
     Nonce.find_by(server: INFO_SERVER_NAME).nonce
   end
 
+  def update_nonce(latest_nonce)
+    nonce = Nonce.find_by(server: INFO_SERVER_NAME)
+
+    nonce.update(nonce: latest_nonce) if nonce.nonce < latest_nonce
+  end
+
     private
 
   def message_signature(message)

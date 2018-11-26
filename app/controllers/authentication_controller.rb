@@ -61,8 +61,6 @@ class AuthenticationController < ApplicationController
       params.fetch(:signature, '')
     )
 
-    puts "address_from_pub_key = #{recovered_address}"
-
     unless recovered_address == address
       return render json: { error: :challenge_failed,
                             errors: ['challengeFailed'] }

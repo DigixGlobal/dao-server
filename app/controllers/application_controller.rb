@@ -50,13 +50,6 @@ class ApplicationController < ActionController::API
     res
   end
 
-  def increase_self_nonce
-    currentNonce = Nonce.find_by(server: 'self')
-    incrementedNonce = currentNonce.nonce + 1
-    Nonce.update(currentNonce.id, nonce: incrementedNonce)
-    incrementedNonce
-  end
-
   def check_info_server_request
     unless request.headers.include?('ACCESS-NONCE') &&
            request.headers.include?('ACCESS-SIGN') &&
@@ -79,6 +72,14 @@ class ApplicationController < ActionController::API
     unless request_nonce > valid_nonce
       raise  InfoServer::InvalidRequest,
              'Invalid nonce provided.'
+    end
+  end
+
+  def update_info_server_nonce
+    if request.headers.include?('ACCESS-NONCE')
+      request_nonce = request.headers.fetch('ACCESS-NONCE', '').to_i
+
+      InfoServer.update_nonce(request_nonce)
     end
   end
 end
