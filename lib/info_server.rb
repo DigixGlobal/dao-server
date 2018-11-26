@@ -5,7 +5,7 @@ class InfoServer
     'DAO_INFO_SERVER_SECRET',
     'this-is-a-secret-between-dao-and-info-server'
   )
-  INFO_SERVER_NAME = Rails.configuration.nonces['info_server_name']
+  SERVER_NAME = Rails.configuration.nonces['info_server_name']
 
   class << self
   def request_signature(request)
@@ -17,13 +17,15 @@ class InfoServer
   end
 
   def current_nonce
-    Nonce.find_by(server: INFO_SERVER_NAME).nonce
+    Nonce.find_by(server: SERVER_NAME).nonce
   end
 
   def update_nonce(latest_nonce)
-    nonce = Nonce.find_by(server: INFO_SERVER_NAME)
+    nonce = Nonce.find_by(server: SERVER_NAME)
 
     nonce.update(nonce: latest_nonce) if nonce.nonce < latest_nonce
+
+    nonce.nonce
   end
 
     private

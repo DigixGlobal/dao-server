@@ -6,12 +6,10 @@ require 'net/http'
 require 'net/https'
 
 require 'info_server'
+require 'self_server'
 
 class ApplicationController < ActionController::API
   include DeviseTokenAuth::Concerns::SetUserByToken
-
-  INFO_SERVER_URL = ENV.fetch('INFO_SERVER_URL') { 'http://localhost:3001' }
-  INFO_SERVER_NAME = Rails.configuration.nonces['info_server_name']
 
   def render_invalid_info_request(error)
     render json: { message: error.message },
@@ -28,26 +26,20 @@ class ApplicationController < ActionController::API
   end
 
   def request_info_server(endpoint, payload)
-    new_nonce = increase_self_nonce
+    new_nonce = SelfServer.increment_nonce
 
-    # compute sig
-    digest = OpenSSL::Digest.new('sha256')
+    signature = InfoServer.access_signature('POST', endpoint, new_nonce, payload)
 
-    message = 'POST' + endpoint + payload.to_json + new_nonce.to_s
-    signature = OpenSSL::HMAC.hexdigest(digest, SERVER_SECRET, message)
-
-    # form uri
     uri = URI.parse("#{INFO_SERVER_URL}#{endpoint}")
     https = Net::HTTP.new(uri.host, uri.port)
-    https.use_ssl = true
-    req = Net::HTTP::Post.new(uri.path, initheader = {
-                                'Content-Type' => 'application/json',
-                                'ACCESS-SIGN' => signature,
-                                'ACCESS-NONCE' => new_nonce.to_s
-                              })
+    # https.use_ssl = true
+    req = Net::HTTP::Post.new(uri.path,
+                              'Content-Type' => 'application/json',
+                              'ACCESS-SIGN' => signature,
+                              'ACCESS-NONCE' => new_nonce.to_s)
     req.body = { payload: payload }.to_json
-    res = https.request(req)
-    res
+
+    https.request(req)
   end
 
   def check_info_server_request
