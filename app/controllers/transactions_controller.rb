@@ -6,21 +6,23 @@ class TransactionsController < ApplicationController
   before_action :authenticate_user!, only: %i[new list]
 
   def confirmed
-    body = JSON.parse(request.raw_post)
-    txhashes = body['payload'].map { |e| e['txhash'] }
-    Transaction.where(txhash: txhashes).update_all(status: 'confirmed')
+    txn_hashes = params.fetch('payload', []).map { |e| e.fetch('txhash', '') }
+    confirm_transactions(txn_hashes)
 
     render json: { result: :ok,
                    msg: 'correct' }
   end
 
   def latest
-    body = JSON.parse(request.raw_post)
-    blockNumber = body['payload']['blockNumber']
-    latestTxns = body['payload']['transactions']
+    payload = params.fetch('payload', {})
+    transactions = payload.fetch('transactions', [])
+    block_number = payload.fetch('blockNumber', '')
 
-    unless latestTxns.empty?
-      Transaction.where(txhash: latestTxns).update_all(blockNumber: blockNumber, status: 'seen')
+    unless transactions.empty?
+      seen_transactions(
+        transactions.map { |e| e.fetch('txhash', '') },
+        block_number
+      )
     end
 
     render json: { result: :ok,
@@ -48,10 +50,12 @@ class TransactionsController < ApplicationController
   end
 
   def status
-    # TODO: sanitize
-    transaction = Transaction.find_by(txhash: params[:txhash])
-    transaction || (return error_response('notFound'))
-    render json: transaction
+    case (transaction = Transaction.find_by(txhash: params.fetch(:txhash, '')))
+    when nil
+      render json: { error: :transaction_not_found }
+    else
+      render json: transaction
+    end
   end
 
   def test_server
@@ -76,9 +80,16 @@ class TransactionsController < ApplicationController
     [:ok, transaction]
   end
 
-  def check_transactions_params
-    params.require(:txhash)
-    params.permit(:title)
+  def confirm_transactions(txn_hashes)
+    Transaction
+      .where(txhash: txn_hashes)
+      .update_all(status: 'confirmed')
+  end
+
+  def seen_transactions(txn_hashes, block_number)
+    Transaction
+      .where(txhash: txn_hashes)
+      .update_all(blockNumber: block_number, status: 'seen')
   end
 
   def transactions_params

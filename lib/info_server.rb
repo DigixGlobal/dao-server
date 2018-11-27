@@ -39,13 +39,17 @@ class InfoServer
 
     unless confirmed_txns.empty?
       confirmed_txns.each do |txn|
-        Transaction.where(txhash: txn['txhash']).update(status: 'confirmed', blockNumber: txn['blockNumber'])
+        Transaction
+          .where(txhash: txn['txhash'])
+          .update(status: 'confirmed', blockNumber: txn['blockNumber'])
       end
     end
 
     unless seen_txns.empty?
       seen_txns.each do |txn|
-        Transaction.where(txhash: txn['txhash']).update(status: 'seen', blockNumber: txn['blockNumber'])
+        Transaction
+          .where(txhash: txn['txhash'])
+          .update(status: 'seen', blockNumber: txn['blockNumber'])
       end
     end
   end
