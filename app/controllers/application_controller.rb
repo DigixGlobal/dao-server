@@ -25,27 +25,10 @@ class ApplicationController < ActionController::API
     render json: { error: error }
   end
 
-  def request_info_server(endpoint, payload)
-    new_nonce = SelfServer.increment_nonce
-
-    signature = InfoServer.access_signature('POST', endpoint, new_nonce, payload)
-
-    uri = URI.parse("#{INFO_SERVER_URL}#{endpoint}")
-    https = Net::HTTP.new(uri.host, uri.port)
-    # https.use_ssl = true
-    req = Net::HTTP::Post.new(uri.path,
-                              'Content-Type' => 'application/json',
-                              'ACCESS-SIGN' => signature,
-                              'ACCESS-NONCE' => new_nonce.to_s)
-    req.body = { payload: payload }.to_json
-
-    https.request(req)
-  end
-
   def check_info_server_request
     unless request.headers.include?('ACCESS-NONCE') &&
            request.headers.include?('ACCESS-SIGN') &&
-           request.parameters.key?('payload')
+           request.params.key?('payload')
       raise  InfoServer::InvalidRequest,
              'Info server requests must have a "payload" parameter and "ACCESS-NONCE" and "ACCESS-SIGN" header.'
     end

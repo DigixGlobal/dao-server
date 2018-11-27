@@ -2,9 +2,9 @@
 
 class UserController < ApplicationController
   before_action :check_info_server_request, only: [:new_user]
+  before_action :authenticate_user!, only: [:details]
 
   def details
-    authenticate_user!
     render json: current_user
   end
 
@@ -13,14 +13,11 @@ class UserController < ApplicationController
 
     case result
     when :invalid_data, :database_error
-      render json: { errors: user_or_error },
-             status: :unprocessable_entity
+      render json: { errors: user_or_error }
     when :ok
-      render json: { result: result },
-             status: :ok
+      render json: { result: result }
     else
-      render json: { error: :server_error },
-             status: :server_error
+      render json: { error: :server_error }
     end
   end
 

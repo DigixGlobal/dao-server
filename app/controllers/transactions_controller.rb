@@ -3,6 +3,7 @@
 class TransactionsController < ApplicationController
   before_action :check_info_server_request, only: %i[confirmed latest test_server]
   after_action :update_info_server_nonce, only: %i[confirmed latest test_server]
+  before_action :authenticate_user!, only: %i[new list]
 
   def confirmed
     body = JSON.parse(request.raw_post)
@@ -27,23 +28,23 @@ class TransactionsController < ApplicationController
   end
 
   def new
-    authenticate_user!
-    check_transactions_params
-    txhash = params[:txhash].downcase
+    result, transaction_or_error = add_new_transaction(current_user, transactions_params)
 
-    return error_response('duplicateTxhash') if Transaction.find_by(txhash: txhash)
+    case result
+    when :invalid_data, :database_error
+      render json: { errors: transaction_or_error }
+    when :ok
+      InfoServer.update_hashes([transaction_or_error.txhash.downcase])
 
-    new_tx = Transaction.new(txhash: txhash, title: params[:title], user: current_user)
-    new_tx.save
-
-    notifyInfoServer([txhash])
-    render json: { success: true, tx: new_tx }
+      render json: { result: result,
+                     tx: transaction_or_error }
+    else
+      render json: { error: :server_error }
+    end
   end
 
   def list
-    authenticate_user!
-    transactions = current_user.transactions
-    render json: { transactions: transactions }
+    render json: { transactions: current_user.transactions }
   end
 
   def status
@@ -54,34 +55,33 @@ class TransactionsController < ApplicationController
   end
 
   def test_server
-    body = JSON.parse(request.raw_post)
+    puts "body from test_server: #{request.body}"
 
-    puts "body from test_server: #{body}"
-
-    render json: { status: 200, msg: 'correct' }
+    render json: {  result: :ok,
+                    msg: 'correct' }
   end
 
   private
 
-  def notifyInfoServer(txhashes)
-    payload = { txns: txhashes }
-    res = request_info_server('/transactions/watch', payload)
-    seenTxns = JSON.parse(res.body)['result']['seen']
-    confirmedTxns = JSON.parse(res.body)['result']['confirmed']
-    unless confirmedTxns.empty?
-      confirmedTxns.each do |txn|
-        Transaction.where(txhash: txn['txhash']).update(status: 'confirmed', blockNumber: txn['blockNumber'])
-      end
-    end
-    unless seenTxns.empty?
-      seenTxns.each do |txn|
-        Transaction.where(txhash: txn['txhash']).update(status: 'seen', blockNumber: txn['blockNumber'])
-      end
-    end
+  def add_new_transaction(user, attrs)
+    transaction = Transaction.new(attrs)
+    transaction.user = user
+
+    return [:invalid_data, transaction.errors] unless transaction.valid?
+
+    transaction.txhash = transaction.txhash.downcase
+
+    return [:database_error, transaction.errors] unless transaction.save
+
+    [:ok, transaction]
   end
 
   def check_transactions_params
     params.require(:txhash)
     params.permit(:title)
+  end
+
+  def transactions_params
+    params.permit(:title, :txhash)
   end
 end

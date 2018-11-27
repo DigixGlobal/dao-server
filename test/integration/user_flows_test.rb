@@ -19,13 +19,17 @@ class UserFlowsTest < ActionDispatch::IntegrationTest
 
     assert_response :success,
                     'should work'
+    assert_match 'ok', @response.body,
+                 'response should be an ok'
 
     post user_new_path,
          params: { payload: params }.to_json,
          headers: info_server_headers('POST', user_new_path, params)
 
-    assert_response :unprocessable_entity,
+    assert_response :success,
                     'should not work with the same params'
+    assert_match 'errors', @response.body,
+                 'response should contain validation errors'
 
     post user_new_path,
          params: {}.to_json,
@@ -46,5 +50,10 @@ class UserFlowsTest < ActionDispatch::IntegrationTest
                     'should work'
     assert_match 'uid', @response.body,
                  'should work'
+
+    get user_details_path
+
+    assert_response :unauthorized,
+                    'should fail without authorization'
   end
 end

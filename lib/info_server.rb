@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
+require 'self_server'
+
 class InfoServer
+  SERVER_URL = ENV.fetch('INFO_SERVER_URL') { 'http://localhost:3001' }
   SERVER_SECRET = ENV.fetch(
     'DAO_INFO_SERVER_SECRET',
     'this-is-a-secret-between-dao-and-info-server'
@@ -28,6 +31,25 @@ class InfoServer
     nonce.nonce
   end
 
+  def update_hashes(txhashes)
+    res = request_info_server('/transactions/watch', txns: txhashes)
+    result = JSON.parse(res.body).dig('result')
+
+    seen_txns, confirmed_txns = result.fetch_values('seen', 'confirmed')
+
+    unless confirmed_txns.empty?
+      confirmed_txns.each do |txn|
+        Transaction.where(txhash: txn['txhash']).update(status: 'confirmed', blockNumber: txn['blockNumber'])
+      end
+    end
+
+    unless seen_txns.empty?
+      seen_txns.each do |txn|
+        Transaction.where(txhash: txn['txhash']).update(status: 'seen', blockNumber: txn['blockNumber'])
+      end
+    end
+  end
+
     private
 
   def message_signature(message)
@@ -47,6 +69,23 @@ class InfoServer
       request.headers.fetch('ACCESS-NONCE', '').to_i,
       request.params.fetch('payload', '')
     )
+  end
+
+  def request_info_server(endpoint, payload)
+    new_nonce = SelfServer.increment_nonce
+
+    signature = InfoServer.access_signature('POST', endpoint, new_nonce, payload)
+
+    uri = URI.parse("#{SERVER_URL}#{endpoint}")
+    https = Net::HTTP.new(uri.host, uri.port)
+    # https.use_ssl = true
+    req = Net::HTTP::Post.new(uri.path,
+                              'Content-Type' => 'application/json',
+                              'ACCESS-SIGN' => signature,
+                              'ACCESS-NONCE' => new_nonce.to_s)
+    req.body = { payload: payload }.to_json
+
+    https.request(req)
   end
   end
 
