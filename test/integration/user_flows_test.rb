@@ -19,7 +19,7 @@ class UserFlowsTest < ActionDispatch::IntegrationTest
 
     assert_response :success,
                     'should work'
-    assert_match 'ok', @response.body,
+    assert_match 'uid', @response.body,
                  'response should be an ok'
 
     post user_new_path,

@@ -18,9 +18,9 @@ class AuthenticationController < ApplicationController
 
     case result
     when :invalid_data, :database_error
-      render json: { error: challenge_or_error }
+      render json: error_response(challenge_or_error)
     else # :ok
-      render json: { result: result }
+      render json: result_response(result)
     end
   end
 
@@ -29,16 +29,16 @@ class AuthenticationController < ApplicationController
            params.key?(:challenge_id) &&
            params.key?(:signature) &&
            params.key?(:message)
-      return render json: { error: :invalid_data }
+      return render json: error_response(:invalid_data)
     end
 
     challenge_id = params.fetch(:challenge_id, '')
     unless (challenge = Challenge.find_by(id: challenge_id))
-      return render json: { error: :challenge_not_found }
+      return render json: error_response(:challenge_not_found)
     end
 
     if challenge.proven?
-      return render json: { error: :challenge_already_proven }
+      return render json: error_response(:challenge_already_proven)
     end
 
     address = params.fetch(:address, '').downcase
@@ -52,14 +52,14 @@ class AuthenticationController < ApplicationController
     )
 
     unless recovered_address == address
-      return render json: { error: :challenge_failed }
+      return render json: error_response(:challenge_failed)
     end
 
     prove_challenge(challenge)
 
     sign_in(:user, challenge.user)
     auth_token = challenge.user.create_new_auth_token
-    render json: { result: auth_token }
+    render json: result_response(auth_token)
   end
 
   private
