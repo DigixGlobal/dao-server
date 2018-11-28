@@ -34,8 +34,10 @@ ActiveRecord::Schema.define(version: 2018_11_28_015631) do
     t.bigint "user_id"
     t.bigint "proposal_id"
     t.integer "parent_id"
+    t.datetime "discarded_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["discarded_at"], name: "index_comments_on_discarded_at"
     t.index ["proposal_id"], name: "index_comments_on_proposal_id"
     t.index ["user_id"], name: "index_comments_on_user_id"
   end

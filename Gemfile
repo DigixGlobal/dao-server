@@ -10,6 +10,7 @@ gem 'rails', '~> 5.2.1'
 # Use sqlite3 as the database for Active Record
 gem 'devise'
 gem 'devise_token_auth'
+gem 'discard', '~> 1.0'
 gem 'mysql2', '>= 0.3.18', '< 0.5'
 
 # Use Puma as the app server
