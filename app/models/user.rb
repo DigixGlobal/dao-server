@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class User < ActiveRecord::Base
-  # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :rememberable, :trackable
   include DeviseTokenAuth::Concerns::User
 
@@ -11,5 +9,19 @@ class User < ActiveRecord::Base
 
   def remove_tokens_after_password_reset
     # override this function in devise_token_auth
+  end
+
+  validates :address,
+            presence: true,
+            uniqueness: true
+
+  validate :address, :checksum_address?
+
+  private
+
+  def checksum_address?
+    unless Eth::Utils.valid_address?(address)
+      errors.add(:address, 'must be a valid checksum address')
+    end
   end
 end

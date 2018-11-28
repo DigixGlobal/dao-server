@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Rails.application.routes.draw do
   mount_devise_token_auth_for 'User', at: 'auth', controllers: {
     # confirmations:      'devise_token_auth/confirmations',
@@ -10,16 +12,16 @@ Rails.application.routes.draw do
 
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
   # get '/test', to: "proposals#test"
-  get '/user/details', to: "user#details"
-  post '/user/new', to: "user#new_user"
+  get '/user/details', to: 'user#details'
+  post '/user/new', to: 'user#new_user'
   # get '/token', to: "proposals#test_token"
-  get '/get_challenge', to: "authentication#challenge"
-  get '/prove', to: "authentication#prove"
+  get '/get_challenge', to: 'authentication#challenge'
+  post '/prove', to: 'authentication#prove'
 
-  get '/transactions/test_server', to: "transactions#test_server"
-  post '/transactions/confirmed', to: "transactions#confirmed"
-  post '/transactions/latest', to: "transactions#latest"
-  post '/transactions/new', to: "transactions#new"
-  post '/transactions/list', to: "transactions#list"
-  post '/transactions/status', to: "transactions#status"
+  get '/transactions/test_server', to: 'transactions#test_server'
+  post '/transactions/confirmed', to: 'transactions#confirmed'
+  post '/transactions/latest', to: 'transactions#latest'
+  post '/transactions/new', to: 'transactions#new'
+  post '/transactions/list', to: 'transactions#list'
+  post '/transactions/status', to: 'transactions#status'
 end

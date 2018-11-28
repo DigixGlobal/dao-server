@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # This file should contain all the record creation needed to seed the database with its default values.
 # The data can then be loaded with the rails db:seed command (or created alongside the database with db:setup).
 #
@@ -8,30 +10,31 @@
 
 def is_unique_uid(uid)
   if User.find_by(uid: uid)
-    return false
+    false
   else
-    return true
+    true
   end
 end
 
 def add_user(address)
   return if User.find_by(address: address)
-  uid = Random.rand(1000000)
-  while (!is_unique_uid(uid)) do
-    uid = Random.rand(1000000)
-  end
+
+  uid = Random.rand(1_000_000)
+  uid = Random.rand(1_000_000) until is_unique_uid(uid)
   u = User.new(address: address, uid: uid)
   u.save
 end
 
 def add_nonce(server, nonce)
   return if Nonce.find_by(server: server)
+
   n = Nonce.new(server: server, nonce: nonce)
   n.save
 end
 
 def add_pending_txns(title, txhash)
   return if Transaction.find_by(txhash: txhash)
+
   t = Transaction.new(title: title, txhash: txhash, user_id: '1')
   t.save
 end
@@ -44,8 +47,8 @@ end
 # add_user('0xcbe85e69eec80f29e9030233a757d49c68e75c8d')
 # add_user('0x355fbd38b3219fa3b7d0739eae142acd9ea832a1')
 
-add_nonce('self', 0)
-add_nonce('infoServer', 0)
+add_nonce(Rails.configuration.nonces['self_server_name'], 0)
+add_nonce(Rails.configuration.nonces['info_server_name'], 0)
 
 # add_pending_txns('title aaa', '0xaaa')
 # add_pending_txns('title bbb', '0xbbb')

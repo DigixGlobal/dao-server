@@ -14,6 +14,7 @@ ActiveRecord::Schema.define(version: 2018_10_31_092845) do
 
   create_table "challenges", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "challenge"
+    t.boolean "proven", default: false
     t.bigint "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

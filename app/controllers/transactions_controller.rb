@@ -1,101 +1,95 @@
-class TransactionsController < ApplicationController
-  def confirmed
-    if verify_info_server_request(request)
-      currentNonce = Nonce.find_by(server: 'infoServer')
-      retrievedNonce = Integer(request.headers["ACCESS-NONCE"])
-      Nonce.update(currentNonce.id, :nonce => retrievedNonce)
-      body = JSON.parse(request.raw_post)
-      txhashes = body["payload"].map { |e| e["txhash"] }
-      Transaction.where(txhash: txhashes).update_all(status: 'confirmed')
+# frozen_string_literal: true
 
-      render json: { status: 200, msg: "correct" }
-    else
-      render json: { status: 403, msg: "wrong" }
-    end
+class TransactionsController < ApplicationController
+  before_action :check_info_server_request, only: %i[confirmed latest test_server]
+  after_action :update_info_server_nonce, only: %i[confirmed latest test_server]
+  before_action :authenticate_user!, only: %i[new list]
+
+  def confirmed
+    txn_hashes = params.fetch('payload', []).map { |e| e.fetch('txhash', '') }
+    confirm_transactions(txn_hashes)
+
+    render json: result_response
   end
 
   def latest
-    if verify_info_server_request(request)
-      currentNonce = Nonce.find_by(server: 'infoServer')
-      retrievedNonce = Integer(request.headers["ACCESS-NONCE"])
-      Nonce.update(currentNonce.id, :nonce => retrievedNonce)
+    payload = params.fetch('payload', {})
+    transactions = payload.fetch('transactions', [])
+    block_number = payload.fetch('blockNumber', '')
 
-      body = JSON.parse(request.raw_post)
-      blockNumber = body["payload"]["blockNumber"]
-      latestTxns = body["payload"]["transactions"]
-      # update transactions (pending --> seen) (blockNumber)
-      if (latestTxns.length > 0)
-        Transaction.where(txhash: latestTxns).update_all(blockNumber: blockNumber, status: 'seen')
-      end
-
-      render json: { status: 200, msg: "correct" }
-    else
-      render json: { status: 403, msg: "wrong" }
+    unless transactions.empty?
+      seen_transactions(
+        transactions.map { |e| e.fetch('txhash', '') },
+        block_number
+      )
     end
+
+    render json: result_response
   end
 
   def new
-    authenticate_user!
-    check_transactions_params
-    txhash = params[:txhash].downcase
+    result, transaction_or_error = add_new_transaction(
+      current_user,
+      transactions_params
+    )
 
-    return error_response('duplicateTxhash') if Transaction.find_by(txhash: txhash)
-    new_tx = Transaction.new(txhash: txhash, title: params[:title], user: current_user)
-    new_tx.save
+    case result
+    when :invalid_data, :database_error
+      render json: error_response(transaction_or_error)
+    when :ok
+      InfoServer.update_hashes([transaction_or_error.txhash.downcase])
 
-    notifyInfoServer([txhash])
-    render json: { success: true, tx: new_tx }
+      render json: result_response(transaction_or_error)
+    end
   end
 
   def list
-    authenticate_user!
-    transactions = current_user.transactions
-    render json: { transactions: transactions }
+    render json: result_response(current_user.transactions)
   end
 
   def status
-    # TODO: sanitize
-    transaction = Transaction.find_by(txhash: params[:txhash])
-    transaction or return error_response('notFound')
-    render json: transaction
+    case (transaction = Transaction.find_by(txhash: params.fetch(:txhash, '')))
+    when nil
+      render json: error_response(:transaction_not_found)
+    else
+      render json: result_response(transaction)
+    end
   end
 
   def test_server
-    puts 'in test_server'
-    if verify_info_server_request(request)
-      currentNonce = Nonce.find_by(server: 'infoServer')
-      retrievedNonce = Integer(request.headers["ACCESS-NONCE"])
-      Nonce.update(currentNonce.id, :nonce => retrievedNonce)
-      body = JSON.parse(request.raw_post)
+    puts "body from test_server: #{request.body}"
 
-      puts "body from test_server: #{body}"
-
-      render json: { status: 200, msg: "correct" }
-    else
-      render json: { status: 403, msg: "wrong" }
-    end
+    render json: result_response
   end
 
   private
-  def notifyInfoServer(txhashes)
-    payload = { txns: txhashes }
-    res = request_info_server('/transactions/watch', payload)
-    seenTxns = JSON.parse(res.body)["result"]["seen"]
-    confirmedTxns = JSON.parse(res.body)["result"]["confirmed"]
-    if (confirmedTxns.length > 0)
-      confirmedTxns.each do |txn|
-        Transaction.where(txhash: txn["txhash"]).update(status: 'confirmed', blockNumber: txn["blockNumber"])
-      end
-    end
-    if (seenTxns.length > 0)
-      seenTxns.each do |txn|
-        Transaction.where(txhash: txn["txhash"]).update(status: 'seen', blockNumber: txn["blockNumber"])
-      end
-    end
+
+  def add_new_transaction(user, attrs)
+    transaction = Transaction.new(attrs)
+    transaction.user = user
+
+    return [:invalid_data, transaction.errors] unless transaction.valid?
+
+    transaction.txhash = transaction.txhash.downcase
+
+    return [:database_error, transaction.errors] unless transaction.save
+
+    [:ok, transaction]
   end
 
-  def check_transactions_params
-  	params.require(:txhash)
-    params.permit(:title)
+  def confirm_transactions(txn_hashes)
+    Transaction
+      .where(txhash: txn_hashes)
+      .update_all(status: 'confirmed')
+  end
+
+  def seen_transactions(txn_hashes, block_number)
+    Transaction
+      .where(txhash: txn_hashes)
+      .update_all(blockNumber: block_number, status: 'seen')
+  end
+
+  def transactions_params
+    params.permit(:title, :txhash)
   end
 end
