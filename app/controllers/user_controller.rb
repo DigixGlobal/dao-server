@@ -5,7 +5,7 @@ class UserController < ApplicationController
   before_action :authenticate_user!, only: [:details]
 
   def details
-    render json: current_user
+    render json: { result: current_user }
   end
 
   def new_user
@@ -13,7 +13,7 @@ class UserController < ApplicationController
 
     case result
     when :invalid_data, :database_error
-      render json: { errors: user_or_error }
+      render json: { error: user_or_error }
     when :ok
       render json: { result: result }
     else

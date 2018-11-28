@@ -18,12 +18,9 @@ class AuthenticationController < ApplicationController
 
     case result
     when :invalid_data, :database_error
-      render json: { errors: challenge_or_error }
-    when :ok
-      render json: { result: result,
-                     challenge: challenge_or_error }
-    else
-      render json: { error: :server_error }
+      render json: { error: challenge_or_error }
+    else # :ok
+      render json: { result: result }
     end
   end
 
@@ -32,25 +29,21 @@ class AuthenticationController < ApplicationController
            params.key?(:challenge_id) &&
            params.key?(:signature) &&
            params.key?(:message)
-      return render json: { error: :invalid_data,
-                            errors: ['wrongParameters'] }
+      return render json: { error: :invalid_data }
     end
 
     challenge_id = params.fetch(:challenge_id, '')
     unless (challenge = Challenge.find_by(id: challenge_id))
-      return render json: { error: :challenge_not_found,
-                            errors: ['challengeNotFound'] }
+      return render json: { error: :challenge_not_found }
     end
 
     if challenge.proven?
-      return render json: { error: :challenge_already_proven,
-                            errors: ['challengeAlreadyProved'] }
+      return render json: { error: :challenge_already_proven }
     end
 
     address = params.fetch(:address, '').downcase
     unless challenge.user.address == address
-      return render json: { error: :address_not_equal,
-                            errors: ['addressNotMatch'] }
+      return render json: { error: :address_not_equal }
     end
 
     recovered_address = recover_address(
@@ -59,15 +52,14 @@ class AuthenticationController < ApplicationController
     )
 
     unless recovered_address == address
-      return render json: { error: :challenge_failed,
-                            errors: ['challengeFailed'] }
+      return render json: { error: :challenge_failed }
     end
 
     prove_challenge(challenge)
 
     sign_in(:user, challenge.user)
     auth_token = challenge.user.create_new_auth_token
-    render json: auth_token
+    render json: { result: auth_token }
   end
 
   private

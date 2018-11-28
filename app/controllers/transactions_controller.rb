@@ -9,8 +9,7 @@ class TransactionsController < ApplicationController
     txn_hashes = params.fetch('payload', []).map { |e| e.fetch('txhash', '') }
     confirm_transactions(txn_hashes)
 
-    render json: { result: :ok,
-                   msg: 'correct' }
+    render json: { result: :ok }
   end
 
   def latest
@@ -25,8 +24,7 @@ class TransactionsController < ApplicationController
       )
     end
 
-    render json: { result: :ok,
-                   msg: 'correct' }
+    render json: { result: :ok }
   end
 
   def new
@@ -34,19 +32,18 @@ class TransactionsController < ApplicationController
 
     case result
     when :invalid_data, :database_error
-      render json: { errors: transaction_or_error }
+      render json: { error: transaction_or_error }
     when :ok
       InfoServer.update_hashes([transaction_or_error.txhash.downcase])
 
-      render json: { result: result,
-                     tx: transaction_or_error }
+      render json: { result: transaction_or_error }
     else
       render json: { error: :server_error }
     end
   end
 
   def list
-    render json: { transactions: current_user.transactions }
+    render json: { result: current_user.transactions }
   end
 
   def status
@@ -61,8 +58,7 @@ class TransactionsController < ApplicationController
   def test_server
     puts "body from test_server: #{request.body}"
 
-    render json: {  result: :ok,
-                    msg: 'correct' }
+    render json: {  result: :ok  }
   end
 
   private

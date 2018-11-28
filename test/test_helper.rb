@@ -43,7 +43,9 @@ module ActiveSupport
 
       post prove_path, params: params
 
-      ::JSON.parse(@response.body).slice('access-token', 'client', 'uid')
+      ::JSON.parse(@response.body)
+            .fetch('result', {})
+            .slice('access-token', 'client', 'uid')
     end
   end
 end

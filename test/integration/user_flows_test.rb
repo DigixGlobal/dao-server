@@ -28,7 +28,7 @@ class UserFlowsTest < ActionDispatch::IntegrationTest
 
     assert_response :success,
                     'should not work with the same params'
-    assert_match 'errors', @response.body,
+    assert_match 'error', @response.body,
                  'response should contain validation errors'
 
     post user_new_path,
