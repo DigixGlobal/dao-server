@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_10_31_092845) do
+ActiveRecord::Schema.define(version: 2018_11_28_015631) do
 
   create_table "challenges", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "challenge"
@@ -21,11 +21,39 @@ ActiveRecord::Schema.define(version: 2018_10_31_092845) do
     t.index ["user_id"], name: "index_challenges_on_user_id"
   end
 
+  create_table "comment_hierarchies", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.integer "ancestor_id", null: false
+    t.integer "descendant_id", null: false
+    t.integer "generations", null: false
+    t.index ["ancestor_id", "descendant_id", "generations"], name: "comment_anc_desc_idx", unique: true
+    t.index ["descendant_id"], name: "comment_desc_idx"
+  end
+
+  create_table "comments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "comment"
+    t.bigint "user_id"
+    t.bigint "proposal_id"
+    t.integer "parent_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["proposal_id"], name: "index_comments_on_proposal_id"
+    t.index ["user_id"], name: "index_comments_on_user_id"
+  end
+
   create_table "nonces", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "server"
     t.integer "nonce"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "proposals", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "title"
+    t.string "description"
+    t.bigint "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_proposals_on_user_id"
   end
 
   create_table "transactions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -58,5 +86,8 @@ ActiveRecord::Schema.define(version: 2018_10_31_092845) do
   end
 
   add_foreign_key "challenges", "users"
+  add_foreign_key "comments", "proposals"
+  add_foreign_key "comments", "users"
+  add_foreign_key "proposals", "users"
   add_foreign_key "transactions", "users"
 end
