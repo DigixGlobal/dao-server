@@ -20,7 +20,7 @@ class AuthenticationController < ApplicationController
     when :invalid_data, :database_error
       render json: error_response(challenge_or_error)
     else # :ok
-      render json: result_response(result)
+      render json: result_response(challenge_or_error)
     end
   end
 

@@ -32,10 +32,11 @@ class InfoServer
   end
 
   def update_hashes(txhashes)
-    res = request_info_server('/transactions/watch', txns: txhashes)
-    result = JSON.parse(res.body).dig('result')
+    result, payload_or_error = request_info_server('/transactions/watch', txns: txhashes)
 
-    seen_txns, confirmed_txns = result.fetch_values('seen', 'confirmed')
+    return [result, payload_or_error] unless result == :ok
+
+    seen_txns, confirmed_txns = payload_or_error.fetch_values('seen', 'confirmed')
 
     unless confirmed_txns.empty?
       confirmed_txns.each do |txn|
@@ -89,7 +90,15 @@ class InfoServer
                               'ACCESS-NONCE' => new_nonce.to_s)
     req.body = { payload: payload }.to_json
 
-    https.request(req)
+    begin
+      res = https.request(req)
+
+      result = JSON.parse(res.body).dig('result')
+
+      [:ok, result]
+    rescue StandardError
+      [:error, nil]
+    end
   end
   end
 
