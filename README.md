@@ -1,7 +1,10 @@
 ### SETUP INSTRUCTIONS
 Please refer [HERE](https://gist.github.com/roynalnaruto/52f2be795f256ed7b0f156666108f8fc). The DAO-server runs together with [DigixDAO contracts](https://github.com/DigixGlobal/dao-contracts/tree/dev-info-server) and [Info-server](https://github.com/DigixGlobal/info-server/tree/dev)
 
-# Endpoints:
+### Proposals
+[link](PROPOSALS.md)
+
+### Endpoints:
 * `/get_challenge?address=<address>`(**GET**): To get an authentication token, first get a challenge which you must prove
 
 ``` json
