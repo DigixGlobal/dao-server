@@ -21,8 +21,13 @@ class ProposalsController < ApplicationController
     end
   end
 
-  # TODO: Last
   def find
+    case (proposal = Proposal.find_by(id: params.fetch(:id)))
+    when nil
+      render json: error_response(:proposal_not_found)
+    else
+      render json: result_response(proposal)
+    end
   end
 
   def comment
@@ -32,8 +37,7 @@ class ProposalsController < ApplicationController
 
     user = current_user
 
-    attrs = { body: comment_params.fetch('comment', nil) }
-    result, comment_or_error = Proposal.comment(proposal, user, attrs)
+    result, comment_or_error = Proposal.comment(proposal, user, comment_params)
 
     case result
     when :invalid_data, :database_error
@@ -44,10 +48,10 @@ class ProposalsController < ApplicationController
   end
 
   def create_params
-    params.require('payload').permit(:proposal_id, :proposer)
+    params.require(:payload).permit(:proposal_id, :proposer)
   end
 
   def comment_params
-    params.permit(:comment)
+    params.permit(:body)
   end
 end

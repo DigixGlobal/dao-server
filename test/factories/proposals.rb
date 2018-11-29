@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   sequence(:proposal_id) { |_| Random.rand(100..1000) }
-  sequence(:proposal_stage) { |_| Proposal.stages.values.sample }
+  sequence(:proposal_stage) { |_| Proposal.stages.keys.sample }
 
   factory :proposal, class: 'Proposal' do
     stage { generate(:proposal_stage) }

@@ -40,5 +40,43 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
     post proposal_comments_path(proposal.id),
          params: params,
          headers: auth_headers
+
+    assert_response :success,
+                    'should work'
+    assert_match 'id', @response.body,
+                 'response should contain id'
+
+    post proposal_comments_path(proposal.id),
+         headers: auth_headers
+
+    assert_response :success,
+                    'should fail with empty data'
+    assert_match 'error', @response.body,
+                 'response should be an error'
+
+    post proposal_comments_path(proposal.id),
+         params: params
+
+    assert_response :unauthorized,
+                    'should fail without authorization'
+  end
+
+  test 'find proposal should work' do
+    key = Eth::Key.new
+    user = create(:user, address: key.address)
+    proposal = create(:proposal, user: user)
+    30.times do
+      create(:comment, proposal: proposal, stage: generate(:proposal_stage))
+    end
+
+    auth_headers = auth_headers(key)
+
+    get proposal_detail_path(proposal.id),
+        headers: auth_headers
+
+    assert_response :success,
+                    'should work'
+    assert_match 'id', @response.body,
+                 'response should contain id'
   end
 end
