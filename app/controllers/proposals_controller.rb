@@ -50,6 +50,8 @@ class ProposalsController < ApplicationController
   end
 
   def create_params
+    return {} if params.fetch(:payload, nil).nil?
+
     params.require(:payload).permit(:proposal_id, :proposer)
   end
 

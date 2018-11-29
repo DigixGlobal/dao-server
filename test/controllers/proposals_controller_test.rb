@@ -24,11 +24,11 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
                  'response should contain id'
 
     post path,
-         params: { payload: { cat: :kitten } }.to_json,
+         params: { payload: nil }.to_json,
          headers: info_server_headers(
            'POST',
            path,
-           cat: :kitten
+           nil
          )
 
     assert_response :success,
