@@ -24,6 +24,19 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
                  'response should contain id'
 
     post path,
+         params: { payload: { cat: :kitten } }.to_json,
+         headers: info_server_headers(
+           'POST',
+           path,
+           cat: :kitten
+         )
+
+    assert_response :success,
+                    'should fail with empty data'
+    assert_match 'error', @response.body,
+                 'response should be ann error'
+
+    post path,
          params: { payload: payload }.to_json
 
     assert_response :forbidden,
