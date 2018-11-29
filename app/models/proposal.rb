@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 class Proposal < ActiveRecord::Base
+  include StageField
+
   belongs_to :user
   has_many :comments, -> { where(parent_id: nil) }
-  enum stage: { idea: 1, draft: 2 }
 
-  validates :id,
+  validates :stage,
             presence: true
-
   validates :user,
             presence: true,
             uniqueness: true
@@ -26,6 +26,20 @@ class Proposal < ActiveRecord::Base
       return [:database_error, proposal.errors] unless proposal.save
 
       [:ok, proposal]
+    end
+
+    def comment(proposal, user, attrs)
+      comment = Comment.new(
+        body: attrs.fetch(:body, nil),
+        stage: proposal.stage,
+        proposal: proposal,
+        user: user
+      )
+
+      return [:invalid_data, comment.errors] unless comment.valid?
+      return [:database_error, comment.errors] unless comment.save
+
+      [:ok, comment]
     end
   end
 end

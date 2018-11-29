@@ -30,7 +30,8 @@ ActiveRecord::Schema.define(version: 2018_11_28_015631) do
   end
 
   create_table "comments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.string "comment"
+    t.text "body"
+    t.integer "stage", default: 1
     t.bigint "user_id"
     t.bigint "proposal_id"
     t.integer "parent_id"
@@ -38,6 +39,7 @@ ActiveRecord::Schema.define(version: 2018_11_28_015631) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["discarded_at"], name: "index_comments_on_discarded_at"
+    t.index ["proposal_id", "stage"], name: "index_comments_on_proposal_id_and_stage"
     t.index ["proposal_id"], name: "index_comments_on_proposal_id"
     t.index ["user_id"], name: "index_comments_on_user_id"
   end

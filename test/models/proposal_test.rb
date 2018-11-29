@@ -39,4 +39,31 @@ class ProposalTest < ActiveSupport::TestCase
     assert_equal :invalid_data, invalid_data,
                  'should fail with empty data'
   end
+
+  test 'comment on post should work' do
+    proposal = create(:proposal)
+    user = proposal.user
+    attrs = attributes_for(:comment)
+
+    ok, comment = Proposal.comment(proposal, user, attrs)
+
+    assert_equal :ok, ok,
+                 'should work'
+    assert_kind_of Comment, comment,
+                   'result should be a comment'
+    assert_equal proposal.stage, comment.stage,
+                 'comment and proposal should have the same stage/status'
+
+    ok, other_comment = Proposal.comment(proposal, user, attrs)
+
+    assert_equal :ok, ok,
+                 'making the same comment should work'
+    assert_not_equal comment.id, other_comment.id,
+                     'other comments should be different'
+
+    invalid_data, = Proposal.comment(proposal, user, {})
+
+    assert_equal :invalid_data, invalid_data,
+                 'should fail with empty data'
+  end
 end

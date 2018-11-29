@@ -29,4 +29,16 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden,
                     'should fail without authorization'
   end
+
+  test 'comment on proposal should work' do
+    key = Eth::Key.new
+    proposal = create(:proposal, user: create(:user, address: key.address))
+    params = attributes_for(:proposal_comment)
+
+    auth_headers = auth_headers(key)
+
+    post proposal_comments_path(proposal.id),
+         params: params,
+         headers: auth_headers
+  end
 end

@@ -26,5 +26,6 @@ Rails.application.routes.draw do
   post '/transactions/status', to: 'transactions#status'
 
   post '/proposals/create', to: 'proposals#create'
-  post '/proposals/details/:proposalId', to: 'proposals#find'
+  post '/proposals/:id', to: 'proposals#find'
+  post '/proposals/:id/comments', to: 'proposals#comment', as: 'proposal_comments'
 end
