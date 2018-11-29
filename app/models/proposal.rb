@@ -5,6 +5,9 @@ class Proposal < ActiveRecord::Base
   has_many :comments, -> { where(parent_id: nil) }
   enum stage: { idea: 1, draft: 2 }
 
+  validates :id,
+            presence: true
+
   validates :user,
             presence: true,
             uniqueness: true
