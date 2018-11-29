@@ -25,7 +25,7 @@ class ApplicationController < ActionController::API
     { result: result }
   end
 
-  def error_response(error = 'Error')
+  def error_response(error = :error)
     { error: error }
   end
 

@@ -54,6 +54,13 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
     assert_match 'error', @response.body,
                  'response should be an error'
 
+    post proposal_comments_path('NON_EXISTENT_ID'),
+         params: params,
+         headers: auth_headers
+
+    assert_response :not_found,
+                    'should not find proposal'
+
     post proposal_comments_path(proposal.id),
          params: params
 
@@ -78,5 +85,11 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
                     'should work'
     assert_match 'id', @response.body,
                  'response should contain id'
+
+    get proposal_detail_path('NON_EXISTENT_ID'),
+        headers: auth_headers
+
+    assert_response :not_found,
+                    'should not find proposal'
   end
 end

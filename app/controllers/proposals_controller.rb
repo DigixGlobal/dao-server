@@ -24,16 +24,18 @@ class ProposalsController < ApplicationController
   def find
     case (proposal = Proposal.find_by(id: params.fetch(:id)))
     when nil
-      render json: error_response(:proposal_not_found)
+      render json: error_response(:proposal_not_found),
+             status: :not_found
     else
       render json: result_response(proposal)
     end
   end
 
   def comment
-    proposal = Proposal.find_by(id: params.fetch(:id))
-
-    render json: error_response(:proposal_not_found) unless proposal
+    unless (proposal = Proposal.find_by(id: params.fetch(:id)))
+      return render json: error_response(:proposal_not_found),
+                    status: :not_found
+    end
 
     user = current_user
 
