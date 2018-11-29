@@ -3,9 +3,7 @@
 require 'test_helper'
 
 class UserTest < ActiveSupport::TestCase
-  setup do
-    User.delete_all
-  end
+  setup :database_fixture
 
   test 'create new user should work' do
     params = attributes_for(:user)

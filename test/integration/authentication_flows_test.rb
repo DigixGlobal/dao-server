@@ -3,10 +3,7 @@
 require 'test_helper'
 
 class AuthenticationFlowsTest < ActionDispatch::IntegrationTest
-  setup do
-    User.delete_all
-    Challenge.delete_all
-  end
+  setup :database_fixture
 
   test 'create challenge should work' do
     user = create(:user)

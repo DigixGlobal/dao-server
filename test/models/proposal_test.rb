@@ -3,9 +3,7 @@
 require 'test_helper'
 
 class ProposalTest < ActiveSupport::TestCase
-  setup do
-    Proposal.delete_all
-  end
+  setup :database_fixture
 
   test 'create new proposal should work' do
     user = create(:user)

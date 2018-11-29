@@ -3,12 +3,7 @@
 require 'test_helper'
 
 class UserFlowsTest < ActionDispatch::IntegrationTest
-  setup do
-    User.delete_all
-    Nonce.delete_all
-
-    create(:server_nonce, server: Rails.configuration.nonces['info_server_name'])
-  end
+  setup :database_fixture
 
   test 'create user should work' do
     params = attributes_for(:user)
