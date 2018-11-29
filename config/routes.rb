@@ -24,4 +24,9 @@ Rails.application.routes.draw do
   post '/transactions/new', to: 'transactions#new'
   post '/transactions/list', to: 'transactions#list'
   post '/transactions/status', to: 'transactions#status'
+
+  scope '/proposals' do
+    get '/create', to: 'proposals#create'
+    get '/details/:proposalId', to: 'proposals#find'
+  end
 end

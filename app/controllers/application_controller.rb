@@ -61,4 +61,10 @@ class ApplicationController < ActionController::API
       InfoServer.update_nonce(request_nonce)
     end
   end
+
+  def check_and_update_info_server_request
+    check_info_server_request
+    yield
+    update_info_server_nonce
+  end
 end

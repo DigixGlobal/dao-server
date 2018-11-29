@@ -50,11 +50,11 @@ ActiveRecord::Schema.define(version: 2018_11_28_015631) do
   end
 
   create_table "proposals", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.string "title"
-    t.string "description"
     t.bigint "user_id"
+    t.integer "stage", default: 1
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["stage"], name: "index_proposals_on_stage"
     t.index ["user_id"], name: "index_proposals_on_user_id"
   end
 

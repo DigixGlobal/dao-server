@@ -3,14 +3,7 @@
 require 'test_helper'
 
 class TransactionFlowsTest < ActionDispatch::IntegrationTest
-  setup do
-    Transaction.delete_all
-    User.delete_all
-    Nonce.delete_all
-
-    create(:server_nonce, server: Rails.configuration.nonces['info_server_name'])
-    create(:server_nonce, server: Rails.configuration.nonces['self_server_name'])
-  end
+  setup :database_fixture
 
   test 'create new transaction should work' do
     stub_request(:any, /transactions/)

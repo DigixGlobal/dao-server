@@ -8,6 +8,7 @@ ruby '2.5.0'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.2.1'
 # Use sqlite3 as the database for Active Record
+gem 'closure_tree', '>= 7.0.0 '
 gem 'devise'
 gem 'devise_token_auth'
 gem 'discard', '~> 1.0'
@@ -35,7 +36,6 @@ gem 'rack-cors', require: 'rack/cors'
 
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
 # gem 'rack-cors'
-gem 'closure_tree', '>= 7.0.0 '
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
