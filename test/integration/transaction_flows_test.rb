@@ -32,7 +32,7 @@ class TransactionFlowsTest < ActionDispatch::IntegrationTest
 
     assert_response :success,
                     'should work'
-    assert_match 'ok', @response.body,
+    assert_match 'title', @response.body,
                  'response should contain ok status'
 
     post transactions_new_path,
@@ -41,7 +41,7 @@ class TransactionFlowsTest < ActionDispatch::IntegrationTest
 
     assert_response :success,
                     'should fail on retry'
-    assert_match 'errors', @response.body,
+    assert_match 'error', @response.body,
                  'response should contain errors'
   end
 
@@ -70,7 +70,7 @@ class TransactionFlowsTest < ActionDispatch::IntegrationTest
 
     assert_response :success,
                     'should fail on with empty data'
-    assert_match 'errors', @response.body,
+    assert_match 'error', @response.body,
                  'response should contain validation errors'
   end
 
@@ -88,7 +88,7 @@ class TransactionFlowsTest < ActionDispatch::IntegrationTest
 
     assert_response :success,
                     'should work'
-    assert_match 'transactions', @response.body,
+    assert_match 'title', @response.body,
                  'response should contain ok status'
 
     post transactions_list_path

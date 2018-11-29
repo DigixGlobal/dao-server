@@ -1,90 +1,112 @@
 ### SETUP INSTRUCTIONS
 Please refer [HERE](https://gist.github.com/roynalnaruto/52f2be795f256ed7b0f156666108f8fc). The DAO-server runs together with [DigixDAO contracts](https://github.com/DigixGlobal/dao-contracts/tree/dev-info-server) and [Info-server](https://github.com/DigixGlobal/info-server/tree/dev)
 
-# Endpoints:
-* `/get_challenge?address=<address>`: Get a challenge for logging into Dao Server
-```
+### Proposals
+[link](PROPOSALS.md)
+
+### Endpoints:
+* `/get_challenge?address=<address>`(**GET**): To get an authentication token, first get a challenge which you must prove
+
+``` json
 {
-  "challenge": {
-    "id": 4,
-    "challenge": "322",
+  "result": {
+    "id": 2,
+    "challenge": "239",
+    "proven": false,
     "user_id": 1,
-    "created_at": "2018-10-24T14:44:15.000+08:00",
-    "updated_at": "2018-10-24T14:44:15.000+08:00"
+    "created_at": "2018-11-28T14:26:39.000+08:00",
+    "updated_at": "2018-11-28T14:26:39.000+08:00"
+  }
+}
+```
+* `/prove?address=<address>&challenge_id=<challenge_id>&message=<message>&signature=<signature>`(**POST**):
+    Using your ethereum account, sign the `challenge` with your signature to get the tokens
+
+``` json
+{
+  "result": {
+    "access-token": "ld7LvGgwNfPWYWb8FjojHQ",
+    "token-type": "Bearer",
+    "client": "7vZsAGdmbrD8aPMQRiwZjw",
+    "expiry": "1544596721",
+    "uid": "96949"
   }
 }
 ```
 
-* `/prove?address=<address>&challenge_id=2&message=<message>&signature=<signature>`: Prove the address and login, getting back the access tokens
-```
-{
-    "access-token": "aXi_r1LkjihLH9UIZpVKVw",
-    "token-type": "Bearer",
-    "client": "5JVvXO45a65YyS8VsNb3_w",
-    "expiry": "1541573249",
-    "uid": "12"
-}
-```
-These info should be put into the headers for subsequent APIs to Dao Server
+These info should be put into the headers for subsequent APIs to Dao Server. As an example:
 
-* `/user/details`: [authenticated] get a user details after login, to test if token authentication works
+``` shell
+curl -i -H UID\:\ 96949 -H CLIENT\:\ 7vZsAGdmbrD8aPMQRiwZjw -H ACCESS-TOKEN\:\ ld7LvGgwNfPWYWb8FjojHQ -XGET http\://127.0.0.1\:3005/user/details
 ```
+
+* `/user/details`(**GET**): [authenticated] Get current user details. Use this to test if token authentication works
+
+``` json
 {
+  "result": {
     "id": 1,
     "provider": "address",
-    "uid": "12",
-    "address": "0x6d07b3f29a305294bde6dc4976d923cc9f5ee4de",
-    "created_at": "2018-10-24T10:27:45.000+08:00",
-    "updated_at": "2018-10-24T15:07:33.000+08:00"
+    "uid": "96949",
+    "address": "0x22e8422744054e07f15a4d634747e5bed53b043d",
+    "created_at": "2018-11-28T14:25:12.000+08:00",
+    "updated_at": "2018-11-28T14:38:41.000+08:00"
+  }
 }
 ```
 
-* `/transactions/new?txhash=<>&title=<>`: [authenticated] tell the dao server that we have just executed a tnx
-```
-{
-    "success": true,
-    "tx": {
-        "id": 1,
-        "title": "123123123",
-        "txhash": "0x0123",
-        "user_id": 1,
-        "created_at": "2018-11-01T11:56:53.000+08:00",
-        "updated_at": "2018-11-01T11:56:53.000+08:00"
-    }
-}
-```
+* `/transactions/new?txhash=<>&title=<>`(**POST**): [authenticated] Notify the server that a transaction is executed
 
-* `/transactions/list`: [authenticated] get the status of all transactions of current user
-```
+``` json
 {
-    "transactions": [
-        {
-            "id": 1,
-            "title": "123123123",
-            "txhash": "0x0123",
-            "status": "pending",
-            "user_id": 1,
-            "created_at": "2018-11-01T12:00:02.000+08:00",
-            "updated_at": "2018-11-01T12:00:02.000+08:00"
-        }
-    ]
-}
-```
-
-* `/transactions/status?txhash=<>`: get status of a particular tnx
-```
-{
-    "id": 1,
-    "title": "123123123",
-    "txhash": "0x0123",
+  "result": {
+    "id": 3,
+    "title": "Lock DGD",
+    "txhash": "0x510c47f843bdcc21891b10def3f12a575b2b2e73889228f0ac75a45e22eab5cd",
     "status": "pending",
+    "blockNumber": null,
     "user_id": 1,
-    "created_at": "2018-11-01T12:00:02.000+08:00",
-    "updated_at": "2018-11-01T12:00:02.000+08:00"
+    "created_at": "2018-11-28T15:07:50.000+08:00",
+    "updated_at": "2018-11-28T15:07:50.000+08:00"
+  }
 }
 ```
 
+* `/transactions/list`(**POST**): [authenticated] Get all transaction details of the current user
 
+```json
+{
+  "result": [
+    {
+      "id": 1,
+      "title": "Lock DGD",
+      "txhash": "0x500c47f843bdcc21891b10def3f12a575b2b2e73889228f0ac75a45e22eab5cd",
+      "status": "pending",
+      "blockNumber": null,
+      "user_id": 1,
+      "created_at": "2018-11-28T14:47:35.000+08:00",
+      "updated_at": "2018-11-28T14:47:35.000+08:00"
+    }
+  ]
+}
+```
+
+* `/transactions/status?txhash=<txhash>`(**POST**): [authenticated] Get a specific transaction detail given an hash
+
+``` json
+{
+  "result": {
+    "id": 4,
+    "title": "Lock DGD",
+    "txhash": "0x520c47f843bdcc21891b10def3f12a575b2b2e73889228f0ac75a45e22eab5cd",
+    "status": "pending",
+    "blockNumber": null,
+    "user_id": 1,
+    "created_at": "2018-11-28T15:09:39.000+08:00",
+    "updated_at": "2018-11-28T15:09:39.000+08:00"
+  }
+}
+```
 
 # Setup
 * Install mysql2, set the password for root user to be `digixtest` https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-16-04

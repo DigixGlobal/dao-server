@@ -16,7 +16,6 @@ Rails.application.routes.draw do
   post '/user/new', to: 'user#new_user'
   # get '/token', to: "proposals#test_token"
   get '/get_challenge', to: 'authentication#challenge'
-  get '/prove', to: 'authentication#prove'
   post '/prove', to: 'authentication#prove'
 
   get '/transactions/test_server', to: 'transactions#test_server'

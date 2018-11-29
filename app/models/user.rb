@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class User < ActiveRecord::Base
-  # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :rememberable, :trackable
   include DeviseTokenAuth::Concerns::User
 
@@ -15,8 +13,15 @@ class User < ActiveRecord::Base
 
   validates :address,
             presence: true,
-            uniqueness: true,
-            format: { with: /\A0x[a-fA-F0-9]{40}\Z/,
-                      message: 'only valid addresses' },
-            length: { is: 42 }
+            uniqueness: true
+
+  validate :address, :checksum_address?
+
+  private
+
+  def checksum_address?
+    unless Eth::Utils.valid_address?(address)
+      errors.add(:address, 'must be a valid checksum address')
+    end
+  end
 end

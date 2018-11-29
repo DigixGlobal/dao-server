@@ -21,8 +21,12 @@ class ApplicationController < ActionController::API
 
   private
 
+  def result_response(result = :ok)
+    { result: result }
+  end
+
   def error_response(error = 'Error')
-    render json: { error: error }
+    { error: error }
   end
 
   def check_info_server_request

@@ -3,6 +3,10 @@
 require 'test_helper'
 
 class UserTest < ActiveSupport::TestCase
+  setup do
+    User.delete_all
+  end
+
   test 'create new user should work' do
     params = attributes_for(:user)
 
@@ -34,7 +38,7 @@ class UserTest < ActiveSupport::TestCase
     assert_not user.update(address: address.slice(1)),
                'should not fall below 42 characters'
 
-    assert_not user.update(address: 'g' + address.slice(2) + 'G'),
+    assert_not user.update(address: "0xg#{address.slice(4)}G"),
                'should only accept hexadecimal characters'
   end
 end
