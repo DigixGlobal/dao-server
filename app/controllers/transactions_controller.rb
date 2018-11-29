@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class TransactionsController < ApplicationController
-  before_action :check_info_server_request, only: %i[confirmed latest test_server]
-  after_action :update_info_server_nonce, only: %i[confirmed latest test_server]
+  around_action :check_and_update_info_server_request,
+                only: %i[confirmed latest test_server]
   before_action :authenticate_user!, only: %i[new list]
 
   def confirmed
