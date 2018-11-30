@@ -27,6 +27,7 @@ Rails.application.routes.draw do
 
   post '/proposals/create', to: 'proposals#create'
   get '/proposals/(:id)', to: 'proposals#find', as: 'proposal_detail'
+  get '/proposals/(:id)/details', to: 'proposals#find'
   post '/proposals/(:id)/comments',
        to: 'proposals#comment',
        as: 'proposal_comments'
