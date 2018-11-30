@@ -15,7 +15,6 @@ class Proposal < ActiveRecord::Base
   def threads
     Comment
       .where(proposal_id: id)
-      .kept
       .order(created_at: :desc)
       .group_by(&:stage)
       .map do |key, stage_comments|
@@ -80,14 +79,11 @@ class Proposal < ActiveRecord::Base
     end
 
     def delete_comment(user, comment)
-      return [:already_deleted, nil] if comment.discarded?
-
       unless Ability.new(user).can?(:delete, comment)
         return [:unauthorized_action, nil]
       end
 
       comment.discard
-      comment.descendants.each(&:discard)
 
       [:ok, comment]
     end

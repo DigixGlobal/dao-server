@@ -97,11 +97,6 @@ class ProposalTest < ActiveSupport::TestCase
     assert Comment.find(child_comment.id).discarded?,
            'child comment should be deleted'
 
-    already_deleted, = Comment.delete(comment.user, comment)
-
-    assert_equal :already_deleted, already_deleted,
-                 'should fail when already deleted'
-
     another_comment = create(:comment)
 
     unauthorized_action, = Comment.delete(comment.user, another_comment)
@@ -110,7 +105,7 @@ class ProposalTest < ActiveSupport::TestCase
                  'should not allow other users to delete'
   end
 
-  test 'deleted replies should not be found' do
+  test 'deleted replies should be found' do
     proposal = create(:proposal_with_comments)
     comment = proposal.comments.sample
     child_comment = create(:comment, parent: comment)
@@ -120,10 +115,10 @@ class ProposalTest < ActiveSupport::TestCase
 
     assert_equal :ok, ok,
                  'should work'
-    assert_not comment.children.kept.find_by(id: discarded_comment.id),
-               'should not find deleted comment'
-    assert comment.children.kept.find_by(id: child_comment.id),
-           'should find other comment'
+    assert comment.children.find_by(id: discarded_comment.id),
+           'should find deleted comment'
+    assert comment.children.find_by(id: child_comment.id),
+           'should still find other comment'
   end
 
   test 'threads property should work' do
@@ -139,14 +134,19 @@ class ProposalTest < ActiveSupport::TestCase
                'no deleted comments should exsist'
     assert comments.all? { |comment| comment.proposal_id == proposal.id },
            'comments should use the same proposal'
-    assert_equal proposal.comments.size, comments.size,
+    assert_equal Comment.where(proposal_id: proposal.id).size, comments.size,
                  'comments should be the same'
 
+    puts Proposal.all.size
+    puts Comment.all.size
+    puts Comment.where(proposal_id: proposal.id).size
+    puts comments.size
+
     new_comment = create(:comment, proposal: proposal)
-    sleep(1) # Let new comment be inserted
+    sleep(2) # Let new comment be inserted
 
     assert_equal new_comment.id,
-                 proposal.reload.threads[proposal.stage].first.id,
+                 proposal.reload.threads.fetch(proposal.stage, []).first.id,
                  'new comment should be first in the list'
   end
 

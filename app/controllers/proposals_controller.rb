@@ -78,9 +78,6 @@ class ProposalsController < ApplicationController
     )
 
     case result
-    when :already_deleted
-      render json: error_response(result),
-             status: :not_found
     when :invalid_data, :database_error
       render json: error_response(comment_or_error)
     when :ok
