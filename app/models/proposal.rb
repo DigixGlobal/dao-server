@@ -13,19 +13,15 @@ class Proposal < ActiveRecord::Base
             uniqueness: true
 
   def threads
-    comments
+    Comment
+      .where(proposal_id: id)
       .kept
       .order(created_at: :desc)
       .group_by(&:stage)
       .map do |key, stage_comments|
       [
         key,
-        stage_comments
-          .map(&:hash_tree)
-          .flat_map do |comment_map|
-          normalize_hash_map(comment_map, :replies)
-        end
-
+        build_comment_trees(stage_comments)
       ]
     end
       .to_h
@@ -33,20 +29,24 @@ class Proposal < ActiveRecord::Base
 
   private
 
-  def normalize_hash_map(hash_map, children_key = :children)
-    hash_map
-      .map do |entity, child_map|
-        if entity.discarded?
-          nil
-        else
-          unless child_map.empty?
-            entity[children_key] = normalize_hash_map(child_map, children_key)
-          end
+  def build_comment_trees(comments)
+    comment_map = {}
 
-          entity
+    comments.each do |comment|
+      comment_map[comment.id] = comment
+    end
+
+    comment_map
+      .values
+      .reject { |comment| comment.parent_id.nil? }
+      .each do |comment|
+        if (parent_comment = comment_map.fetch(comment.parent_id))
+          parent_comment.replies ||= []
+          parent_comment.replies.push(comment)
         end
       end
-      .reject(&:nil?)
+
+    comments.select { |comment| comment.parent_id.nil? }
   end
 
   class << self

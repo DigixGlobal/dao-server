@@ -132,8 +132,15 @@ class ProposalTest < ActiveSupport::TestCase
 
     assert threads,
            'should work'
-    assert_not flatten_threads(threads).any?(&:discarded?),
+
+    comments = flatten_threads(threads)
+
+    assert_not comments.any?(&:discarded?),
                'no deleted comments should exsist'
+    assert comments.all? { |comment| comment.proposal_id == proposal.id },
+           'comments should use the same proposal'
+    assert_equal proposal.comments.size, comments.size,
+                 'comments should be the same'
 
     new_comment = create(:comment, proposal: proposal)
     sleep(1) # Let new comment be inserted
