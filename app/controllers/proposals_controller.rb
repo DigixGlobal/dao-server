@@ -2,7 +2,7 @@
 
 class ProposalsController < ApplicationController
   around_action :check_and_update_info_server_request, only: %i[create]
-  before_action :authenticate_user!, only: %i[find comment delete_comment]
+  before_action :authenticate_user!, only: %i[find comment reply delete_comment]
 
   def create
     base_params = create_params
@@ -37,21 +37,12 @@ class ProposalsController < ApplicationController
                     status: :not_found
     end
 
-    parent_comment = nil
-
-    if params.key?(:comment_id)
-      unless (parent_comment = Comment.find_by(id: params.fetch(:comment_id)))
-        return render json: error_response(:comment_not_found),
-                      status: :not_found
-      end
-    end
-
     user = current_user
 
     result, comment_or_error = Proposal.comment(
       proposal,
       user,
-      parent_comment,
+      nil,
       comment_params
     )
 
@@ -59,7 +50,38 @@ class ProposalsController < ApplicationController
     when :unauthorized_action
       render json: error_response(result),
              status: :forbidden
-    when :invalid_data, :database_error, :already_deleted
+    when :invalid_data, :database_error
+      render json: error_response(comment_or_error)
+    when :ok
+      render json: result_response(comment_or_error)
+    end
+  end
+
+  def reply
+    unless (comment = Comment.find_by(id: params.fetch(:id)))
+      return render json: error_response(:comment_not_found),
+                    status: :not_found
+    end
+
+    unless (proposal = Proposal.find_by(id: comment.proposal_id))
+      return render json: error_response(:proposal_not_found),
+                    status: :not_found
+    end
+
+    user = current_user
+
+    result, comment_or_error = Proposal.comment(
+      proposal,
+      user,
+      comment,
+      comment_params
+    )
+
+    case result
+    when :already_deleted
+      render json: error_response(result),
+             status: :not_found
+    when :invalid_data, :database_error
       render json: error_response(comment_or_error)
     when :ok
       render json: result_response(comment_or_error)

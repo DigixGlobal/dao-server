@@ -89,7 +89,7 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
 
     auth_headers = auth_headers(key)
 
-    post proposal_comment_path(comment.proposal_id, comment.id),
+    post comment_path(comment.id),
          params: params,
          headers: auth_headers
 
@@ -98,7 +98,7 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
     assert_match 'id', @response.body,
                  'response should contain id'
 
-    post proposal_comment_path(comment.proposal_id, comment.id),
+    post comment_path(comment.id),
          headers: auth_headers
 
     assert_response :success,
@@ -106,21 +106,14 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
     assert_match 'error', @response.body,
                  'response should be an error'
 
-    post proposal_comment_path('NON_EXISTENT_ID', comment.id),
-         params: params,
-         headers: auth_headers
-
-    assert_response :not_found,
-                    'should not find proposal'
-
-    post proposal_comment_path(comment.proposal_id, 'NON_EXISTENT_ID'),
+    post comment_path('NON_EXISTENT_ID'),
          params: params,
          headers: auth_headers
 
     assert_response :not_found,
                     'should not find comment'
 
-    post proposal_comment_path(comment.proposal_id, comment.id),
+    post comment_path(comment.id),
          params: params
 
     assert_response :unauthorized,
