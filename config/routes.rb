@@ -25,15 +25,18 @@ Rails.application.routes.draw do
   post '/transactions/list', to: 'transactions#list'
   post '/transactions/status', to: 'transactions#status'
 
-  post '/proposals/create', to: 'proposals#create'
-  get '/proposals/(:id)', to: 'proposals#find', as: 'proposal_detail'
-  get '/proposals/(:id)/details', to: 'proposals#find'
+  post '/proposals',
+       to: 'proposals#create',
+       as: 'proposals'
+  get '/proposals/(:id)',
+      to: 'proposals#show',
+      as: 'proposal'
   post '/proposals/(:id)/comments',
        to: 'proposals#comment',
        as: 'proposal_comments'
   post '/comments/(:id)',
        to: 'proposals#reply',
        as: 'comment'
-  delete '/comments(/:id)',
+  delete '/comments/(:id)',
          to: 'proposals#delete_comment'
 end

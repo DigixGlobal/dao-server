@@ -8,7 +8,7 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
   test 'create new proposal should work' do
     payload = attributes_for(:info_proposal)
     create(:user, address: payload.fetch(:proposer))
-    path = proposals_create_path
+    path = proposals_path
 
     post path,
          params: { payload: payload }.to_json,
@@ -163,7 +163,7 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
 
     auth_headers = auth_headers(key)
 
-    get proposal_detail_path(proposal.id),
+    get proposal_path(proposal.id),
         headers: auth_headers
 
     assert_response :success,
@@ -171,7 +171,7 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
     assert_match 'id', @response.body,
                  'response should contain id'
 
-    get proposal_detail_path('NON_EXISTENT_ID'),
+    get proposal_path('NON_EXISTENT_ID'),
         headers: auth_headers
 
     assert_response :not_found,
@@ -185,7 +185,7 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
 
     auth_headers = auth_headers(key)
 
-    get proposal_detail_path(proposal.id),
+    get proposal_path(proposal.id),
         headers: auth_headers
 
     assert_response :success,

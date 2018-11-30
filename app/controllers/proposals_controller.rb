@@ -21,7 +21,7 @@ class ProposalsController < ApplicationController
     end
   end
 
-  def find
+  def show
     case (proposal = Proposal.find_by(id: params.fetch(:id)))
     when nil
       render json: error_response(:proposal_not_found),
@@ -126,7 +126,6 @@ class ProposalsController < ApplicationController
   end
 
   def proposal_view(proposal)
-    proposal.comments.kept
     proposal.serializable_hash(methods: :threads)
   end
 end
