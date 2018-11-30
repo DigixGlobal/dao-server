@@ -8,6 +8,8 @@
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
 
+require 'factory_bot'
+
 def is_unique_uid(uid)
   if User.find_by(uid: uid)
     false
@@ -39,6 +41,13 @@ def add_pending_txns(title, txhash)
   t.save
 end
 
+Nonce.delete_all
+Challenge.delete_all
+Comment.delete_all
+CommentHierarchy.delete_all
+Proposal.delete_all
+User.delete_all
+
 # add_user('0x68911e512a4ecbd12d5dbae3250ff2c8e5850b60')
 # add_user('0x300ac2c15a6778cfdd7eaa6189a4401123ff9dda')
 # add_user('0x602651daaea32f5a13d9bd4df67d0922662e8928')
@@ -52,3 +61,8 @@ add_nonce(Rails.configuration.nonces['info_server_name'], 0)
 
 # add_pending_txns('title aaa', '0xaaa')
 # add_pending_txns('title bbb', '0xbbb')
+
+FactoryBot.find_definitions
+
+puts 'Seeding proposals with comments'
+FactoryBot.create_list(:proposal_with_comments, 3)

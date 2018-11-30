@@ -32,6 +32,9 @@ class Proposal < ActiveRecord::Base
 
   private
 
+  def normalize_comments
+  end
+
   def normalize_hash_map(hash_map, children_key = :children)
     hash_map.map do |entity, child_map|
       unless child_map.empty?
