@@ -21,6 +21,14 @@ class Comment < ActiveRecord::Base
   validates :proposal,
             presence: true
 
+  def as_json(options = {})
+    serializable_hash(except: %i[body replies])
+      .merge(
+        body: discarded? ? nil : body,
+        replies: replies&.map { |reply| reply.as_json(options) }
+      )
+  end
+
   class << self
     def delete(user, comment)
       return [:already_deleted, nil] if comment.discarded?

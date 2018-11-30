@@ -29,17 +29,19 @@ class Proposal < ActiveRecord::Base
   private
 
   def build_comment_trees(comments)
+    return [] if comments.empty?
+
     comment_map = {}
 
     comments.each do |comment|
       comment_map[comment.id] = comment
+      comment.replies = []
     end
 
     comments
       .reject { |comment| comment.parent_id.nil? }
       .each do |comment|
         if (parent_comment = comment_map.fetch(comment.parent_id))
-          parent_comment.replies ||= []
           parent_comment.replies.unshift(comment)
         end
       end
