@@ -12,8 +12,6 @@ class Proposal < ActiveRecord::Base
             presence: true,
             uniqueness: true
 
-  private
-
   class << self
     def create_proposal(attrs)
       proposal = new(
@@ -40,6 +38,19 @@ class Proposal < ActiveRecord::Base
       return [:database_error, comment.errors] unless comment.save
 
       parent_comment&.add_child(comment)
+
+      [:ok, comment]
+    end
+
+    def delete_comment(user, comment)
+      return [:already_deleted, nil] if comment.discarded?
+
+      unless Ability.new(user).can?(:delete, comment)
+        return [:unauthorized_action, nil]
+      end
+
+      comment.discard
+      comment.descendants.each(&:discard)
 
       [:ok, comment]
     end

@@ -15,18 +15,24 @@ FactoryBot.define do
         comment_ratio { 67 }
       end
       after(:create) do |proposal, evaluator|
-        comments = create_list(:comment, evaluator.comment_count, proposal: proposal)
+        comment_count = evaluator.comment_count
+        comment_depth = evaluator.comment_depth
+        comment_ratio = evaluator.comment_ratio
+
+        comments = create_list(:comment, comment_count, proposal: proposal)
         more_comments = comments
         depth = 0
 
-        until more_comments.empty? || (depth >= evaluator.comment_depth)
+        until more_comments.empty? || (depth >= comment_depth)
           new_comments = []
 
           more_comments.each do |comment|
-            create_list(:comment, evaluator.comment_count).each do |reply|
-              comment.add_child(reply)
-
-              new_comments.push(reply) if Random.rand(100) >= evaluator.comment_ratio
+            create_list(
+              :comment,
+              comment_count,
+              parent: comment
+            ).each do |reply|
+              new_comments.push(reply) if Random.rand(100) >= comment_ratio
             end
           end
 

@@ -82,4 +82,47 @@ class ProposalTest < ActiveSupport::TestCase
     assert parent_comment.children.find(comment.id),
            'created comment should be a child/reply of the comment'
   end
+
+  test 'delete comment should work' do
+    proposal = create(:proposal_with_comments)
+    comment = proposal.comments.sample
+    child_comment = create(:comment, parent: comment)
+
+    ok, deleted_comment = Proposal.delete_comment(comment.user, comment)
+
+    assert_equal :ok, ok,
+                 'should work'
+    assert deleted_comment.discarded?,
+           'comment should be deleted'
+    assert Comment.find(child_comment.id).discarded?,
+           'child comment should be deleted'
+
+    already_deleted, = Proposal.delete_comment(comment.user, comment)
+
+    assert_equal :already_deleted, already_deleted,
+                 'should fail when already deleted'
+
+    another_comment = create(:comment)
+
+    unauthorized_action, = Proposal.delete_comment(comment.user, another_comment)
+
+    assert_equal :unauthorized_action, unauthorized_action,
+                 'should not allow other users to delete'
+  end
+
+  test 'deleted replies should not be found' do
+    proposal = create(:proposal_with_comments)
+    comment = proposal.comments.sample
+    child_comment = create(:comment, parent: comment)
+    discarded_comment = create(:comment, parent: comment)
+
+    ok, = Proposal.delete_comment(discarded_comment.user, discarded_comment)
+
+    assert_equal :ok, ok,
+                 'should work'
+    assert_not comment.children.kept.find_by(id: discarded_comment.id),
+               'should not find deleted comment'
+    assert comment.children.kept.find_by(id: child_comment.id),
+           'should find other comment'
+  end
 end

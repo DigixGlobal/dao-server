@@ -56,7 +56,10 @@ class ProposalsController < ApplicationController
     )
 
     case result
-    when :invalid_data, :database_error
+    when :unauthorized_action
+      render json: error_response(result),
+             status: :forbidden
+    when :invalid_data, :database_error, :already_deleted
       render json: error_response(comment_or_error)
     when :ok
       render json: result_response(comment_or_error)

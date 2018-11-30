@@ -9,13 +9,13 @@ class AbilityTest < ActiveSupport::TestCase
 
     assert user_ability.can?(:read, Proposal)
     assert user_ability.can?(:create, Proposal)
-    assert user_ability.can?(:destroy, this_proposal)
+    assert user_ability.can?(:delete, this_proposal)
 
     other_proposal = create(:proposal)
     other_ability = Ability.new(other_proposal.user)
 
-    assert other_ability.can?(:destroy, other_proposal)
-    assert other_ability.cannot?(:destroy, this_proposal)
+    assert other_ability.can?(:delete, other_proposal)
+    assert other_ability.cannot?(:delete, this_proposal)
   end
 
   test 'user proposal comments abilities should work' do
@@ -24,12 +24,12 @@ class AbilityTest < ActiveSupport::TestCase
 
     assert user_ability.can?(:read, Comment)
     assert user_ability.can?(:create, Comment)
-    assert user_ability.can?(:destroy, this_comment)
+    assert user_ability.can?(:delete, this_comment)
 
     other_comment = create(:comment)
     other_ability = Ability.new(other_comment.user)
 
-    assert other_ability.can?(:destroy, other_comment)
-    assert other_ability.cannot?(:destroy, this_comment)
+    assert other_ability.can?(:delete, other_comment)
+    assert other_ability.cannot?(:delete, this_comment)
   end
 end
