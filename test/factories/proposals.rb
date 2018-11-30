@@ -31,6 +31,7 @@ FactoryBot.define do
               :comment,
               comment_count,
               stage: comment.stage,
+              proposal: proposal,
               parent: comment
             ).each do |reply|
               new_comments.push(reply) if Random.rand(100) >= comment_ratio

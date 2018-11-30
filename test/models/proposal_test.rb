@@ -105,7 +105,7 @@ class ProposalTest < ActiveSupport::TestCase
                  'should not allow other users to delete'
   end
 
-  test 'deleted replies should be found' do
+  test 'deleted replies should be found and still be commented' do
     proposal = create(:proposal_with_comments)
     comment = proposal.comments.sample
     child_comment = create(:comment, parent: comment)
@@ -119,12 +119,27 @@ class ProposalTest < ActiveSupport::TestCase
            'should find deleted comment'
     assert comment.children.find_by(id: child_comment.id),
            'should still find other comment'
+
+    ok, = Proposal.comment(
+      proposal,
+      child_comment.user,
+      discarded_comment,
+      attributes_for(:comment)
+    )
+
+    assert_equal :ok, ok,
+                 'can reply to deleted comments/replies'
   end
 
   test 'threads property should work' do
     proposal = create(:proposal_with_comments)
-    threads = proposal.threads
 
+    # Hack to force deterministic ordering with the created_at field
+    Comment.in_batches.each do |relation|
+      relation.update_all('created_at = FROM_UNIXTIME(id)')
+    end
+
+    threads = proposal.reload.threads
     assert threads,
            'should work'
 
@@ -137,13 +152,7 @@ class ProposalTest < ActiveSupport::TestCase
     assert_equal Comment.where(proposal_id: proposal.id).size, comments.size,
                  'comments should be the same'
 
-    puts Proposal.all.size
-    puts Comment.all.size
-    puts Comment.where(proposal_id: proposal.id).size
-    puts comments.size
-
-    new_comment = create(:comment, proposal: proposal)
-    sleep(2) # Let new comment be inserted
+    new_comment = create(:comment, proposal: proposal, stage: proposal.stage)
 
     assert_equal new_comment.id,
                  proposal.reload.threads.fetch(proposal.stage, []).first.id,

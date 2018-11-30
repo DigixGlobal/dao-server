@@ -5,7 +5,8 @@ class Comment < ActiveRecord::Base
 
   include StageField
   include Discard::Model
-  has_closure_tree order: 'created_at DESC'
+  has_closure_tree(order: 'created_at DESC')
+
   belongs_to :user
 
   belongs_to :proposal

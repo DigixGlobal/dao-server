@@ -35,13 +35,12 @@ class Proposal < ActiveRecord::Base
       comment_map[comment.id] = comment
     end
 
-    comment_map
-      .values
+    comments
       .reject { |comment| comment.parent_id.nil? }
       .each do |comment|
         if (parent_comment = comment_map.fetch(comment.parent_id))
           parent_comment.replies ||= []
-          parent_comment.replies.push(comment)
+          parent_comment.replies.unshift(comment)
         end
       end
 
