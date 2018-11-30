@@ -15,6 +15,7 @@ class Proposal < ActiveRecord::Base
   def threads
     comments
       .kept
+      .order(created_at: :desc)
       .group_by(&:stage)
       .map do |key, stage_comments|
       [
@@ -32,17 +33,20 @@ class Proposal < ActiveRecord::Base
 
   private
 
-  def normalize_comments
-  end
-
   def normalize_hash_map(hash_map, children_key = :children)
-    hash_map.map do |entity, child_map|
-      unless child_map.empty?
-        entity[children_key] = normalize_hash_map(child_map, children_key)
-      end
+    hash_map
+      .map do |entity, child_map|
+        if entity.discarded?
+          nil
+        else
+          unless child_map.empty?
+            entity[children_key] = normalize_hash_map(child_map, children_key)
+          end
 
-      entity
-    end
+          entity
+        end
+      end
+      .reject(&:nil?)
   end
 
   class << self

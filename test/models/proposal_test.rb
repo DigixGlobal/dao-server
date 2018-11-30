@@ -128,8 +128,35 @@ class ProposalTest < ActiveSupport::TestCase
 
   test 'threads property should work' do
     proposal = create(:proposal_with_comments)
+    threads = proposal.threads
 
-    assert proposal.threads,
+    assert threads,
            'should work'
+    assert_not flatten_threads(threads).any?(&:discarded?),
+               'no deleted comments should exsist'
+
+    new_comment = create(:comment, proposal: proposal)
+    sleep(1) # Let new comment be inserted
+
+    assert_equal new_comment.id,
+                 proposal.reload.threads[proposal.stage].first.id,
+                 'new comment should be first in the list'
+  end
+
+  private
+
+  def flatten_threads(threads)
+    threads
+      .values
+      .map do |stage_comments|
+        stage_comments.map { |comment| flatten_comment_tree(comment) }
+      end
+      .flatten
+  end
+
+  def flatten_comment_tree(comment)
+    replies = comment.replies || []
+    comment.replies = nil
+    [comment, replies.map { |reply| flatten_comment_tree(reply) }].flatten
   end
 end
