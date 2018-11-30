@@ -27,7 +27,7 @@ class ProposalsController < ApplicationController
       render json: error_response(:proposal_not_found),
              status: :not_found
     else
-      render json: result_response(proposal)
+      render json: result_response(proposal_view(proposal))
     end
   end
 
@@ -113,6 +113,8 @@ class ProposalsController < ApplicationController
     end
   end
 
+  private
+
   def create_params
     return {} if params.fetch(:payload, nil).nil?
 
@@ -121,5 +123,10 @@ class ProposalsController < ApplicationController
 
   def comment_params
     params.permit(:body)
+  end
+
+  def proposal_view(proposal)
+    proposal.comments.kept
+    proposal.serializable_hash(methods: :threads)
   end
 end

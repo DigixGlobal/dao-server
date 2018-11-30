@@ -125,4 +125,11 @@ class ProposalTest < ActiveSupport::TestCase
     assert comment.children.kept.find_by(id: child_comment.id),
            'should find other comment'
   end
+
+  test 'threads property should work' do
+    proposal = create(:proposal_with_comments)
+
+    assert proposal.threads,
+           'should work'
+  end
 end

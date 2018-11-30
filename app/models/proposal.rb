@@ -12,6 +12,36 @@ class Proposal < ActiveRecord::Base
             presence: true,
             uniqueness: true
 
+  def threads
+    comments
+      .kept
+      .group_by(&:stage)
+      .map do |key, stage_comments|
+      [
+        key,
+        stage_comments
+          .map(&:hash_tree)
+          .flat_map do |comment_map|
+          normalize_hash_map(comment_map, :replies)
+        end
+
+      ]
+    end
+      .to_h
+  end
+
+  private
+
+  def normalize_hash_map(hash_map, children_key = :children)
+    hash_map.map do |entity, child_map|
+      unless child_map.empty?
+        entity[children_key] = normalize_hash_map(child_map, children_key)
+      end
+
+      entity
+    end
+  end
+
   class << self
     def create_proposal(attrs)
       proposal = new(

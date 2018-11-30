@@ -1,9 +1,11 @@
 # frozen_string_literal: true
 
 class Comment < ActiveRecord::Base
+  attribute :replies
+
   include StageField
   include Discard::Model
-  has_closure_tree
+  has_closure_tree order: 'created_at DESC'
   belongs_to :user
 
   belongs_to :proposal

@@ -159,10 +159,7 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
   test 'find proposal should work' do
     key = Eth::Key.new
     user = create(:user, address: key.address)
-    proposal = create(:proposal, user: user)
-    30.times do
-      create(:comment, proposal: proposal, stage: generate(:proposal_stage))
-    end
+    proposal = create(:proposal_with_comments, user: user)
 
     auth_headers = auth_headers(key)
 
@@ -179,5 +176,21 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :not_found,
                     'should not find proposal'
+  end
+
+  test 'find proposal threads should work' do
+    key = Eth::Key.new
+    user = create(:user, address: key.address)
+    proposal = create(:proposal_with_comments, user: user)
+
+    auth_headers = auth_headers(key)
+
+    get proposal_detail_path(proposal.id),
+        headers: auth_headers
+
+    assert_response :success,
+                    'should work'
+    assert_match 'replies', @response.body,
+                 'response should contain replies'
   end
 end
