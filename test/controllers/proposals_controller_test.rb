@@ -84,7 +84,7 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
   test 'replying to a comment proposal should work' do
     key = Eth::Key.new
     create(:user, address: key.address)
-    comment = create(:proposal_with_comments).comments.first
+    comment = create(:proposal_with_comments).comments.sample
     params = attributes_for(:proposal_comment)
 
     auth_headers = auth_headers(key)

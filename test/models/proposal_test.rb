@@ -45,7 +45,7 @@ class ProposalTest < ActiveSupport::TestCase
     user = proposal.user
     attrs = attributes_for(:comment)
 
-    ok, comment = Proposal.comment(proposal, user, attrs)
+    ok, comment = Proposal.comment(proposal, user, nil, attrs)
 
     assert_equal :ok, ok,
                  'should work'
@@ -54,16 +54,32 @@ class ProposalTest < ActiveSupport::TestCase
     assert_equal proposal.stage, comment.stage,
                  'comment and proposal should have the same stage/status'
 
-    ok, other_comment = Proposal.comment(proposal, user, attrs)
+    ok, other_comment = Proposal.comment(proposal, user, nil, attrs)
 
     assert_equal :ok, ok,
                  'making the same comment should work'
     assert_not_equal comment.id, other_comment.id,
                      'other comments should be different'
 
-    invalid_data, = Proposal.comment(proposal, user, {})
+    invalid_data, = Proposal.comment(proposal, user, nil, {})
 
     assert_equal :invalid_data, invalid_data,
                  'should fail with empty data'
+  end
+
+  test 'reply on comment post should work' do
+    proposal = create(:proposal_with_comments)
+    parent_comment = proposal.comments.sample
+    user = create(:user)
+    attrs = attributes_for(:comment)
+
+    ok, comment = Proposal.comment(proposal, user, parent_comment, attrs)
+
+    assert_equal :ok, ok,
+                 'should work'
+    assert_equal parent_comment.id, comment.parent_id,
+                 'should be linked to its parent'
+    assert parent_comment.children.find(comment.id),
+           'created comment should be a child/reply of the comment'
   end
 end

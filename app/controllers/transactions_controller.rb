@@ -57,7 +57,7 @@ class TransactionsController < ApplicationController
   end
 
   def test_server
-    puts "body from test_server: #{request.body}"
+    puts "body from test_server: #{request.body.inspect}"
 
     render json: result_response
   end

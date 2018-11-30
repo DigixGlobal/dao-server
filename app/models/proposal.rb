@@ -28,7 +28,7 @@ class Proposal < ActiveRecord::Base
       [:ok, proposal]
     end
 
-    def comment(proposal, user, attrs)
+    def comment(proposal, user, parent_comment, attrs)
       comment = Comment.new(
         body: attrs.fetch(:body, nil),
         stage: proposal.stage,
@@ -38,6 +38,8 @@ class Proposal < ActiveRecord::Base
 
       return [:invalid_data, comment.errors] unless comment.valid?
       return [:database_error, comment.errors] unless comment.save
+
+      parent_comment&.add_child(comment)
 
       [:ok, comment]
     end

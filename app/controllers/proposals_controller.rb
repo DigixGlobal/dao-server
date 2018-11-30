@@ -48,7 +48,12 @@ class ProposalsController < ApplicationController
 
     user = current_user
 
-    result, comment_or_error = Proposal.comment(proposal, user, comment_params)
+    result, comment_or_error = Proposal.comment(
+      proposal,
+      user,
+      parent_comment,
+      comment_params
+    )
 
     case result
     when :invalid_data, :database_error
