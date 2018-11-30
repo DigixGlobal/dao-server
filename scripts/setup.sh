@@ -1,4 +1,4 @@
-if [ $SKIP_UI_COMPONENTS!=true ]
+if [[ $SKIP_UI_COMPONENTS != "true" ]]
 then
   echo Setting up node modules in governance-ui-components
   cd ../governance-ui-components
@@ -7,7 +7,7 @@ then
   npm i
 fi
 
-if [ $SKIP_UI!=true ]
+if [[ $SKIP_UI != "true" ]]
 then
   echo Setting up node modules in governance-ui
   cd ../governance-ui
@@ -16,7 +16,16 @@ then
   npm i
 fi
 
-if [ $SKIP_DAO_CONTRACTS!=true ]
+if [[ $SKIP_INFO_SERVER != "true" ]]
+then
+  echo Setting up node modules in info-server
+  cd ../info-server
+  rm -rf node_modules
+  rm package-lock.json
+  npm i
+fi
+
+if [[ $SKIP_DAO_CONTRACTS != "true" ]]
 then
   echo Setting up node modules in dao-contracts
   cd ../dao-contracts
@@ -29,7 +38,7 @@ then
   node_modules/.bin/truffle compile
 fi
 
-if [ $SKIP_DAO_SERVER!=true ]
+if [[ $SKIP_DAO_SERVER != "true" ]]
 then
   echo installing gems in dao-server
   cd ../dao-server
