@@ -37,6 +37,15 @@ class ProposalsController < ApplicationController
                     status: :not_found
     end
 
+    parent_comment = nil
+
+    if params.key?(:comment_id)
+      unless (parent_comment = Comment.find_by(id: params.fetch(:comment_id)))
+        return render json: error_response(:comment_not_found),
+                      status: :not_found
+      end
+    end
+
     user = current_user
 
     result, comment_or_error = Proposal.comment(proposal, user, comment_params)

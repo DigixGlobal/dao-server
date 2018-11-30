@@ -81,6 +81,52 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
                     'should fail without authorization'
   end
 
+  test 'replying to a comment proposal should work' do
+    key = Eth::Key.new
+    create(:user, address: key.address)
+    comment = create(:proposal_with_comments).comments.first
+    params = attributes_for(:proposal_comment)
+
+    auth_headers = auth_headers(key)
+
+    post proposal_comment_path(comment.proposal_id, comment.id),
+         params: params,
+         headers: auth_headers
+
+    assert_response :success,
+                    'should work'
+    assert_match 'id', @response.body,
+                 'response should contain id'
+
+    post proposal_comment_path(comment.proposal_id, comment.id),
+         headers: auth_headers
+
+    assert_response :success,
+                    'should fail with empty data'
+    assert_match 'error', @response.body,
+                 'response should be an error'
+
+    post proposal_comment_path('NON_EXISTENT_ID', comment.id),
+         params: params,
+         headers: auth_headers
+
+    assert_response :not_found,
+                    'should not find proposal'
+
+    post proposal_comment_path(comment.proposal_id, 'NON_EXISTENT_ID'),
+         params: params,
+         headers: auth_headers
+
+    assert_response :not_found,
+                    'should not find comment'
+
+    post proposal_comment_path(comment.proposal_id, comment.id),
+         params: params
+
+    assert_response :unauthorized,
+                    'should fail without authorization'
+  end
+
   test 'find proposal should work' do
     key = Eth::Key.new
     user = create(:user, address: key.address)

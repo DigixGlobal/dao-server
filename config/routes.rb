@@ -27,5 +27,10 @@ Rails.application.routes.draw do
 
   post '/proposals/create', to: 'proposals#create'
   get '/proposals/(:id)', to: 'proposals#find', as: 'proposal_detail'
-  post '/proposals/(:id)/comments', to: 'proposals#comment', as: 'proposal_comments'
+  post '/proposals/(:id)/comments(/:comment_id)',
+       to: 'proposals#comment',
+       as: 'proposal_comments'
+  delete '/proposals/(:id)/comments(/:comment_id)',
+         to: 'proposals#comment',
+         as: 'proposal_comment'
 end
