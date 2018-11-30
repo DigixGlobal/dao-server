@@ -30,7 +30,7 @@ Rails.application.routes.draw do
   post '/proposals/(:id)/comments(/:comment_id)',
        to: 'proposals#comment',
        as: 'proposal_comments'
-  delete '/proposals/(:id)/comments(/:comment_id)',
-         to: 'proposals#comment',
-         as: 'proposal_comment'
+  delete '/comments(/:id)',
+         to: 'proposals#delete_comment',
+         as: 'comment'
 end

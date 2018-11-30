@@ -127,6 +127,42 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
                     'should fail without authorization'
   end
 
+  test 'deleting a comment should work' do
+    key = Eth::Key.new
+    user = create(:user, address: key.address)
+    proposal = create(:proposal_with_comments)
+    comment = create(:comment, proposal: proposal, user: user)
+
+    auth_headers = auth_headers(key)
+
+    delete comment_path(comment.id),
+           headers: auth_headers
+
+    assert_response :success,
+                    'should work'
+    assert_match 'discarded', @response.body,
+                 'response be ok'
+
+    delete comment_path(comment.id),
+           headers: auth_headers
+
+    assert_response :not_found,
+                    'should fail with deleted comment'
+
+    other_comment = create(:comment, proposal: proposal)
+
+    delete comment_path(other_comment.id),
+           headers: auth_headers
+
+    assert_response :forbidden,
+                    'should not allow to delete other comment'
+
+    delete comment_path(comment.id)
+
+    assert_response :unauthorized,
+                    'should fail without headers'
+  end
+
   test 'find proposal should work' do
     key = Eth::Key.new
     user = create(:user, address: key.address)

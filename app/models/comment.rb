@@ -17,4 +17,19 @@ class Comment < ActiveRecord::Base
             presence: true
   validates :proposal,
             presence: true
+
+  class << self
+    def delete(user, comment)
+      return [:already_deleted, nil] if comment.discarded?
+
+      unless Ability.new(user).can?(:delete, comment)
+        return [:unauthorized_action, nil]
+      end
+
+      comment.discard
+      comment.descendants.each(&:discard)
+
+      [:ok, comment]
+    end
+  end
 end

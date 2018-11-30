@@ -88,7 +88,7 @@ class ProposalTest < ActiveSupport::TestCase
     comment = proposal.comments.sample
     child_comment = create(:comment, parent: comment)
 
-    ok, deleted_comment = Proposal.delete_comment(comment.user, comment)
+    ok, deleted_comment = Comment.delete(comment.user, comment)
 
     assert_equal :ok, ok,
                  'should work'
@@ -97,14 +97,14 @@ class ProposalTest < ActiveSupport::TestCase
     assert Comment.find(child_comment.id).discarded?,
            'child comment should be deleted'
 
-    already_deleted, = Proposal.delete_comment(comment.user, comment)
+    already_deleted, = Comment.delete(comment.user, comment)
 
     assert_equal :already_deleted, already_deleted,
                  'should fail when already deleted'
 
     another_comment = create(:comment)
 
-    unauthorized_action, = Proposal.delete_comment(comment.user, another_comment)
+    unauthorized_action, = Comment.delete(comment.user, another_comment)
 
     assert_equal :unauthorized_action, unauthorized_action,
                  'should not allow other users to delete'
@@ -116,7 +116,7 @@ class ProposalTest < ActiveSupport::TestCase
     child_comment = create(:comment, parent: comment)
     discarded_comment = create(:comment, parent: comment)
 
-    ok, = Proposal.delete_comment(discarded_comment.user, discarded_comment)
+    ok, = Comment.delete(discarded_comment.user, discarded_comment)
 
     assert_equal :ok, ok,
                  'should work'
