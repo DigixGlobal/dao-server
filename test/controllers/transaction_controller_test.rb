@@ -19,7 +19,7 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
     params = attributes_for(:transaction)
     auth_headers = auth_headers(key)
 
-    post transactions_new_path,
+    post transactions_path,
          params: params,
          headers: auth_headers
 
@@ -28,7 +28,7 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
     assert_match 'title', @response.body,
                  'response should contain ok status'
 
-    post transactions_new_path,
+    post transactions_path,
          params: params,
          headers: auth_headers
 
@@ -52,13 +52,13 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
     params = attributes_for(:transaction)
     auth_headers = auth_headers(key)
 
-    post transactions_new_path,
+    post transactions_path,
          params: params
 
     assert_response :unauthorized,
                     'should fail on without authorization'
 
-    post transactions_new_path,
+    post transactions_path,
          headers: auth_headers
 
     assert_response :success,
@@ -76,7 +76,7 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
 
     auth_headers = auth_headers(key)
 
-    post transactions_list_path,
+    post transactions_path,
          headers: auth_headers
 
     assert_response :success,
@@ -84,7 +84,7 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
     assert_match 'title', @response.body,
                  'response should contain ok status'
 
-    post transactions_list_path
+    post transactions_path
 
     assert_response :unauthorized,
                     'should fail on without authorization'
@@ -95,28 +95,41 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
       create(:transaction)
     end
 
-    post transactions_confirmed_path,
-         params: { payload: transactions }.to_json,
-         headers: info_server_headers(
-           'POST',
-           transactions_confirmed_path,
-           transactions
-         )
+    path = transactions_update_path('confirmed')
+
+    put path,
+        params: { payload: transactions }.to_json,
+        headers: info_server_headers(
+          'PUT',
+          path,
+          transactions
+        )
 
     assert_response :success,
                     'should work'
-    assert_match 'ok', @response.body,
+    assert_match 'confirmed', @response.body,
                  'response should be ok'
 
     Transaction.all.each do |txn|
       assert_equal 'confirmed', txn.status
     end
 
-    post transactions_confirmed_path,
-         params: { payload: transactions }.to_json
+    put path,
+        params: { payload: transactions }.to_json
 
     assert_response :forbidden,
                     'should fail without a signature'
+
+    put transactions_update_path('invalid_action'),
+        params: { payload: {} }.to_json,
+        headers: info_server_headers(
+          'PUT',
+          transactions_update_path('invalid_action'),
+          {}
+        )
+
+    assert_response :unprocessable_entity,
+                    'should fail if the action is incorrect'
   end
 
   test 'latest transactions should work' do
@@ -129,43 +142,56 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
       blockNumber: generate(:block_number)
     }
 
-    post transactions_latest_path,
-         params: { payload: payload }.to_json,
-         headers: info_server_headers(
-           'POST',
-           transactions_latest_path,
-           payload
-         )
+    path = transactions_update_path('seen')
+
+    put path,
+        params: { payload: payload }.to_json,
+        headers: info_server_headers(
+          'PUT',
+          path,
+          payload
+        )
 
     assert_response :success,
                     'should work'
-    assert_match 'ok', @response.body,
+    assert_match 'seen', @response.body,
                  'response should say ok'
 
     Transaction.all.each do |txn|
       assert_equal 'seen', txn.status
     end
 
-    post transactions_latest_path,
-         params: { payload: payload }.to_json
+    put path,
+        params: { payload: payload }.to_json
 
     assert_response :forbidden,
                     'should fail without a signature'
+
+    put transactions_update_path('invalid_action'),
+        params: { payload: {} }.to_json,
+        headers: info_server_headers(
+          'PUT',
+          transactions_update_path('invalid_action'),
+          {}
+        )
+
+    assert_response :unprocessable_entity,
+                    'should fail if the action is incorrect'
   end
 
   test 'find transaction should work' do
     transaction = create(:transaction)
 
-    post transactions_status_path,
-         params: { txhash: transaction.txhash }
+    get transaction_path,
+        params: { txhash: transaction.txhash }
 
     assert_response :success,
                     'should work'
     assert_match 'id', @response.body,
                  'response should give the transaction'
 
-    post transactions_status_path,
-         params: { txhash: 'NON_EXISTENT_HASH' }
+    get transaction_path,
+        params: { txhash: 'NON_EXISTENT_HASH' }
 
     assert_response :success,
                     'should fail with invalid hash'
@@ -175,7 +201,7 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
 
   test 'test server should work' do
     payload = generate(:txhash)
-    path = "#{transactions_test_server_path}?payload=#{payload}"
+    path = "#{transactions_ping_path}?payload=#{payload}"
 
     get path,
         headers: info_server_headers(

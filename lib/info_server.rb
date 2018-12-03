@@ -37,7 +37,7 @@ class InfoServer
 
     nonce.update(nonce: latest_nonce) if nonce.nonce < latest_nonce
 
-    nonce.nonce
+    latest_nonce
   end
 
   # Fetch transactions from the info server and sync with the local data
