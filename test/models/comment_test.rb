@@ -58,4 +58,66 @@ class CommentTest < ActiveSupport::TestCase
     assert_equal 0, still_disliked_comment.likes,
                  'should be still unliked'
   end
+
+  test 'comment like should always be updated' do
+    comment = create(:comment)
+
+    assert_equal 0, comment.likes,
+                 'should have no likes'
+
+    100.times do
+      if comment.likes.zero?
+        user = create(:user)
+
+        ok, updated_comment = Comment.like(user, comment)
+      else
+        case %i[like unlike].sample
+        when :like
+          user = create(:user)
+
+          ok, updated_comment = Comment.like(user, comment)
+        when :unlike
+          like = CommentLike.all.sample
+
+          ok, updated_comment = Comment.unlike(like.user, comment)
+        end
+      end
+
+      assert_equal :ok, ok,
+                   'should always work'
+
+      comment = updated_comment
+    end
+
+    assert_equal CommentLike.count, comment.likes,
+                 'likes should be the same'
+  end
+
+  test 'concurrency should be handled with comment' do
+    comment = create(:comment_with_likes, like_count: 5)
+    current_likes = comment.likes
+    workers = Random.rand(5..10)
+
+    (1..workers)
+      .map { |_| create(:user) }
+      .map { |user| Thread.new { Comment.like(user, comment) } }
+      .map(&:join)
+
+    assert_equal current_likes + workers, comment.reload.likes,
+                 'likes should handle concurrency properly'
+
+    current_likes = comment.likes
+
+    disliking_users = CommentLike
+                      .all
+                      .sample(Random.rand(1..current_likes))
+                      .map(&:user)
+
+    disliking_users
+      .map { |user| Thread.new { Comment.unlike(user, comment) } }
+      .map(&:join)
+
+    assert_equal current_likes - disliking_users.size, comment.reload.likes,
+                 'unlikes should handle concurrency properly'
+  end
 end
