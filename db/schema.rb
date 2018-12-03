@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_11_28_015631) do
+ActiveRecord::Schema.define(version: 2018_12_03_031837) do
 
   create_table "challenges", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "challenge"
@@ -29,11 +29,20 @@ ActiveRecord::Schema.define(version: 2018_11_28_015631) do
     t.index ["descendant_id"], name: "comment_desc_idx"
   end
 
+  create_table "comment_likes", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "comment_id"
+    t.index ["comment_id"], name: "index_comment_likes_on_comment_id"
+    t.index ["user_id", "comment_id"], name: "index_comment_likes_on_user_id_and_comment_id", unique: true
+    t.index ["user_id"], name: "index_comment_likes_on_user_id"
+  end
+
   create_table "comments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.text "body"
     t.integer "stage", default: 1
     t.bigint "user_id"
     t.bigint "proposal_id"
+    t.integer "likes", default: 0
     t.integer "parent_id"
     t.datetime "discarded_at"
     t.datetime "created_at", null: false

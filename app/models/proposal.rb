@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Proposal < ActiveRecord::Base
+class Proposal < ApplicationRecord
   include StageField
 
   COMMENT_MAX_DEPTH = Rails

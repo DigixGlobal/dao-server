@@ -8,8 +8,8 @@ class Comment < ActiveRecord::Base
   has_closure_tree(order: 'created_at DESC')
 
   belongs_to :user
-
   belongs_to :proposal
+  has_many :comment_likes
 
   validates :body,
             presence: true,
@@ -41,6 +41,40 @@ class Comment < ActiveRecord::Base
       comment.descendants.each(&:discard)
 
       [:ok, comment]
+    end
+
+    def like(user, comment)
+      attrs = { user_id: user.id, comment_id: comment.id }
+
+      return [:already_liked, nil] if CommentLike.find_by(attrs)
+
+      result = nil
+
+      ActiveRecord::Base.transaction do
+        CommentLike.new(attrs).save!
+        comment.update!(likes: comment.comment_likes.count)
+
+        result = [:ok, comment]
+      end
+
+      result
+    end
+
+    def unlike(user, comment)
+      attrs = { user_id: user.id, comment_id: comment.id }
+
+      return [:not_liked, nil] unless (like = CommentLike.find_by(attrs))
+
+      result = nil
+
+      ActiveRecord::Base.transaction do
+        like.destroy!
+        comment.update!(likes: comment.comment_likes.count)
+
+        result = [:ok, comment]
+      end
+
+      result
     end
   end
 end
