@@ -170,6 +170,12 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden,
                     'should not allow to delete other comment'
 
+    delete comment_path('NON_EXISTENT_ID'),
+           headers: auth_headers
+
+    assert_response :not_found,
+                    'should not find the comment'
+
     delete comment_path(comment.id)
 
     assert_response :unauthorized,

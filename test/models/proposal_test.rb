@@ -102,14 +102,14 @@ class ProposalTest < ActiveSupport::TestCase
                    'should work while limit is not reached'
     end
 
-    maximum_reply_depth, = Proposal.comment(
+    maximum_comment_depth, = Proposal.comment(
       proposal,
       proposal.user,
       parent_comment,
       attrs
     )
 
-    assert_equal :maximum_reply_depth, maximum_reply_depth,
+    assert_equal :maximum_comment_depth, maximum_comment_depth,
                  'should fail if limit is reached'
   end
 

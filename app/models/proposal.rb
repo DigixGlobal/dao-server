@@ -71,7 +71,7 @@ class Proposal < ActiveRecord::Base
     def comment(proposal, user, parent_comment, attrs)
       if parent_comment &&
          parent_comment.depth >= (COMMENT_MAX_DEPTH - 1)
-        return [:maximum_reply_depth, nil]
+        return [:maximum_comment_depth, nil]
       end
 
       comment = Comment.new(
