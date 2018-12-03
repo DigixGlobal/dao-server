@@ -12,7 +12,7 @@ class ApplicationController < ActionController::API
   include DeviseTokenAuth::Concerns::SetUserByToken
 
   def render_invalid_info_request(error)
-    render json: { message: error.message },
+    render json: error_response(error.message),
            status: :forbidden
   end
 

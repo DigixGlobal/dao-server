@@ -59,6 +59,16 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
     assert_match 'id', @response.body,
                  'response should contain id'
 
+    sleep(1.seconds)
+
+    post proposal_comments_path(proposal.id),
+         headers: auth_headers
+
+    assert_response :forbidden,
+                    'should throttle commenting'
+
+    sleep(1.seconds)
+
     post proposal_comments_path(proposal.id),
          headers: auth_headers
 
@@ -97,6 +107,16 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
                     'should work'
     assert_match 'id', @response.body,
                  'response should contain id'
+
+    sleep(1.seconds)
+
+    post comment_path(comment.id),
+         headers: auth_headers
+
+    assert_response :forbidden,
+                    'should throttle commenting'
+
+    sleep(1.seconds)
 
     post comment_path(comment.id),
          headers: auth_headers

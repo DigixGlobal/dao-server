@@ -1,8 +1,27 @@
 # frozen_string_literal: true
 
 class ProposalsController < ApplicationController
-  around_action :check_and_update_info_server_request, only: %i[create]
-  before_action :authenticate_user!, only: %i[find comment reply delete_comment]
+  around_action :check_and_update_info_server_request,
+                only: %i[create]
+  before_action :authenticate_user!,
+                only: %i[find comment reply delete_comment]
+  before_action :throttle_commenting!,
+                only: %i[comment reply]
+
+  class ActionThrottled < StandardError; end
+
+  COMMENT_THROTTLE_PERIOD = Rails
+                            .configuration
+                            .proposals['comment_throttle_period']
+                            .to_i
+
+  rescue_from ActionThrottled,
+              with: :render_action_throttled
+
+  def render_action_throttled(_error)
+    render json: error_response(:action_throttled),
+           status: :forbidden
+  end
 
   def create
     base_params = create_params
@@ -124,5 +143,15 @@ class ProposalsController < ApplicationController
 
   def proposal_view(proposal)
     proposal.serializable_hash(methods: :threads)
+  end
+
+  def throttle_commenting!
+    if (latest_comment = Comment
+                           .where(['user_id = ?', current_user.id])
+                           .order(created_at: :desc)
+                           .first)
+      throttled_period = Time.now - latest_comment.created_at
+      raise ActionThrottled if throttled_period <= COMMENT_THROTTLE_PERIOD
+    end
   end
 end

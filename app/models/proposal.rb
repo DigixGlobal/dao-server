@@ -3,7 +3,10 @@
 class Proposal < ActiveRecord::Base
   include StageField
 
-  COMMENT_MAX_DEPTH = Rails.configuration.proposals['comment_max_depth'].to_i
+  COMMENT_MAX_DEPTH = Rails
+                      .configuration
+                      .proposals['comment_max_depth']
+                      .to_i
 
   belongs_to :user
   has_many :comments, -> { where(parent_id: nil) }
@@ -66,7 +69,8 @@ class Proposal < ActiveRecord::Base
     end
 
     def comment(proposal, user, parent_comment, attrs)
-      if parent_comment && parent_comment.depth >= (COMMENT_MAX_DEPTH - 1)
+      if parent_comment &&
+         parent_comment.depth >= (COMMENT_MAX_DEPTH - 1)
         return [:maximum_reply_depth, nil]
       end
 
