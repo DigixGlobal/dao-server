@@ -32,7 +32,7 @@ class ApplicationController < ActionController::API
   def check_info_server_request
     unless request.headers.include?('ACCESS-NONCE') &&
            request.headers.include?('ACCESS-SIGN') &&
-           request.params.key?('payload')
+           JSON.parse(request.raw_post).key?('payload')
       raise  InfoServer::InvalidRequest,
              'Info server requests must have a "payload" parameter and "ACCESS-NONCE" and "ACCESS-SIGN" header.'
     end

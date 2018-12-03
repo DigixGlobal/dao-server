@@ -88,7 +88,7 @@ class InfoServer
       request.method,
       request.original_fullpath,
       request.headers.fetch('ACCESS-NONCE', '').to_i,
-      request.params.fetch('payload', '')
+      JSON.parse(request.raw_post)['payload']
     )
   end
 
