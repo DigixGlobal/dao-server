@@ -83,6 +83,36 @@ class ProposalTest < ActiveSupport::TestCase
            'created comment should be a child/reply of the comment'
   end
 
+  test 'comment reply depth limit should work' do
+    proposal = create(:proposal)
+    attrs = attributes_for(:comment)
+
+    limit = Rails.configuration.proposals['comment_max_depth'].to_i
+
+    parent_comment = nil
+    limit.times do
+      ok, parent_comment = Proposal.comment(
+        proposal,
+        proposal.user,
+        parent_comment,
+        attrs
+      )
+
+      assert_equal :ok, ok,
+                   'should work while limit is not reached'
+    end
+
+    maximum_reply_depth, = Proposal.comment(
+      proposal,
+      proposal.user,
+      parent_comment,
+      attrs
+    )
+
+    assert_equal :maximum_reply_depth, maximum_reply_depth,
+                 'should fail if limit is reached'
+  end
+
   test 'delete comment should work' do
     proposal = create(:proposal_with_comments)
     comment = proposal.comments.sample
