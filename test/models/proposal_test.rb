@@ -124,8 +124,8 @@ class ProposalTest < ActiveSupport::TestCase
                  'should work'
     assert deleted_comment.discarded?,
            'comment should be deleted'
-    assert Comment.find(child_comment.id).discarded?,
-           'child comment should be deleted'
+    assert_not Comment.find(child_comment.id).discarded?,
+               'child comment should not be deleted'
 
     another_comment = create(:comment)
 

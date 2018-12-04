@@ -42,7 +42,6 @@ class Comment < ApplicationRecord
       end
 
       comment.discard
-      comment.descendants.each(&:discard)
 
       [:ok, comment]
     end
