@@ -36,6 +36,11 @@ Rails.application.routes.draw do
   get '/proposals/(:id)',
       to: 'proposals#show',
       as: 'proposal'
+  post '/proposals/(:id)/likes',
+       to: 'proposals#like',
+       as: 'proposal_likes'
+  delete '/proposals/(:id)/likes',
+         to: 'proposals#unlike'
   post '/proposals/(:id)/comments',
        to: 'proposals#comment',
        as: 'proposal_comments'

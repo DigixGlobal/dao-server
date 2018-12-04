@@ -219,4 +219,51 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
     assert_match 'replies', @response.body,
                  'response should contain replies'
   end
+
+  test 'liking a proposal should work' do
+    key = Eth::Key.new
+    proposal = create(:proposal)
+    create(:user, address: key.address)
+
+    auth_headers = auth_headers(key)
+
+    post proposal_likes_path(proposal.id),
+         headers: auth_headers
+
+    assert_response :success,
+                    'should work'
+    assert_match 'id', @response.body,
+                 'response should contain id'
+
+    post proposal_likes_path(proposal.id),
+         headers: auth_headers
+
+    assert_response :success,
+                    'should fail if repeated'
+    assert_match 'already_liked', @response.body,
+                 'response should contain already liked status'
+  end
+
+  test 'unliking a proposal should work' do
+    key = Eth::Key.new
+    like = create(:proposal_like, user: create(:user, address: key.address))
+
+    auth_headers = auth_headers(key)
+
+    delete proposal_likes_path(like.proposal_id),
+           headers: auth_headers
+
+    assert_response :success,
+                    'should work'
+    assert_match 'id', @response.body,
+                 'response should contain id'
+
+    delete proposal_likes_path(like.proposal_id),
+           headers: auth_headers
+
+    assert_response :success,
+                    'should fail if repeated'
+    assert_match 'not_liked', @response.body,
+                 'response should contain not liked status'
+  end
 end
