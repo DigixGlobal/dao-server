@@ -96,9 +96,10 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
     end
 
     path = transactions_update_path('confirmed')
+    payload = transactions
 
     put path,
-        params: { payload: transactions }.to_json,
+        params: { payload: payload }.to_json,
         headers: info_server_headers(
           'PUT',
           path,
@@ -115,7 +116,7 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
     end
 
     put path,
-        params: { payload: transactions }.to_json
+        params: { payload: payload }.to_json
 
     assert_response :forbidden,
                     'should fail without a signature'
