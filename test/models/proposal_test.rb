@@ -170,7 +170,7 @@ class ProposalTest < ActiveSupport::TestCase
       relation.update_all('created_at = FROM_UNIXTIME(id)')
     end
 
-    threads = proposal.reload.user_threads(user)
+    threads = proposal.user_threads(user)
     assert threads,
            'should work'
 
@@ -186,7 +186,7 @@ class ProposalTest < ActiveSupport::TestCase
     new_comment = create(:comment, proposal: proposal, stage: proposal.stage)
 
     assert_equal new_comment.id,
-                 proposal.reload.user_threads(user).fetch(proposal.stage, []).first.id,
+                 proposal.user_threads(user).fetch(proposal.stage, []).first.id,
                  'new comment should be first in the list'
   end
 
