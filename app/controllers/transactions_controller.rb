@@ -11,7 +11,7 @@ class TransactionsController < ApplicationController
     when 'seen'
       payload = params.fetch('payload', {})
       transactions = payload.fetch('transactions', [])
-      block_number = payload.fetch('blockNumber', '')
+      block_number = payload.fetch('block_number', '')
 
       unless transactions.empty?
         seen_transactions(
@@ -91,7 +91,7 @@ class TransactionsController < ApplicationController
   def seen_transactions(txn_hashes, block_number)
     Transaction
       .where(txhash: txn_hashes)
-      .update_all(blockNumber: block_number, status: 'seen')
+      .update_all(block_number: block_number, status: 'seen')
   end
 
   def transactions_params

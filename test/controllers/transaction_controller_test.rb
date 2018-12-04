@@ -139,7 +139,7 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
 
     payload = {
       transactions: transactions,
-      blockNumber: generate(:block_number)
+      block_number: generate(:block_number)
     }
 
     path = transactions_update_path('seen')
