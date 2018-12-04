@@ -235,6 +235,12 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
     assert_match 'id', @response.body,
                  'response should contain id'
 
+    post proposal_likes_path('NON_EXISTENT_ID'),
+         headers: auth_headers
+
+    assert_response :not_found,
+                    'should fail to find proposal'
+
     post proposal_likes_path(proposal.id),
          headers: auth_headers
 
@@ -257,6 +263,12 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
                     'should work'
     assert_match 'id', @response.body,
                  'response should contain id'
+
+    delete proposal_likes_path('NON_EXISTENT_ID'),
+           headers: auth_headers
+
+    assert_response :not_found,
+                    'should fail to find proposal'
 
     delete proposal_likes_path(like.proposal_id),
            headers: auth_headers

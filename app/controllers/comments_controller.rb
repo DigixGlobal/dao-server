@@ -6,8 +6,8 @@ class CommentsController < ApplicationController
 
   def like
     unless (comment = Comment.find_by(id: params.fetch(:id)))
-      render json: error_response(:comment_not_found),
-             status: :not_found
+      return render json: error_response(:comment_not_found),
+                    status: :not_found
     end
 
     result, comment_or_error = Comment.like(current_user, comment)
@@ -22,8 +22,8 @@ class CommentsController < ApplicationController
 
   def unlike
     unless (comment = Comment.find_by(id: params.fetch(:id)))
-      render json: error_response(:comment_not_found),
-             status: :not_found
+      return render json: error_response(:comment_not_found),
+                    status: :not_found
     end
 
     result, comment_or_error = Comment.unlike(current_user, comment)

@@ -128,8 +128,8 @@ class ProposalsController < ApplicationController
 
   def like
     unless (proposal = Proposal.find_by(id: params.fetch(:id)))
-      render json: error_response(:proposal_not_found),
-             status: :not_found
+      return render json: error_response(:proposal_not_found),
+                    status: :not_found
     end
 
     result, proposal_or_error = Proposal.like(current_user, proposal)
@@ -144,8 +144,8 @@ class ProposalsController < ApplicationController
 
   def unlike
     unless (proposal = Proposal.find_by(id: params.fetch(:id)))
-      render json: error_response(:proposal_not_found),
-             status: :not_found
+      return render json: error_response(:proposal_not_found),
+                    status: :not_found
     end
 
     result, proposal_or_error = Proposal.unlike(current_user, proposal)

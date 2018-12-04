@@ -20,6 +20,12 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
     assert_match 'id', @response.body,
                  'response should contain id'
 
+    post comment_likes_path('NON_EXISTENT_ID'),
+         headers: auth_headers
+
+    assert_response :not_found,
+                    'should fail to find comment'
+
     post comment_likes_path(comment.id),
          headers: auth_headers
 
@@ -42,6 +48,12 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
                     'should work'
     assert_match 'id', @response.body,
                  'response should contain id'
+
+    delete comment_likes_path('NON_EXISTENT_ID'),
+           headers: auth_headers
+
+    assert_response :not_found,
+                    'should fail to find comment'
 
     delete comment_likes_path(like.comment_id),
            headers: auth_headers
