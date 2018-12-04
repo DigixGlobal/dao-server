@@ -35,6 +35,10 @@ class Proposal < ApplicationRecord
       .to_h
   end
 
+  def user_liked?(user)
+    !ProposalLike.find_by(user_id: user.id, proposal_id: id).nil?
+  end
+
   private
 
   def build_comment_trees(comments)

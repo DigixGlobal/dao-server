@@ -173,7 +173,7 @@ class ProposalsController < ApplicationController
   def user_proposal_view(user, proposal)
     proposal
       .serializable_hash
-      .merge(threads: proposal.user_threads(user))
+      .merge(threads: proposal.user_threads(user), liked: proposal.user_liked?(user))
   end
 
   def throttle_commenting!
