@@ -22,15 +22,18 @@ class Comment < ApplicationRecord
             presence: true
 
   def as_json(options = {})
-    serializable_hash(
+    base_hash = serializable_hash(
       except: %i[body replies parent_id discarded_at],
-      include: { user: { only: :address } }
+      include: { user: { only: :address }, comment_likes: {} }
     )
-      .merge(
-        'body' => discarded? ? nil : body,
-        'replies' => replies&.map { |reply| reply.as_json(options) }
-      )
-      .deep_transform_keys! { |key| key.camelize(:lower) }
+
+    user_likes = base_hash.delete 'comment_likes'
+
+    base_hash.merge(
+      'body' => discarded? ? nil : body,
+      'replies' => replies&.map { |reply| reply.as_json(options) },
+      'liked' => !user_likes.empty?
+    ).deep_transform_keys! { |key| key.camelize(:lower) }
   end
 
   class << self
