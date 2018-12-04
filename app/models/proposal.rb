@@ -10,6 +10,7 @@ class Proposal < ApplicationRecord
 
   belongs_to :user
   has_many :comments, -> { where(parent_id: nil) }
+  has_many :proposal_likes
 
   validates :stage,
             presence: true
@@ -26,11 +27,11 @@ class Proposal < ApplicationRecord
       .includes(%i[user])
       .group_by(&:stage)
       .map do |key, stage_comments|
-        [
-          key,
-          build_comment_trees(stage_comments)
-        ]
-      end
+      [
+        key,
+        build_comment_trees(stage_comments)
+      ]
+    end
       .to_h
   end
 
@@ -49,10 +50,10 @@ class Proposal < ApplicationRecord
     comments
       .reject { |comment| comment.parent_id.nil? }
       .each do |comment|
-        if (parent_comment = comment_map.fetch(comment.parent_id))
-          parent_comment.replies.unshift(comment)
-        end
+      if (parent_comment = comment_map.fetch(comment.parent_id))
+        parent_comment.replies.unshift(comment)
       end
+    end
 
     comments.select { |comment| comment.parent_id.nil? }
   end
@@ -100,6 +101,40 @@ class Proposal < ApplicationRecord
       comment.discard
 
       [:ok, comment]
+    end
+
+    def like(user, proposal)
+      attrs = { user_id: user.id, proposal_id: proposal.id }
+
+      return [:already_liked, nil] if ProposalLike.find_by(attrs)
+
+      result = nil
+
+      ActiveRecord::Base.transaction do
+        ProposalLike.new(attrs).save!
+        proposal.update!(likes: proposal.proposal_likes.count)
+
+        result = [:ok, proposal]
+      end
+
+      result
+    end
+
+    def unlike(user, proposal)
+      attrs = { user_id: user.id, proposal_id: proposal.id }
+
+      return [:not_liked, nil] unless (like = ProposalLike.find_by(attrs))
+
+      result = nil
+
+      ActiveRecord::Base.transaction do
+        like.destroy!
+        proposal.update!(likes: proposal.proposal_likes.count)
+
+        result = [:ok, proposal]
+      end
+
+      result
     end
   end
 end

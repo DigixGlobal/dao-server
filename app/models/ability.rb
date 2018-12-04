@@ -15,6 +15,9 @@ class Ability
 
       can :like, CommentLike
       can :unlike, CommentLike, user_id: user.id
+
+      can :like, ProposalLike
+      can :unlike, ProposalLike, user_id: user.id
     end
   end
 end

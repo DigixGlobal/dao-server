@@ -43,6 +43,23 @@ FactoryBot.define do
         end
       end
     end
+
+    factory :proposal_with_likes do
+      transient do
+        like_count { 40 }
+      end
+
+      after(:create) do |proposal, evaluator|
+        like_count = evaluator.like_count
+
+        count = Random.rand(1..like_count)
+        count.times do
+          create(:proposal_like, proposal: proposal)
+        end
+
+        proposal.update(likes: count)
+      end
+    end
   end
 
   factory :info_proposal, class: 'Object' do
