@@ -19,8 +19,10 @@ class Proposal < ApplicationRecord
 
   def threads
     Comment
+      .joins(:user)
       .where(proposal_id: id)
       .order(created_at: :desc)
+      .includes(:user)
       .group_by(&:stage)
       .map do |key, stage_comments|
       [

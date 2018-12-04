@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Comment < ActiveRecord::Base
+class Comment < ApplicationRecord
   attribute :replies
 
   include StageField
@@ -22,11 +22,15 @@ class Comment < ActiveRecord::Base
             presence: true
 
   def as_json(options = {})
-    serializable_hash(except: %i[body replies])
+    serializable_hash(
+      except: %i[body replies parent_id discarded_at],
+      include: { user: { only: :address } }
+    )
       .merge(
-        body: discarded? ? nil : body,
-        replies: replies&.map { |reply| reply.as_json(options) }
+        'body' => discarded? ? nil : body,
+        'replies' => replies&.map { |reply| reply.as_json(options) }
       )
+      .deep_transform_keys! { |key| key.camelize(:lower) }
   end
 
   class << self
