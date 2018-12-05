@@ -8,18 +8,16 @@ class UserControllerTest < ActionDispatch::IntegrationTest
   test 'create user should work' do
     params = attributes_for(:user)
 
-    post user_new_path,
-         params: { payload: params }.to_json,
-         headers: info_server_headers('POST', user_new_path, params)
+    info_post user_new_path,
+              payload: params
 
     assert_response :success,
                     'should work'
     assert_match 'uid', @response.body,
                  'response should be an ok'
 
-    post user_new_path,
-         params: { payload: params }.to_json,
-         headers: info_server_headers('POST', user_new_path, params)
+    info_post user_new_path,
+              payload: params
 
     assert_response :success,
                     'should not work with the same params'
@@ -27,8 +25,7 @@ class UserControllerTest < ActionDispatch::IntegrationTest
                  'response should contain validation errors'
 
     post user_new_path,
-         params: {}.to_json,
-         headers: info_server_headers('POST', user_new_path, {})
+         params: {}
 
     assert_response :forbidden,
                     'should not work with the empty params'

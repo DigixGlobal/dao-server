@@ -98,13 +98,8 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
     path = transactions_update_path('confirmed')
     payload = transactions
 
-    put path,
-        params: { payload: payload }.to_json,
-        headers: info_server_headers(
-          'PUT',
-          path,
-          transactions
-        )
+    info_put path,
+             payload: payload
 
     assert_response :success,
                     'should work'
@@ -121,13 +116,8 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden,
                     'should fail without a signature'
 
-    put transactions_update_path('invalid_action'),
-        params: { payload: {} }.to_json,
-        headers: info_server_headers(
-          'PUT',
-          transactions_update_path('invalid_action'),
-          {}
-        )
+    info_put transactions_update_path('invalid_action'),
+             payload: {}
 
     assert_response :unprocessable_entity,
                     'should fail if the action is incorrect'
@@ -145,13 +135,8 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
 
     path = transactions_update_path('seen')
 
-    put path,
-        params: { payload: payload }.to_json,
-        headers: info_server_headers(
-          'PUT',
-          path,
-          payload
-        )
+    info_put path,
+             payload: payload
 
     assert_response :success,
                     'should work'
@@ -168,13 +153,8 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden,
                     'should fail without a signature'
 
-    put transactions_update_path('invalid_action'),
-        params: { payload: {} }.to_json,
-        headers: info_server_headers(
-          'PUT',
-          transactions_update_path('invalid_action'),
-          {}
-        )
+    info_put transactions_update_path('invalid_action'),
+             payload: payload
 
     assert_response :unprocessable_entity,
                     'should fail if the action is incorrect'

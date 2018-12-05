@@ -61,5 +61,23 @@ module ActiveSupport
       create(:server_nonce, server: Rails.configuration.nonces['info_server_name'])
       create(:server_nonce, server: Rails.configuration.nonces['self_server_name'])
     end
+
+    def info_post(path, payload: {}, headers: {}, **kwargs)
+      info_headers = info_server_headers('POST', path, payload)
+
+      post(path,
+           params: { payload: payload }.to_json,
+           headers: headers.merge(info_headers),
+           **kwargs)
+    end
+
+    def info_put(path, payload: {}, headers: {}, **kwargs)
+      info_headers = info_server_headers('PUT', path, payload)
+
+      put(path,
+          params: { payload: payload }.to_json,
+          headers: headers.merge(info_headers),
+          **kwargs)
+    end
   end
 end
