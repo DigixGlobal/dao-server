@@ -18,6 +18,10 @@ class Proposal < ApplicationRecord
             presence: true,
             uniqueness: true
 
+  def user_like(user)
+    ProposalLike.find_by(proposal_id: id, user_id: user.id)
+  end
+
   def user_threads(user)
     Comment
       .joins(:user)
@@ -108,37 +112,35 @@ class Proposal < ApplicationRecord
     end
 
     def like(user, proposal)
-      attrs = { user_id: user.id, proposal_id: proposal.id }
-
-      return [:already_liked, nil] if ProposalLike.find_by(attrs)
-
-      result = nil
-
-      ActiveRecord::Base.transaction do
-        ProposalLike.new(attrs).save!
-        proposal.update!(likes: proposal.proposal_likes.count)
-
-        result = [:ok, proposal]
+      unless (proposal = Proposal.find_by(id: proposal.id))
+        return [:proposal_not_found, nil]
       end
 
-      result
+      unless Ability.new(user).can?(:like, proposal)
+        return [:already_liked, nil]
+      end
+
+      ActiveRecord::Base.transaction do
+        ProposalLike.new(user_id: user.id, proposal_id: proposal.id).save!
+        proposal.update!(likes: proposal.proposal_likes.count)
+      end
+
+      [:ok, proposal]
     end
 
     def unlike(user, proposal)
-      attrs = { user_id: user.id, proposal_id: proposal.id }
-
-      return [:not_liked, nil] unless (like = ProposalLike.find_by(attrs))
-
-      result = nil
-
-      ActiveRecord::Base.transaction do
-        like.destroy!
-        proposal.update!(likes: proposal.proposal_likes.count)
-
-        result = [:ok, proposal]
+      unless (proposal = Proposal.find_by(id: proposal.id))
+        return [:proposal_not_found, nil]
       end
 
-      result
+      return [:not_liked, nil] unless Ability.new(user).can?(:unlike, proposal)
+
+      ActiveRecord::Base.transaction do
+        ProposalLike.find_by(user_id: user.id, proposal_id: proposal.id).destroy!
+        proposal.update!(likes: proposal.proposal_likes.count)
+      end
+
+      [:ok, proposal]
     end
   end
 end

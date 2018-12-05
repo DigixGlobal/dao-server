@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'cancancan'
+
 class Comment < ApplicationRecord
   attribute :replies
 
@@ -36,6 +38,10 @@ class Comment < ApplicationRecord
     ).deep_transform_keys! { |key| key.camelize(:lower) }
   end
 
+  def user_like(user)
+    CommentLike.find_by(comment_id: id, user_id: user.id)
+  end
+
   class << self
     def delete(user, comment)
       return [:already_deleted, nil] if comment.discarded?
@@ -50,37 +56,37 @@ class Comment < ApplicationRecord
     end
 
     def like(user, comment)
-      attrs = { user_id: user.id, comment_id: comment.id }
-
-      return [:already_liked, nil] if CommentLike.find_by(attrs)
-
-      result = nil
-
-      ActiveRecord::Base.transaction do
-        CommentLike.new(attrs).save!
-        comment.update!(likes: comment.comment_likes.count)
-
-        result = [:ok, comment]
+      unless (comment = Comment.find_by(id: comment.id))
+        return [:comment_not_found, nil]
       end
 
-      result
+      unless Ability.new(user).can?(:like, comment)
+        return [:already_liked, nil]
+      end
+
+      ActiveRecord::Base.transaction do
+        CommentLike.new(user_id: user.id, comment_id: comment.id).save!
+        comment.update!(likes: comment.comment_likes.count)
+      end
+
+      [:ok, comment]
     end
 
     def unlike(user, comment)
-      attrs = { user_id: user.id, comment_id: comment.id }
-
-      return [:not_liked, nil] unless (like = CommentLike.find_by(attrs))
-
-      result = nil
-
-      ActiveRecord::Base.transaction do
-        like.destroy!
-        comment.update!(likes: comment.comment_likes.count)
-
-        result = [:ok, comment]
+      unless (comment = Comment.find_by(id: comment.id))
+        return [:comment_not_found, nil]
       end
 
-      result
+      unless Ability.new(user).can?(:unlike, comment)
+        return [:not_liked, nil]
+      end
+
+      ActiveRecord::Base.transaction do
+        CommentLike.find_by(user_id: user.id, comment_id: comment.id).destroy!
+        comment.update!(likes: comment.comment_likes.count)
+      end
+
+      [:ok, comment]
     end
   end
 end
