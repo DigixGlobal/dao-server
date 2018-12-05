@@ -6,21 +6,16 @@ class TransactionsController < ApplicationController
   before_action :authenticate_user!, only: %i[new list]
 
   def confirmed
-    body = JSON.parse(request.raw_post)
-    txn_hashes = body["payload"].map { |e| e["txhash"] }
-    # txn_hashes = params.fetch('payload', []).map { |e| e.fetch('txhash', '') }
+    txn_hashes = params.fetch('payload', []).map { |e| e.fetch('txhash', '') }
     confirm_transactions(txn_hashes)
 
     render json: result_response
   end
 
   def latest
-    body = JSON.parse(request.raw_post)
-    block_number = body["payload"]["blockNumber"]
-    transactions = body["payload"]["transactions"]
-    # payload = params.fetch('payload', {})
-    # transactions = payload.fetch('transactions', [])
-    # block_number = payload.fetch('blockNumber', '')
+    payload = params.fetch('payload', {})
+    transactions = payload.fetch('transactions', [])
+    block_number = payload.fetch('blockNumber', '')
 
     unless transactions.empty?
       seen_transactions(

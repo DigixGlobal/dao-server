@@ -46,7 +46,6 @@ class UserController < ApplicationController
   end
 
   def user_params
-    address = JSON.parse(request.raw_post)['payload']['address']
-    return { address: address }
+    params.require('payload').permit('address')
   end
 end
