@@ -32,14 +32,13 @@ class UserControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'user details should work' do
-    key = Eth::Key.new
-    create(:user, address: key.address)
+    _user, auth_headers, _key = create_auth_user
 
     get user_details_path,
-        headers: auth_headers(key)
+        headers: auth_headers
 
     assert_response :success,
-                    'should work'
+                    'should owrk'
     assert_match 'uid', @response.body,
                  'should work'
 

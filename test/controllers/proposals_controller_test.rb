@@ -44,11 +44,9 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'comment on proposal should work' do
-    key = Eth::Key.new
-    proposal = create(:proposal, user: create(:user, address: key.address))
+    user, auth_headers, _key = create_auth_user
+    proposal = create(:proposal, user: user)
     params = attributes_for(:proposal_comment)
-
-    auth_headers = auth_headers(key)
 
     post proposal_comments_path(proposal.id),
          params: params,
@@ -59,15 +57,13 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
     assert_match 'id', @response.body,
                  'response should contain id'
 
-    sleep(1.seconds)
-
     post proposal_comments_path(proposal.id),
          headers: auth_headers
 
     assert_response :forbidden,
                     'should throttle commenting'
 
-    sleep(1.seconds)
+    sleep(3.seconds)
 
     post proposal_comments_path(proposal.id),
          headers: auth_headers
@@ -92,12 +88,9 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'replying to a comment proposal should work' do
-    key = Eth::Key.new
-    create(:user, address: key.address)
+    _user, auth_headers, _key = create_auth_user
     comment = create(:proposal_with_comments).comments.sample
     params = attributes_for(:proposal_comment)
-
-    auth_headers = auth_headers(key)
 
     post comment_path(comment.id),
          params: params,
@@ -108,15 +101,13 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
     assert_match 'id', @response.body,
                  'response should contain id'
 
-    sleep(1.seconds)
-
     post comment_path(comment.id),
          headers: auth_headers
 
     assert_response :forbidden,
                     'should throttle commenting'
 
-    sleep(1.seconds)
+    sleep(3.seconds)
 
     post comment_path(comment.id),
          headers: auth_headers
@@ -141,12 +132,9 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'deleting a comment should work' do
-    key = Eth::Key.new
-    user = create(:user, address: key.address)
+    user, auth_headers, _key = create_auth_user
     proposal = create(:proposal_with_comments)
     comment = create(:comment, proposal: proposal, user: user)
-
-    auth_headers = auth_headers(key)
 
     delete comment_path(comment.id),
            headers: auth_headers
@@ -183,11 +171,8 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'find proposal should work' do
-    key = Eth::Key.new
-    user = create(:user, address: key.address)
+    user, auth_headers, _key = create_auth_user
     proposal = create(:proposal_with_comments, user: user)
-
-    auth_headers = auth_headers(key)
 
     get proposal_path(proposal.id),
         headers: auth_headers
@@ -205,11 +190,8 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'find proposal threads should work' do
-    key = Eth::Key.new
-    user = create(:user, address: key.address)
+    user, auth_headers, _key = create_auth_user
     proposal = create(:proposal_with_comments, user: user)
-
-    auth_headers = auth_headers(key)
 
     get proposal_path(proposal.id),
         headers: auth_headers
@@ -221,11 +203,8 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'liking a proposal should work' do
-    key = Eth::Key.new
+    user, auth_headers, _key = create_auth_user
     proposal = create(:proposal)
-    create(:user, address: key.address)
-
-    auth_headers = auth_headers(key)
 
     post proposal_likes_path(proposal.id),
          headers: auth_headers
@@ -251,10 +230,8 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'unliking a proposal should work' do
-    key = Eth::Key.new
-    like = create(:proposal_like, user: create(:user, address: key.address))
-
-    auth_headers = auth_headers(key)
+    user, auth_headers, _key = create_auth_user
+    like = create(:proposal_like, user: user)
 
     delete proposal_likes_path(like.proposal_id),
            headers: auth_headers

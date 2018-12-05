@@ -14,10 +14,8 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
         }
       }.to_json)
 
-    key = Eth::Key.new
-    create(:user, address: key.address)
+    _user, auth_headers, _key = create_auth_user
     params = attributes_for(:transaction)
-    auth_headers = auth_headers(key)
 
     post transactions_path,
          params: params,
@@ -47,10 +45,8 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
         }
       }.to_json)
 
-    key = Eth::Key.new
-    create(:user, address: key.address)
+    _user, auth_headers, _key = create_auth_user
     params = attributes_for(:transaction)
-    auth_headers = auth_headers(key)
 
     post transactions_path,
          params: params
@@ -68,13 +64,11 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'list transaction should work' do
-    key = Eth::Key.new
-    user = create(:user, address: key.address)
+    user, auth_headers, _key = create_auth_user
+
     10.times do
       create(:transaction, user: user)
     end
-
-    auth_headers = auth_headers(key)
 
     post transactions_path,
          headers: auth_headers

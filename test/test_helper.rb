@@ -48,6 +48,13 @@ module ActiveSupport
             .slice('access-token', 'client', 'uid')
     end
 
+    def create_auth_user(**kwargs)
+      key = Eth::Key.new
+      user = create(:user, address: key.address, **kwargs)
+
+      [user, auth_headers(key), key]
+    end
+
     def database_fixture
       Transaction.delete_all
       CommentLike.delete_all
