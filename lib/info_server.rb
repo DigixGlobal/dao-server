@@ -52,7 +52,7 @@ class InfoServer
       confirmed_txns.each do |txn|
         Transaction
           .where(txhash: txn['txhash'])
-          .update(status: 'confirmed', blockNumber: txn['block_number'])
+          .update(status: 'confirmed', block_number: txn['block_number'])
       end
     end
 
@@ -60,7 +60,7 @@ class InfoServer
       seen_txns.each do |txn|
         Transaction
           .where(txhash: txn['txhash'])
-          .update(status: 'seen', blockNumber: txn['block_number'])
+          .update(status: 'seen', block_number: txn['block_number'])
       end
     end
 
