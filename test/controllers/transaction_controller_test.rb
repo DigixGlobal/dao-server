@@ -92,11 +92,17 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
       page = Random.rand(1..100)
       per_page = Random.rand(1..100)
 
-      post "#{transactions_path}?page=#{page}&per_page=#{per_page}",
-           headers: auth_headers
+      get "#{transactions_path}?page=#{page}&per_page=#{per_page}",
+          headers: auth_headers
 
       assert_response :success,
                       'should work'
+
+      items = JSON.parse(@response.body).fetch(:result, [])
+      records = user.transactions.page(page).per(per_page)
+
+      assert_equal items.size, records.size,
+                   'should be paginated correctly'
     end
   end
 
