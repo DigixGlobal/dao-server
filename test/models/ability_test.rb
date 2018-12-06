@@ -32,4 +32,18 @@ class AbilityTest < ActiveSupport::TestCase
     assert other_ability.can?(:delete, other_comment)
     assert other_ability.cannot?(:delete, this_comment)
   end
+
+  test 'user comment liking abilities should work' do
+    this_like = create(:comment_like)
+    user_ability = Ability.new(this_like.user)
+
+    assert user_ability.can?(:like, this_like)
+    assert user_ability.can?(:unlike, this_like)
+
+    other_like = create(:comment_like)
+    other_ability = Ability.new(other_like.user)
+
+    assert other_ability.can?(:unlike, other_like)
+    assert other_ability.cannot?(:unlike, this_like)
+  end
 end

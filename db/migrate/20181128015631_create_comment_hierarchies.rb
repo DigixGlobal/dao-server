@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateCommentHierarchies < ActiveRecord::Migration[5.2]
   def change
     create_table :comment_hierarchies, id: false do |t|
@@ -6,11 +8,11 @@ class CreateCommentHierarchies < ActiveRecord::Migration[5.2]
       t.integer :generations, null: false
     end
 
-    add_index :comment_hierarchies, [:ancestor_id, :descendant_id, :generations],
-      unique: true,
-      name: "comment_anc_desc_idx"
+    add_index :comment_hierarchies, %i[ancestor_id descendant_id generations],
+              unique: true,
+              name: 'comment_anc_desc_idx'
 
     add_index :comment_hierarchies, [:descendant_id],
-      name: "comment_desc_idx"
+              name: 'comment_desc_idx'
   end
 end

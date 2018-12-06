@@ -12,6 +12,9 @@ class Ability
       can :create, Comment
       can :read, Comment
       can :delete, Comment, user_id: user.id
+
+      can :like, CommentLike
+      can :unlike, CommentLike, user_id: user.id
     end
   end
 end

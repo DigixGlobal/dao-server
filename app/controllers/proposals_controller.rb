@@ -46,7 +46,7 @@ class ProposalsController < ApplicationController
       render json: error_response(:proposal_not_found),
              status: :not_found
     else
-      render json: result_response(proposal_view(proposal))
+      render json: result_response(user_proposal_view(current_user, proposal))
     end
   end
 
@@ -138,8 +138,10 @@ class ProposalsController < ApplicationController
     params.permit(:body)
   end
 
-  def proposal_view(proposal)
-    proposal.serializable_hash(methods: :threads)
+  def user_proposal_view(user, proposal)
+    proposal
+      .serializable_hash
+      .merge(threads: proposal.user_threads(user))
   end
 
   def throttle_commenting!

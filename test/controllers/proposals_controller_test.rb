@@ -153,7 +153,7 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success,
                     'should work'
-    assert_match 'discarded', @response.body,
+    assert_match 'stage', @response.body,
                  'response be ok'
 
     delete comment_path(comment.id),

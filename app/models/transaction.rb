@@ -8,6 +8,6 @@ class Transaction < ApplicationRecord
   validates :txhash,
             presence: true,
             uniqueness: true
-  validates :blockNumber,
+  validates :block_number,
             presence: false
 end

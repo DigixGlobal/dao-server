@@ -8,7 +8,7 @@ FactoryBot.define do
   factory :transaction, class: 'Transaction' do
     title { generate(:title) }
     txhash { generate(:txhash) }
-    blockNumber { generate(:block_number) }
+    block_number { generate(:block_number) }
     association :user, factory: :user
   end
 end

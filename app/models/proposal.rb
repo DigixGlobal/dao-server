@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Proposal < ActiveRecord::Base
+class Proposal < ApplicationRecord
   include StageField
 
   COMMENT_MAX_DEPTH = Rails
@@ -17,17 +17,20 @@ class Proposal < ActiveRecord::Base
             presence: true,
             uniqueness: true
 
-  def threads
+  def user_threads(user)
     Comment
+      .joins(:user)
+      .joins("LEFT OUTER JOIN comment_likes ON comment_likes.comment_id = comments.id AND comment_likes.user_id = #{user.id}")
       .where(proposal_id: id)
       .order(created_at: :desc)
+      .includes(%i[user])
       .group_by(&:stage)
       .map do |key, stage_comments|
-      [
-        key,
-        build_comment_trees(stage_comments)
-      ]
-    end
+        [
+          key,
+          build_comment_trees(stage_comments)
+        ]
+      end
       .to_h
   end
 

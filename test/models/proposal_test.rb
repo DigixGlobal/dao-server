@@ -124,8 +124,8 @@ class ProposalTest < ActiveSupport::TestCase
                  'should work'
     assert deleted_comment.discarded?,
            'comment should be deleted'
-    assert Comment.find(child_comment.id).discarded?,
-           'child comment should be deleted'
+    assert_not Comment.find(child_comment.id).discarded?,
+               'child comment should not be deleted'
 
     another_comment = create(:comment)
 
@@ -163,13 +163,14 @@ class ProposalTest < ActiveSupport::TestCase
 
   test 'threads property should work' do
     proposal = create(:proposal_with_comments)
+    user = create(:user)
 
     # Hack to force deterministic ordering with the created_at field
     Comment.in_batches.each do |relation|
       relation.update_all('created_at = FROM_UNIXTIME(id)')
     end
 
-    threads = proposal.reload.threads
+    threads = proposal.user_threads(user)
     assert threads,
            'should work'
 
@@ -185,7 +186,7 @@ class ProposalTest < ActiveSupport::TestCase
     new_comment = create(:comment, proposal: proposal, stage: proposal.stage)
 
     assert_equal new_comment.id,
-                 proposal.reload.threads.fetch(proposal.stage, []).first.id,
+                 proposal.user_threads(user).fetch(proposal.stage, []).first.id,
                  'new comment should be first in the list'
   end
 

@@ -52,7 +52,7 @@ class InfoServer
       confirmed_txns.each do |txn|
         Transaction
           .where(txhash: txn['txhash'])
-          .update(status: 'confirmed', blockNumber: txn['blockNumber'])
+          .update(status: 'confirmed', blockNumber: txn['block_number'])
       end
     end
 
@@ -60,7 +60,7 @@ class InfoServer
       seen_txns.each do |txn|
         Transaction
           .where(txhash: txn['txhash'])
-          .update(status: 'seen', blockNumber: txn['blockNumber'])
+          .update(status: 'seen', blockNumber: txn['block_number'])
       end
     end
 
@@ -79,7 +79,17 @@ class InfoServer
   # Given a request's method, path, nonce and payload, concatenate them
   # to create an unique message for authentication
   def access_message(method, path, nonce, payload)
-    "#{method.upcase}#{path}#{payload.to_json}#{nonce}"
+    "#{method.upcase}#{path}#{simplify_payload(payload).to_json}#{nonce}"
+  end
+
+  def simplify_payload(payload)
+    if payload.is_a?(Array)
+      payload.map { |item| simplify_payload(item) }
+    elsif payload.is_a?(Hash)
+      payload.deep_transform_keys! { |key| key.to_s.camelize(:lower) }
+    else
+      payload
+    end
   end
 
   # Like `access_message` but takes a HTTP request
