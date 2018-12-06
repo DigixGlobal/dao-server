@@ -10,13 +10,14 @@ Rails.application.routes.draw do
     # token_validations:  'overrides/token_validations',
   }
 
-  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
-  # get '/test', to: "proposals#test"
-  get '/user/details', to: 'user#details'
-  post '/user/new', to: 'user#new_user'
-  # get '/token', to: "proposals#test_token"
-  get '/get_challenge', to: 'authentication#challenge'
-  post '/prove', to: 'authentication#prove'
+  get '/user',
+      to: 'user#details'
+  post '/user',
+       to: 'user#new_user'
+  post '/authorization',
+       to: 'authentication#challenge'
+  put '/authorization',
+      to: 'authentication#prove'
 
   get '/transactions/ping',
       to: 'transactions#ping'
