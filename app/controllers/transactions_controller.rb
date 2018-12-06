@@ -62,7 +62,7 @@ class TransactionsController < ApplicationController
   end
 
   def ping
-    puts "body from test_server: #{request.body.inspect}"
+    Rails.logger.info("body from test_server: #{request.body.inspect}")
 
     render json: result_response
   end
