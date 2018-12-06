@@ -66,9 +66,7 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
   test 'list transaction should work' do
     user, auth_headers, _key = create_auth_user
 
-    10.times do
-      create(:transaction, user: user)
-    end
+    create_list(:transaction, 10, user: user)
 
     post transactions_path,
          headers: auth_headers
@@ -82,6 +80,24 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :unauthorized,
                     'should fail on without authorization'
+  end
+
+  test 'list pagination should work' do
+    user, auth_headers, _key = create_auth_user
+
+    total = Random.rand(50..100)
+    create_list(:transaction, total, user: user)
+
+    5.times do
+      page = Random.rand(1..100)
+      per_page = Random.rand(1..100)
+
+      post "#{transactions_path}?page=#{page}&per_page=#{per_page}",
+           headers: auth_headers
+
+      assert_response :success,
+                      'should work'
+    end
   end
 
   test 'confirm transactions should work' do
