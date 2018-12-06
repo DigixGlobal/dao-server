@@ -43,5 +43,6 @@ module DaoServer
     end
 
     config.nonces = config_for(:nonces)
+    config.proposals = config_for(:proposals)
   end
 end

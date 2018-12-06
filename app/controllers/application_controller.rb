@@ -12,7 +12,7 @@ class ApplicationController < ActionController::API
   include DeviseTokenAuth::Concerns::SetUserByToken
 
   def render_invalid_info_request(error)
-    render json: { message: error.message },
+    render json: error_response(error.message),
            status: :forbidden
   end
 
@@ -25,32 +25,33 @@ class ApplicationController < ActionController::API
     { result: result }
   end
 
-  def error_response(error = 'Error')
+  def error_response(error = :error)
     { error: error }
   end
 
   def check_info_server_request
-    unless request.headers.include?('ACCESS-NONCE') &&
-           request.headers.include?('ACCESS-SIGN') &&
-           request.params.key?('payload')
-      raise  InfoServer::InvalidRequest,
-             'Info server requests must have a "payload" parameter and "ACCESS-NONCE" and "ACCESS-SIGN" header.'
+    unless (request_nonce = request.headers.fetch('ACCESS-NONCE', '').to_i)
+      raise InfoServer::InvalidRequest, :missing_access_nonce
     end
 
-    request_nonce = request.headers.fetch('ACCESS-NONCE', '').to_i
-    request_signature = request.headers.fetch('ACCESS-SIGN', '')
+    unless (request_signature = request.headers.fetch('ACCESS-SIGN', ''))
+      raise InfoServer::InvalidRequest, :missing_access_signature
+    end
+
+    unless request.params.key?('payload')
+      raise InfoServer::InvalidRequest, :missing_payload
+    end
 
     valid_signature = InfoServer.request_signature(request)
-    valid_nonce = InfoServer.current_nonce
 
     unless request_signature == valid_signature
-      raise InfoServer::InvalidRequest,
-            'Invalid signature provided.'
+      raise InfoServer::InvalidRequest, :invalid_signature
     end
 
+    valid_nonce = InfoServer.current_nonce
+
     unless request_nonce > valid_nonce
-      raise  InfoServer::InvalidRequest,
-             'Invalid nonce provided.'
+      raise InfoServer::InvalidRequest, :invalid_nonce
     end
   end
 
@@ -60,5 +61,11 @@ class ApplicationController < ActionController::API
 
       InfoServer.update_nonce(request_nonce)
     end
+  end
+
+  def check_and_update_info_server_request
+    check_info_server_request
+    yield
+    update_info_server_nonce
   end
 end

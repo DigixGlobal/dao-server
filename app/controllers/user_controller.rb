@@ -46,6 +46,10 @@ class UserController < ApplicationController
   end
 
   def user_params
-    params.require('payload').permit('address')
+    params
+      .permit(payload: [:address])
+      .to_hash
+      .fetch('payload', {})
+      .slice('address')
   end
 end

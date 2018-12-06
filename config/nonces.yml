@@ -9,4 +9,3 @@ test:
 production:
   info_server_name: infoServer
   self_server_name: self
- 

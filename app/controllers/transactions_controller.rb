@@ -1,30 +1,35 @@
 # frozen_string_literal: true
 
 class TransactionsController < ApplicationController
-  before_action :check_info_server_request, only: %i[confirmed latest test_server]
-  after_action :update_info_server_nonce, only: %i[confirmed latest test_server]
-  before_action :authenticate_user!, only: %i[new list]
+  around_action :check_and_update_info_server_request,
+                only: %i[update_hashes ping]
+  before_action :authenticate_user!,
+                only: %i[new list]
 
-  def confirmed
-    txn_hashes = params.fetch('payload', []).map { |e| e.fetch('txhash', '') }
-    confirm_transactions(txn_hashes)
+  def update_hashes
+    case params.fetch(:type, nil)
+    when 'seen'
+      payload = params.fetch('payload', {})
+      transactions = payload.fetch('transactions', [])
+      block_number = payload.fetch('block_number', '')
 
-    render json: result_response
-  end
+      unless transactions.empty?
+        seen_transactions(
+          transactions.map { |e| e.fetch('txhash', '') },
+          block_number
+        )
+      end
 
-  def latest
-    payload = params.fetch('payload', {})
-    transactions = payload.fetch('transactions', [])
-    block_number = payload.fetch('blockNumber', '')
+      render json: result_response(:seen)
+    when 'confirmed'
+      txn_hashes = params.fetch('payload', []).map { |e| e.fetch('txhash', '') }
+      confirm_transactions(txn_hashes)
 
-    unless transactions.empty?
-      seen_transactions(
-        transactions.map { |e| e.fetch('txhash', '') },
-        block_number
-      )
+      render json: result_response(:confirmed)
+    else
+      render json: error_response(:invalid_action),
+             status: :unprocessable_entity
     end
-
-    render json: result_response
   end
 
   def new
@@ -47,7 +52,7 @@ class TransactionsController < ApplicationController
     render json: result_response(current_user.transactions)
   end
 
-  def status
+  def find
     case (transaction = Transaction.find_by(txhash: params.fetch(:txhash, '')))
     when nil
       render json: error_response(:transaction_not_found)
@@ -56,8 +61,8 @@ class TransactionsController < ApplicationController
     end
   end
 
-  def test_server
-    puts "body from test_server: #{request.body}"
+  def ping
+    Rails.logger.info("body from test_server: #{request.body.inspect}")
 
     render json: result_response
   end
@@ -86,7 +91,7 @@ class TransactionsController < ApplicationController
   def seen_transactions(txn_hashes, block_number)
     Transaction
       .where(txhash: txn_hashes)
-      .update_all(blockNumber: block_number, status: 'seen')
+      .update_all(block_number: block_number, status: 'seen')
   end
 
   def transactions_params

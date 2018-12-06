@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class User < ActiveRecord::Base
+class User < ApplicationRecord
   devise :rememberable, :trackable
   include DeviseTokenAuth::Concerns::User
 
@@ -13,15 +13,6 @@ class User < ActiveRecord::Base
 
   validates :address,
             presence: true,
-            uniqueness: true
-
-  validate :address, :checksum_address?
-
-  private
-
-  def checksum_address?
-    unless Eth::Utils.valid_address?(address)
-      errors.add(:address, 'must be a valid checksum address')
-    end
-  end
+            uniqueness: true,
+            address: true
 end

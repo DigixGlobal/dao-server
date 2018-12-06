@@ -2,6 +2,6 @@
 
 require 'test_helper'
 
-class UserFlowsTest < ActionDispatch::IntegrationTest
+class ProposalFlowsTest < ActionDispatch::IntegrationTest
   setup :database_fixture
 end
