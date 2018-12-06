@@ -8,7 +8,7 @@ class UserControllerTest < ActionDispatch::IntegrationTest
   test 'create user should work' do
     params = attributes_for(:user)
 
-    info_post user_new_path,
+    info_post user_path,
               payload: params
 
     assert_response :success,
@@ -16,7 +16,7 @@ class UserControllerTest < ActionDispatch::IntegrationTest
     assert_match 'uid', @response.body,
                  'response should be an ok'
 
-    info_post user_new_path,
+    info_post user_path,
               payload: params
 
     assert_response :success,
@@ -24,7 +24,7 @@ class UserControllerTest < ActionDispatch::IntegrationTest
     assert_match 'error', @response.body,
                  'response should contain validation errors'
 
-    post user_new_path,
+    post user_path,
          params: {}
 
     assert_response :forbidden,
@@ -34,7 +34,7 @@ class UserControllerTest < ActionDispatch::IntegrationTest
   test 'user details should work' do
     _user, auth_headers, _key = create_auth_user
 
-    get user_details_path,
+    get user_path,
         headers: auth_headers
 
     assert_response :success,
@@ -42,7 +42,7 @@ class UserControllerTest < ActionDispatch::IntegrationTest
     assert_match 'uid', @response.body,
                  'should work'
 
-    get user_details_path
+    get user_path
 
     assert_response :unauthorized,
                     'should fail without authorization'

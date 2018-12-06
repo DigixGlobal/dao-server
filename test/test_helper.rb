@@ -41,7 +41,7 @@ module ActiveSupport
         message: challenge.challenge
       }
 
-      post prove_path, params: params
+      put authorization_path, params: params
 
       ::JSON.parse(@response.body)
             .fetch('result', {})
