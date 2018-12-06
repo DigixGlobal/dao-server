@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_12_03_031837) do
+ActiveRecord::Schema.define(version: 2018_12_04_054826) do
 
   create_table "challenges", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "challenge"
@@ -60,9 +60,18 @@ ActiveRecord::Schema.define(version: 2018_12_03_031837) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "proposal_likes", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "proposal_id"
+    t.index ["proposal_id"], name: "index_proposal_likes_on_proposal_id"
+    t.index ["user_id", "proposal_id"], name: "index_proposal_likes_on_user_id_and_proposal_id", unique: true
+    t.index ["user_id"], name: "index_proposal_likes_on_user_id"
+  end
+
   create_table "proposals", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "user_id"
     t.integer "stage", default: 1
+    t.integer "likes", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["stage"], name: "index_proposals_on_stage"

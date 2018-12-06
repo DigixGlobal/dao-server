@@ -10,12 +10,17 @@ class Proposal < ApplicationRecord
 
   belongs_to :user
   has_many :comments, -> { where(parent_id: nil) }
+  has_many :proposal_likes
 
   validates :stage,
             presence: true
   validates :user,
             presence: true,
             uniqueness: true
+
+  def user_like(user)
+    ProposalLike.find_by(proposal_id: id, user_id: user.id)
+  end
 
   def user_threads(user)
     Comment
@@ -26,12 +31,16 @@ class Proposal < ApplicationRecord
       .includes(%i[user])
       .group_by(&:stage)
       .map do |key, stage_comments|
-        [
-          key,
-          build_comment_trees(stage_comments)
-        ]
-      end
+      [
+        key,
+        build_comment_trees(stage_comments)
+      ]
+    end
       .to_h
+  end
+
+  def user_liked?(user)
+    !ProposalLike.find_by(user_id: user.id, proposal_id: id).nil?
   end
 
   private
@@ -49,10 +58,10 @@ class Proposal < ApplicationRecord
     comments
       .reject { |comment| comment.parent_id.nil? }
       .each do |comment|
-        if (parent_comment = comment_map.fetch(comment.parent_id))
-          parent_comment.replies.unshift(comment)
-        end
+      if (parent_comment = comment_map.fetch(comment.parent_id))
+        parent_comment.replies.unshift(comment)
       end
+    end
 
     comments.select { |comment| comment.parent_id.nil? }
   end
@@ -100,6 +109,38 @@ class Proposal < ApplicationRecord
       comment.discard
 
       [:ok, comment]
+    end
+
+    def like(user, proposal)
+      unless (proposal = Proposal.find_by(id: proposal.id))
+        return [:proposal_not_found, nil]
+      end
+
+      unless Ability.new(user).can?(:like, proposal)
+        return [:already_liked, nil]
+      end
+
+      ActiveRecord::Base.transaction do
+        ProposalLike.new(user_id: user.id, proposal_id: proposal.id).save!
+        proposal.update!(likes: proposal.proposal_likes.count)
+      end
+
+      [:ok, proposal]
+    end
+
+    def unlike(user, proposal)
+      unless (proposal = Proposal.find_by(id: proposal.id))
+        return [:proposal_not_found, nil]
+      end
+
+      return [:not_liked, nil] unless Ability.new(user).can?(:unlike, proposal)
+
+      ActiveRecord::Base.transaction do
+        ProposalLike.find_by(user_id: user.id, proposal_id: proposal.id).destroy!
+        proposal.update!(likes: proposal.proposal_likes.count)
+      end
+
+      [:ok, proposal]
     end
   end
 end

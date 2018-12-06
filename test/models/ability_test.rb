@@ -34,16 +34,26 @@ class AbilityTest < ActiveSupport::TestCase
   end
 
   test 'user comment liking abilities should work' do
-    this_like = create(:comment_like)
-    user_ability = Ability.new(this_like.user)
+    this_comment = create(:comment)
+    user_ability = Ability.new(this_comment.user)
 
-    assert user_ability.can?(:like, this_like)
-    assert user_ability.can?(:unlike, this_like)
+    assert user_ability.can?(:like, this_comment)
+    assert_not user_ability.can?(:unlike, this_comment)
 
-    other_like = create(:comment_like)
-    other_ability = Ability.new(other_like.user)
+    create(:comment_like, user: this_comment.user, comment: this_comment)
 
-    assert other_ability.can?(:unlike, other_like)
-    assert other_ability.cannot?(:unlike, this_like)
+    assert user_ability.can?(:unlike, this_comment)
+  end
+
+  test 'user proposal liking abilities should work' do
+    this_proposal = create(:proposal)
+    user_ability = Ability.new(this_proposal.user)
+
+    assert user_ability.can?(:like, this_proposal)
+    assert_not user_ability.can?(:unlike, this_proposal)
+
+    create(:proposal_like, user: this_proposal.user, proposal: this_proposal)
+
+    assert user_ability.can?(:unlike, this_proposal)
   end
 end

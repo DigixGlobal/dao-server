@@ -5,7 +5,7 @@ Please refer [HERE](https://gist.github.com/roynalnaruto/52f2be795f256ed7b0f1566
 [link](PROPOSALS.md)
 
 ### Endpoints:
-* `/get_challenge?address=<address>`(**GET**): To get an authentication token, first get a challenge which you must prove
+* `/authorization?address=<address>`(**POST**): To get an authentication token, first get a challenge which you must prove
 
 ``` json
 {
@@ -19,7 +19,7 @@ Please refer [HERE](https://gist.github.com/roynalnaruto/52f2be795f256ed7b0f1566
   }
 }
 ```
-* `/prove?address=<address>&challenge_id=<challenge_id>&message=<message>&signature=<signature>`(**POST**):
+* `/authorization?address=<address>&challenge_id=<challenge_id>&message=<message>&signature=<signature>`(**PUT**):
     Using your ethereum account, sign the `challenge` with your signature to get the tokens
 
 ``` json
@@ -37,10 +37,10 @@ Please refer [HERE](https://gist.github.com/roynalnaruto/52f2be795f256ed7b0f1566
 These info should be put into the headers for subsequent APIs to Dao Server. As an example:
 
 ``` shell
-curl -i -H UID\:\ 96949 -H CLIENT\:\ 7vZsAGdmbrD8aPMQRiwZjw -H ACCESS-TOKEN\:\ ld7LvGgwNfPWYWb8FjojHQ -XGET http\://127.0.0.1\:3005/user/details
+curl -i -H UID\:\ 96949 -H CLIENT\:\ 7vZsAGdmbrD8aPMQRiwZjw -H ACCESS-TOKEN\:\ ld7LvGgwNfPWYWb8FjojHQ -XGET http\://127.0.0.1\:3005/user
 ```
 
-* `/user/details`(**GET**): [authenticated] Get current user details. Use this to test if token authentication works
+* `/user`(**GET**): [authenticated] Get current user details. Use this to test if token authentication works
 
 ``` json
 {
@@ -55,7 +55,7 @@ curl -i -H UID\:\ 96949 -H CLIENT\:\ 7vZsAGdmbrD8aPMQRiwZjw -H ACCESS-TOKEN\:\ l
 }
 ```
 
-* `/transactions/new?txhash=<>&title=<>`(**POST**): [authenticated] Notify the server that a transaction is executed
+* `/transactions/seen?txhash=<>&title=<>`(**POST**): [authenticated] Notify the server that a transaction is executed
 
 ``` json
 {
@@ -72,7 +72,7 @@ curl -i -H UID\:\ 96949 -H CLIENT\:\ 7vZsAGdmbrD8aPMQRiwZjw -H ACCESS-TOKEN\:\ l
 }
 ```
 
-* `/transactions/list`(**POST**): [authenticated] Get all transaction details of the current user
+* `/transactions`(**GET**): [authenticated] Get all transaction details of the current user
 
 ```json
 {
@@ -91,7 +91,7 @@ curl -i -H UID\:\ 96949 -H CLIENT\:\ 7vZsAGdmbrD8aPMQRiwZjw -H ACCESS-TOKEN\:\ l
 }
 ```
 
-* `/transactions/status?txhash=<txhash>`(**POST**): [authenticated] Get a specific transaction detail given an hash
+* `/transactions?txhash=<txhash>`(**GET**): [authenticated] Get a specific transaction detail given an hash
 
 ``` json
 {
