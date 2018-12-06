@@ -30,28 +30,28 @@ class ApplicationController < ActionController::API
   end
 
   def check_info_server_request
-    unless request.headers.include?('ACCESS-NONCE') &&
-           request.headers.include?('ACCESS-SIGN') &&
-           request.params.key?('payload')
-      raise InfoServer::InvalidRequest,
-            'Info server requests must have a "payload" parameter and "ACCESS-NONCE" and "ACCESS-SIGN" header.'
+    unless (request_nonce = request.headers.fetch('ACCESS-NONCE', '').to_i)
+      raise InfoServer::InvalidRequest, :missing_access_nonce
     end
 
-    request_nonce = request.headers.fetch('ACCESS-NONCE', '').to_i
-    request_signature = request.headers.fetch('ACCESS-SIGN', '')
+    unless (request_signature = request.headers.fetch('ACCESS-SIGN', ''))
+      raise InfoServer::InvalidRequest, :missing_access_signature
+    end
+
+    unless request.params.key?('payload')
+      raise InfoServer::InvalidRequest, :missing_payload
+    end
 
     valid_signature = InfoServer.request_signature(request)
 
     unless request_signature == valid_signature
-      raise InfoServer::InvalidRequest,
-            'Invalid signature provided.'
+      raise InfoServer::InvalidRequest, :invalid_signature
     end
 
     valid_nonce = InfoServer.current_nonce
 
     unless request_nonce > valid_nonce
-      raise  InfoServer::InvalidRequest,
-             'Invalid nonce provided.'
+      raise InfoServer::InvalidRequest, :invalid_nonce
     end
   end
 

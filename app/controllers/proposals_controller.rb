@@ -126,6 +126,38 @@ class ProposalsController < ApplicationController
     end
   end
 
+  def like
+    unless (proposal = Proposal.find_by(id: params.fetch(:id)))
+      return render json: error_response(:proposal_not_found),
+                    status: :not_found
+    end
+
+    result, proposal_or_error = Proposal.like(current_user, proposal)
+
+    case result
+    when :database_error, :already_liked
+      render json: error_response(proposal_or_error || result)
+    when :ok
+      render json: result_response(proposal_or_error)
+    end
+  end
+
+  def unlike
+    unless (proposal = Proposal.find_by(id: params.fetch(:id)))
+      return render json: error_response(:proposal_not_found),
+                    status: :not_found
+    end
+
+    result, proposal_or_error = Proposal.unlike(current_user, proposal)
+
+    case result
+    when :database_error, :not_liked
+      render json: error_response(proposal_or_error || result)
+    when :ok
+      render json: result_response(proposal_or_error)
+    end
+  end
+
   private
 
   def create_params
@@ -141,7 +173,7 @@ class ProposalsController < ApplicationController
   def user_proposal_view(user, proposal)
     proposal
       .serializable_hash
-      .merge(threads: proposal.user_threads(user))
+      .merge(threads: proposal.user_threads(user), liked: proposal.user_liked?(user))
   end
 
   def throttle_commenting!

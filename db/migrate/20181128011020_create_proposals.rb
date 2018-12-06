@@ -5,6 +5,7 @@ class CreateProposals < ActiveRecord::Migration[5.2]
     create_table :proposals do |t|
       t.references :user, foreign_key: true
       t.integer :stage, default: 1
+      t.integer :likes, default: 0
       t.timestamps
     end
 

@@ -6,11 +6,8 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
   setup :database_fixture
 
   test 'liking a comment should work' do
-    key = Eth::Key.new
+    _user, auth_headers, _key = create_auth_user
     comment = create(:comment)
-    create(:user, address: key.address)
-
-    auth_headers = auth_headers(key)
 
     post comment_likes_path(comment.id),
          headers: auth_headers
@@ -19,6 +16,12 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
                     'should work'
     assert_match 'id', @response.body,
                  'response should contain id'
+
+    post comment_likes_path('NON_EXISTENT_ID'),
+         headers: auth_headers
+
+    assert_response :not_found,
+                    'should fail to find comment'
 
     post comment_likes_path(comment.id),
          headers: auth_headers
@@ -30,10 +33,8 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'unliking a comment should work' do
-    key = Eth::Key.new
-    like = create(:comment_like, user: create(:user, address: key.address))
-
-    auth_headers = auth_headers(key)
+    user, auth_headers, _key = create_auth_user
+    like = create(:comment_like, user: user)
 
     delete comment_likes_path(like.comment_id),
            headers: auth_headers
@@ -42,6 +43,12 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
                     'should work'
     assert_match 'id', @response.body,
                  'response should contain id'
+
+    delete comment_likes_path('NON_EXISTENT_ID'),
+           headers: auth_headers
+
+    assert_response :not_found,
+                    'should fail to find comment'
 
     delete comment_likes_path(like.comment_id),
            headers: auth_headers
