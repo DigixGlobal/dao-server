@@ -3,13 +3,8 @@
 class Proposal < ApplicationRecord
   include StageField
 
-  COMMENT_MAX_DEPTH = Rails
-                      .configuration
-                      .proposals['comment_max_depth']
-                      .to_i
-
   belongs_to :user
-  has_many :comments, -> { where(parent_id: nil) }
+  belongs_to :comment
   has_many :proposal_likes
 
   validates :stage,
@@ -74,31 +69,31 @@ class Proposal < ApplicationRecord
         stage: :idea
       )
 
-      return [:invalid_data, proposal.errors] unless proposal.valid?
-      return [:database_error, proposal.errors] unless proposal.save
-
-      [:ok, proposal]
-    end
-
-    def comment(proposal, user, parent_comment, attrs)
-      if parent_comment &&
-         parent_comment.depth >= (COMMENT_MAX_DEPTH - 1)
-        return [:maximum_comment_depth, nil]
-      end
-
-      comment = Comment.new(
-        body: attrs.fetch(:body, nil),
+      proposal.comment = Comment.new(
+        body: 'ROOT',
         stage: proposal.stage,
-        proposal: proposal,
-        user: user
+        user: proposal.user
       )
 
-      return [:invalid_data, comment.errors] unless comment.valid?
-      return [:database_error, comment.errors] unless comment.save
+      return [:invalid_data, proposal.errors] unless proposal.valid?
 
-      parent_comment&.add_child(comment)
+      result = nil
 
-      [:ok, comment]
+      ActiveRecord::Base.transaction do
+        unless proposal.save
+          result = [:database_error, proposal.errors]
+          raise ActiveRecord::Rollback
+        end
+
+        unless proposal.comment.save
+          result = [:database_error, proposal.comment.errors]
+          raise ActiveRecord::Rollback
+        end
+
+        result = [:ok, proposal]
+      end
+
+      result
     end
 
     def delete_comment(user, comment)

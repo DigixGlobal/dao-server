@@ -42,14 +42,12 @@ Rails.application.routes.draw do
        as: 'proposal_likes'
   delete '/proposals/(:id)/likes',
          to: 'proposals#unlike'
-  post '/proposals/(:id)/comments',
-       to: 'proposals#comment',
-       as: 'proposal_comments'
-  post '/comments/(:id)',
-       to: 'proposals#reply',
-       as: 'comment'
-  delete '/comments/(:id)',
-         to: 'proposals#delete_comment'
+
+  post '/comments(/:id)',
+       to: 'comments#comment',
+       as: 'comments'
+  delete '/comments(/:id)',
+         to: 'comments#delete'
 
   post '/comments/(:id)/likes',
        to: 'comments#like',

@@ -7,6 +7,7 @@ FactoryBot.define do
   factory :proposal, class: 'Proposal' do
     stage { generate(:proposal_stage) }
     association :user, factory: :user
+    association :comment, factory: :comment
 
     factory :proposal_with_comments do
       transient do
@@ -19,7 +20,7 @@ FactoryBot.define do
         comment_depth = evaluator.comment_depth
         comment_ratio = evaluator.comment_ratio
 
-        comments = create_list(:comment, comment_count, proposal: proposal)
+        comments = create_list(:comment, comment_count, parent: proposal.comment)
         more_comments = comments
         depth = 0
 
@@ -31,7 +32,6 @@ FactoryBot.define do
               :comment,
               comment_count,
               stage: comment.stage,
-              proposal: proposal,
               parent: comment
             ).each do |reply|
               new_comments.push(reply) if Random.rand(100) >= comment_ratio

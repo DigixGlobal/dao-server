@@ -21,6 +21,8 @@ class ProposalTest < ActiveSupport::TestCase
                  'proposal should respect the id'
     assert_equal :idea, proposal.stage.to_sym,
                  'proposal should be at the idea stage'
+    assert Comment.find_by(id: proposal.comment_id),
+           'root comment should exist for proposal'
 
     user_not_found, = Proposal.create_proposal(
       params.merge(proposer: 'NON_EXISTENT')
@@ -42,10 +44,11 @@ class ProposalTest < ActiveSupport::TestCase
 
   test 'comment on post should work' do
     proposal = create(:proposal)
+    root_comment = proposal.comment
     user = proposal.user
     attrs = attributes_for(:comment)
 
-    ok, comment = Proposal.comment(proposal, user, nil, attrs)
+    ok, comment = Comment.comment(user, root_comment, attrs)
 
     assert_equal :ok, ok,
                  'should work'
@@ -53,15 +56,17 @@ class ProposalTest < ActiveSupport::TestCase
                    'result should be a comment'
     assert_equal proposal.stage, comment.stage,
                  'comment and proposal should have the same stage/status'
+    assert_equal root_comment.id, comment.parent_id,
+                 'comment should be linked to the root comment'
 
-    ok, other_comment = Proposal.comment(proposal, user, nil, attrs)
+    ok, other_comment = Comment.comment(user, root_comment, attrs)
 
     assert_equal :ok, ok,
                  'making the same comment should work'
     assert_not_equal comment.id, other_comment.id,
                      'other comments should be different'
 
-    invalid_data, = Proposal.comment(proposal, user, nil, {})
+    invalid_data, = Comment.comment(user, root_comment, {})
 
     assert_equal :invalid_data, invalid_data,
                  'should fail with empty data'
@@ -69,18 +74,20 @@ class ProposalTest < ActiveSupport::TestCase
 
   test 'reply on comment post should work' do
     proposal = create(:proposal_with_comments)
-    parent_comment = proposal.comments.sample
+    parent_comment = proposal.comment.descendants.all.sample
     user = create(:user)
     attrs = attributes_for(:comment)
 
-    ok, comment = Proposal.comment(proposal, user, parent_comment, attrs)
+    ok, comment = Comment.comment(user, parent_comment, attrs)
 
     assert_equal :ok, ok,
                  'should work'
     assert_equal parent_comment.id, comment.parent_id,
                  'should be linked to its parent'
     assert parent_comment.children.find(comment.id),
-           'created comment should be a child/reply of the comment'
+           'should be a child/reply of the comment'
+    assert parent_comment.root.descendants.find(comment.id),
+           'should be linked to the root comment'
   end
 
   test 'comment reply depth limit should work' do
@@ -89,10 +96,9 @@ class ProposalTest < ActiveSupport::TestCase
 
     limit = Rails.configuration.proposals['comment_max_depth'].to_i
 
-    parent_comment = nil
+    parent_comment = proposal.comment
     limit.times do
-      ok, parent_comment = Proposal.comment(
-        proposal,
+      ok, parent_comment = Comment.comment(
         proposal.user,
         parent_comment,
         attrs
@@ -102,8 +108,7 @@ class ProposalTest < ActiveSupport::TestCase
                    'should work while limit is not reached'
     end
 
-    maximum_comment_depth, = Proposal.comment(
-      proposal,
+    maximum_comment_depth, = Comment.comment(
       proposal.user,
       parent_comment,
       attrs
@@ -115,7 +120,7 @@ class ProposalTest < ActiveSupport::TestCase
 
   test 'delete comment should work' do
     proposal = create(:proposal_with_comments)
-    comment = proposal.comments.sample
+    comment = proposal.comment.descendants.all.sample
     child_comment = create(:comment, parent: comment)
 
     ok, deleted_comment = Comment.delete(comment.user, comment)
@@ -137,7 +142,7 @@ class ProposalTest < ActiveSupport::TestCase
 
   test 'deleted replies should be found and still be commented' do
     proposal = create(:proposal_with_comments)
-    comment = proposal.comments.sample
+    comment = proposal.comment.descendants.all.sample
     child_comment = create(:comment, parent: comment)
     discarded_comment = create(:comment, parent: comment)
 
@@ -150,8 +155,7 @@ class ProposalTest < ActiveSupport::TestCase
     assert comment.children.find_by(id: child_comment.id),
            'should still find other comment'
 
-    ok, = Proposal.comment(
-      proposal,
+    ok, = Comment.comment(
       child_comment.user,
       discarded_comment,
       attributes_for(:comment)

@@ -6,13 +6,13 @@ class CreateComments < ActiveRecord::Migration[5.2]
       t.text :body, limit: 10_000
       t.integer :stage, default: 1
       t.references :user, foreign_key: true
-      t.references :proposal, foreign_key: true
       t.integer :likes, default: 0
       t.integer :parent_id
       t.datetime :discarded_at
       t.timestamps
     end
+
     add_index :comments, :discarded_at
-    add_index :comments, %i[proposal_id stage]
+    add_index :comments, :stage
   end
 end

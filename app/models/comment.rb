@@ -5,12 +5,16 @@ require 'cancancan'
 class Comment < ApplicationRecord
   attribute :replies
 
+  COMMENT_MAX_DEPTH = Rails
+                      .configuration
+                      .proposals['comment_max_depth']
+                      .to_i
+
   include StageField
   include Discard::Model
   has_closure_tree(order: 'created_at DESC')
 
   belongs_to :user
-  belongs_to :proposal
   has_many :comment_likes
 
   validates :body,
@@ -19,8 +23,6 @@ class Comment < ApplicationRecord
   validates :stage,
             presence: true
   validates :user,
-            presence: true
-  validates :proposal,
             presence: true
 
   def as_json(options = {})
@@ -43,6 +45,44 @@ class Comment < ApplicationRecord
   end
 
   class << self
+    def comment(user, parent_comment, attrs)
+      if parent_comment.depth >= COMMENT_MAX_DEPTH
+        return [:maximum_comment_depth, nil]
+      end
+
+      unless (proposal = Proposal.find_by(comment_id: parent_comment.root.id))
+        return %i[database_error comment_not_linked]
+      end
+
+      comment = Comment.new(
+        body: attrs.fetch(:body, nil),
+        stage: proposal.stage,
+        parent: parent_comment,
+        user: user
+      )
+
+      return [:invalid_data, comment.errors] unless comment.valid?
+      return [:database_error, comment.errors] unless comment.save
+
+      result = nil
+
+      ActiveRecord::Base.transaction do
+        unless comment.save
+          result = [:database_error, comment.errors]
+          raise ActiveRecord::Rollback
+        end
+
+        unless (link = parent_comment.add_child(comment))
+          result = [:database_error, link]
+          raise ActiveRecord::Rollback
+        end
+
+        result = [:ok, comment]
+      end
+
+      result
+    end
+
     def delete(user, comment)
       return [:already_deleted, nil] if comment.discarded?
 
@@ -60,9 +100,7 @@ class Comment < ApplicationRecord
         return [:comment_not_found, nil]
       end
 
-      unless Ability.new(user).can?(:like, comment)
-        return [:already_liked, nil]
-      end
+      return [:already_liked, nil] unless Ability.new(user).can?(:like, comment)
 
       ActiveRecord::Base.transaction do
         CommentLike.new(user_id: user.id, comment_id: comment.id).save!
@@ -77,9 +115,7 @@ class Comment < ApplicationRecord
         return [:comment_not_found, nil]
       end
 
-      unless Ability.new(user).can?(:unlike, comment)
-        return [:not_liked, nil]
-      end
+      return [:not_liked, nil] unless Ability.new(user).can?(:unlike, comment)
 
       ActiveRecord::Base.transaction do
         CommentLike.find_by(user_id: user.id, comment_id: comment.id).destroy!
