@@ -17,48 +17,8 @@ class Proposal < ApplicationRecord
     ProposalLike.find_by(proposal_id: id, user_id: user.id)
   end
 
-  def user_threads(user)
-    Comment
-      .joins(:user)
-      .joins("LEFT OUTER JOIN comment_likes ON comment_likes.comment_id = comments.id AND comment_likes.user_id = #{user.id}")
-      .where(proposal_id: id)
-      .order(created_at: :desc)
-      .includes(%i[user])
-      .group_by(&:stage)
-      .map do |key, stage_comments|
-      [
-        key,
-        build_comment_trees(stage_comments)
-      ]
-    end
-      .to_h
-  end
-
   def user_liked?(user)
     !ProposalLike.find_by(user_id: user.id, proposal_id: id).nil?
-  end
-
-  private
-
-  def build_comment_trees(comments)
-    return [] if comments.empty?
-
-    comment_map = {}
-
-    comments.each do |comment|
-      comment_map[comment.id] = comment
-      comment.replies = []
-    end
-
-    comments
-      .reject { |comment| comment.parent_id.nil? }
-      .each do |comment|
-      if (parent_comment = comment_map.fetch(comment.parent_id))
-        parent_comment.replies.unshift(comment)
-      end
-    end
-
-    comments.select { |comment| comment.parent_id.nil? }
   end
 
   class << self

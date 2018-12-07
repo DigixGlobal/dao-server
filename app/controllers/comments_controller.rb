@@ -21,6 +21,31 @@ class CommentsController < ApplicationController
            status: :forbidden
   end
 
+  def select_threads
+    unless (comment = Comment.find_by(id: params.fetch(:id)))
+      return render json: error_response(:comment_not_found),
+                    status: :not_found
+    end
+
+    proposal = Proposal.find_by(comment_id: comment.root.id)
+
+    if (stage = params.fetch(:stage, proposal.stage))
+      unless Comment.stages.key?(stage)
+        return render json: error_response(:invalid_stage),
+                      status: :not_found
+      end
+    end
+
+    comment_trees = comment.user_stage_comments(current_user, stage)
+
+    render json: result_response(
+      user_comment_tree_view(
+        current_user,
+        comment_trees
+      )
+    )
+  end
+
   def comment
     unless (comment = Comment.find_by(id: params.fetch(:id)))
       return render json: error_response(:comment_not_found),
@@ -102,8 +127,16 @@ class CommentsController < ApplicationController
 
   private
 
+  def user_comment_tree_view(user, comment_trees)
+    comment_trees
+  end
+
   def comment_params
     params.permit(:body)
+  end
+
+  def select_thread_params
+    params.permit(:id, :stage)
   end
 
   def throttle_commenting!

@@ -4,7 +4,7 @@ class ProposalsController < ApplicationController
   around_action :check_and_update_info_server_request,
                 only: %i[create]
   before_action :authenticate_user!,
-                only: %i[find]
+                only: %i[find show]
   before_action :throttle_commenting!,
                 only: %i[comment reply]
 
@@ -77,7 +77,7 @@ class ProposalsController < ApplicationController
 
   def user_proposal_view(user, proposal)
     proposal
-      .serializable_hash
-      .merge(threads: proposal.user_threads(user), liked: proposal.user_liked?(user))
+      .as_json
+      .merge(liked: proposal.user_liked?(user))
   end
 end

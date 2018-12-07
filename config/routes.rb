@@ -43,9 +43,11 @@ Rails.application.routes.draw do
   delete '/proposals/(:id)/likes',
          to: 'proposals#unlike'
 
+  get '/comments/(:id)/threads',
+      to: 'comments#select_threads',
+      as: 'comments'
   post '/comments(/:id)',
-       to: 'comments#comment',
-       as: 'comments'
+       to: 'comments#comment'
   delete '/comments(/:id)',
          to: 'comments#delete'
 

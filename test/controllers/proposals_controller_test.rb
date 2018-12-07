@@ -62,21 +62,8 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
                     'should not find proposal'
   end
 
-  test 'find proposal threads should work' do
-    user, auth_headers, _key = create_auth_user
-    proposal = create(:proposal_with_comments, user: user)
-
-    get proposal_path(proposal.id),
-        headers: auth_headers
-
-    assert_response :success,
-                    'should work'
-    assert_match 'replies', @response.body,
-                 'response should contain replies'
-  end
-
   test 'liking a proposal should work' do
-    user, auth_headers, _key = create_auth_user
+    _user, auth_headers, _key = create_auth_user
     proposal = create(:proposal)
 
     post proposal_likes_path(proposal.id),

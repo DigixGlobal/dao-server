@@ -10,6 +10,11 @@ class Comment < ApplicationRecord
                       .proposals['comment_max_depth']
                       .to_i
 
+  FUDGE_FACTOR = 2
+  FIRST_LEVEL_LIMIT = 10
+  SECOND_LEVEL_LIMIT = 5
+  THIRD_LEVEL_LIMIT = 3
+
   include StageField
   include Discard::Model
   has_closure_tree(order: 'created_at DESC')
@@ -25,6 +30,34 @@ class Comment < ApplicationRecord
   validates :user,
             presence: true
 
+  def user_stage_comments(user, stage)
+    comment_scope = self
+
+    first_level = comment_scope
+                  .find_all_by_generation(1)
+                  .limit(FUDGE_FACTOR * FIRST_LEVEL_LIMIT)
+
+    second_level = comment_scope
+                   .find_all_by_generation(2)
+                   .limit(FUDGE_FACTOR * FIRST_LEVEL_LIMIT * SECOND_LEVEL_LIMIT)
+
+    third_level = comment_scope
+                  .find_all_by_generation(3)
+                  .limit(FUDGE_FACTOR * FIRST_LEVEL_LIMIT * SECOND_LEVEL_LIMIT * THIRD_LEVEL_LIMIT)
+
+    comments = first_level.union(second_level).union(third_level).all.to_a
+    comment_trees = build_comment_trees(comments, self)
+    paginate_comment_trees(comment_trees, 1)
+  end
+
+  def y
+    x
+      .joins(:user)
+      .joins("LEFT OUTER JOIN comment_likes ON comment_likes.comment_id = comments.id AND comment_likes.user_id = #{user.id}")
+      .where(stage: stage)
+      .includes(:user)
+  end
+
   def as_json(options = {})
     base_hash = serializable_hash(
       except: %i[body replies parent_id discarded_at],
@@ -35,13 +68,82 @@ class Comment < ApplicationRecord
 
     base_hash.merge(
       'body' => discarded? ? nil : body,
-      'replies' => replies&.map { |reply| reply.as_json(options) },
+      'replies' => replies&.as_json,
       'liked' => !user_likes.empty?
     ).deep_transform_keys! { |key| key.camelize(:lower) }
   end
 
   def user_like(user)
     CommentLike.find_by(comment_id: id, user_id: user.id)
+  end
+
+  private
+
+  def build_comment_trees(comments, root_comment)
+    return [] if comments.empty?
+
+    comment_map = {}
+
+    comments.each do |comment|
+      comment_map[comment.id] = comment
+      comment.replies = []
+    end
+
+    comments
+      .reject { |comment| comment.parent_id == root_comment.id }
+      .each do |comment|
+        if (parent_comment = comment_map.fetch(comment.parent_id, nil))
+          parent_comment.replies.push(comment)
+        end
+      end
+
+    comments.select { |comment| comment.parent_id == root_comment.id }
+  end
+
+  def paginate_comment_trees(comment_trees, depth)
+    return DataWrapper.new(false, []) if comment_trees.empty?
+
+    depth_limit =
+      case depth
+      when 1
+        FIRST_LEVEL_LIMIT
+      when 2
+        SECOND_LEVEL_LIMIT
+      when 3
+        THIRD_LEVEL_LIMIT
+      else
+        3
+      end
+
+    DataWrapper.new(
+      comment_trees.size > depth_limit,
+      comment_trees.take(depth_limit).map do |comment|
+        comment.replies = paginate_comment_trees(comment.replies, depth + 1)
+        comment
+      end
+    )
+  end
+
+  class DataWrapper
+    include ActiveModel::Serialization
+
+    attr_accessor :has_more, :data
+
+    def initialize(has_more, data)
+      self.has_more = has_more
+      self.data = data
+    end
+
+    def attributes
+      { 'has_more' => false, 'data' => [] }
+    end
+
+    def as_json(options = {})
+      {
+        'hasMore' => has_more,
+        'data' => data.map { |item| item.as_json(options) }
+      }
+    end
   end
 
   class << self
