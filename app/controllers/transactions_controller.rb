@@ -11,7 +11,7 @@ class TransactionsController < ApplicationController
     when 'seen'
       payload = params.fetch('payload', {})
       transactions = payload.fetch('transactions', [])
-      block_number = payload.fetch('block_number', '')
+      block_number = payload.fetch('blockNumber', '')
 
       unless transactions.empty?
         seen_transactions(
