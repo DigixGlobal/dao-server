@@ -50,6 +50,10 @@ class Comment < ApplicationRecord
         return [:maximum_comment_depth, nil]
       end
 
+      unless Ability.new(user).can?(:comment, parent_comment)
+        return [:action_invalid, nil]
+      end
+
       unless (proposal = Proposal.find_by(comment_id: parent_comment.root.id))
         return %i[database_error comment_not_linked]
       end
@@ -80,10 +84,6 @@ class Comment < ApplicationRecord
     end
 
     def like(user, comment)
-      unless (comment = Comment.find_by(id: comment.id))
-        return [:comment_not_found, nil]
-      end
-
       return [:already_liked, nil] unless Ability.new(user).can?(:like, comment)
 
       ActiveRecord::Base.transaction do
@@ -95,10 +95,6 @@ class Comment < ApplicationRecord
     end
 
     def unlike(user, comment)
-      unless (comment = Comment.find_by(id: comment.id))
-        return [:comment_not_found, nil]
-      end
-
       return [:not_liked, nil] unless Ability.new(user).can?(:unlike, comment)
 
       ActiveRecord::Base.transaction do

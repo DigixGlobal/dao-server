@@ -36,8 +36,8 @@ class CommentsController < ApplicationController
     )
 
     case result
-    when :invalid_data, :database_error
-      render json: error_response(comment_or_error)
+    when :invalid_data, :database_error, :action_invalid
+      render json: error_response(comment_or_error || result)
     when :ok
       render json: result_response(comment_or_error)
     end

@@ -45,9 +45,10 @@ class ProposalTest < ActiveSupport::TestCase
   test 'deleted replies should be found and still be commented' do
     proposal = create(:proposal_with_comments)
     comment = proposal.comment.descendants.all.sample
-    child_comment = create(:comment, parent: comment)
-    discarded_comment = create(:comment, parent: comment)
+    child_comment = create(:comment, parent: comment, stage: comment.stage)
+    discarded_comment = create(:comment, parent: comment, stage: comment.stage)
 
+    proposal.update!(stage: comment.stage)
     ok, = Comment.delete(discarded_comment.user, discarded_comment)
 
     assert_equal :ok, ok,

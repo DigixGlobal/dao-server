@@ -29,6 +29,15 @@ class CommentTest < ActiveSupport::TestCase
     assert_not_equal comment.id, other_comment.id,
                      'other comments should be different'
 
+    action_invalid, = Comment.comment(
+      user,
+      create(:comment, stage: :archived),
+      attrs
+    )
+
+    assert_equal :action_invalid, action_invalid,
+                 'should not allow previously staged comment'
+
     invalid_data, = Comment.comment(user, root_comment, {})
 
     assert_equal :invalid_data, invalid_data,
@@ -41,6 +50,7 @@ class CommentTest < ActiveSupport::TestCase
     user = create(:user)
     attrs = attributes_for(:comment)
 
+    proposal.update!(stage: parent_comment.stage)
     ok, comment = Comment.comment(user, parent_comment, attrs)
 
     assert_equal :ok, ok,
