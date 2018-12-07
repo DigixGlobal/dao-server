@@ -64,23 +64,7 @@ class Comment < ApplicationRecord
       return [:invalid_data, comment.errors] unless comment.valid?
       return [:database_error, comment.errors] unless comment.save
 
-      result = nil
-
-      ActiveRecord::Base.transaction do
-        unless comment.save
-          result = [:database_error, comment.errors]
-          raise ActiveRecord::Rollback
-        end
-
-        unless (link = parent_comment.add_child(comment))
-          result = [:database_error, link]
-          raise ActiveRecord::Rollback
-        end
-
-        result = [:ok, comment]
-      end
-
-      result
+      [:ok, comment]
     end
 
     def delete(user, comment)

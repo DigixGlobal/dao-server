@@ -76,41 +76,12 @@ class Proposal < ApplicationRecord
       )
 
       return [:invalid_data, proposal.errors] unless proposal.valid?
+      return [:database_error, proposal.errors] unless proposal.save
 
-      result = nil
-
-      ActiveRecord::Base.transaction do
-        unless proposal.save
-          result = [:database_error, proposal.errors]
-          raise ActiveRecord::Rollback
-        end
-
-        unless proposal.comment.save
-          result = [:database_error, proposal.comment.errors]
-          raise ActiveRecord::Rollback
-        end
-
-        result = [:ok, proposal]
-      end
-
-      result
-    end
-
-    def delete_comment(user, comment)
-      unless Ability.new(user).can?(:delete, comment)
-        return [:unauthorized_action, nil]
-      end
-
-      comment.discard
-
-      [:ok, comment]
+      [:ok, proposal]
     end
 
     def like(user, proposal)
-      unless (proposal = Proposal.find_by(id: proposal.id))
-        return [:proposal_not_found, nil]
-      end
-
       unless Ability.new(user).can?(:like, proposal)
         return [:already_liked, nil]
       end
@@ -124,10 +95,6 @@ class Proposal < ApplicationRecord
     end
 
     def unlike(user, proposal)
-      unless (proposal = Proposal.find_by(id: proposal.id))
-        return [:proposal_not_found, nil]
-      end
-
       return [:not_liked, nil] unless Ability.new(user).can?(:unlike, proposal)
 
       ActiveRecord::Base.transaction do
