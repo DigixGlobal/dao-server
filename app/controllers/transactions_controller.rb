@@ -51,8 +51,8 @@ class TransactionsController < ApplicationController
   def list
     paginated_transactions = paginate(
       current_user.transactions,
-      per_page: params.fetch(:per_page),
-      page: params.fetch(:page)
+      per_page: params.fetch(:per_page, 10),
+      page: params.fetch(:page, 1)
     )
 
     render json: result_response(paginated_transactions)

@@ -70,18 +70,41 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
       create(:transaction, user: user)
     end
 
-    post transactions_path,
-         headers: auth_headers
+    get transactions_path,
+        headers: auth_headers
 
     assert_response :success,
                     'should work'
     assert_match 'title', @response.body,
                  'response should contain ok status'
 
-    post transactions_path
+    get transactions_path
 
     assert_response :unauthorized,
                     'should fail on without authorization'
+  end
+
+  test 'list transactions should be paginated' do
+    user, auth_headers, _key = create_auth_user
+
+    create_list(:transaction, Random.rand(10..20), user: user)
+
+    Random.rand(5..10).times do
+      page = Random.rand(1..20)
+      per_page = Random.rand(1..50)
+
+      get "#{transactions_path}?page=#{page}&per_page=#{per_page}",
+          headers: auth_headers
+
+      assert_response :success,
+                      'should work'
+
+      result = JSON.parse(@response.body).fetch('result', [])
+      items = user.transactions.page(page).per(per_page)
+
+      assert_equal items.size, result.size,
+                   'should paginate correctly'
+    end
   end
 
   test 'confirm transactions should work' do
