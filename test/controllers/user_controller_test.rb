@@ -38,7 +38,7 @@ class UserControllerTest < ActionDispatch::IntegrationTest
         headers: auth_headers
 
     assert_response :success,
-                    'should work'
+                    'should owrk'
     assert_match 'uid', @response.body,
                  'should work'
 
