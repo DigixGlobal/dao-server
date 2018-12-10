@@ -2,7 +2,7 @@
 
 class CommentsController < ApplicationController
   before_action :authenticate_user!,
-                only: %i[like unlike comment delete]
+                only: %i[select_threads like unlike comment delete]
   before_action :throttle_commenting!,
                 only: %i[comment]
 
