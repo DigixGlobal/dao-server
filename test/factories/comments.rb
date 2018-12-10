@@ -6,7 +6,6 @@ FactoryBot.define do
   factory :comment, class: 'Comment' do
     body { generate(:comment_body) }
     stage { generate(:proposal_stage) }
-    association :proposal, factory: :proposal
     association :user, factory: :user
 
     factory :comment_with_likes do

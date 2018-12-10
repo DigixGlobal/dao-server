@@ -49,7 +49,13 @@ class TransactionsController < ApplicationController
   end
 
   def list
-    render json: result_response(current_user.transactions)
+    paginated_transactions = paginate(
+      current_user.transactions,
+      per_page: params.fetch(:per_page, 10),
+      page: params.fetch(:page, 1)
+    )
+
+    render json: result_response(paginated_transactions)
   end
 
   def find

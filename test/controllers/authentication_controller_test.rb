@@ -9,20 +9,22 @@ class AuthenticationControllerTest < ActionDispatch::IntegrationTest
     user = create(:user)
     params = { address: user.address }
 
+    headers = { 'CONTENT-TYPE': 'application/json' }
+
     post authorization_path,
-        params: params
+         params: params
 
     assert_response :success,
                     'should work'
 
     post authorization_path,
-        params: { address: 'NOT_A_VALID_ADDRESS' }
+         params: { address: 'NOT_A_VALID_ADDRESS' }
 
     assert_response :not_found,
                     'should not work with invalid address'
 
     post authorization_path,
-        params: {}
+         params: {}
 
     assert_response :not_found,
                     'should not work with empty data'

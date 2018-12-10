@@ -111,7 +111,7 @@ class InfoServer
 
     uri = URI.parse("#{SERVER_URL}#{endpoint}")
     https = Net::HTTP.new(uri.host, uri.port)
-    # https.use_ssl = true
+    https.use_ssl = true
     req = Net::HTTP::Post.new(uri.path,
                               'Content-Type' => 'application/json',
                               'ACCESS-SIGN' => signature,

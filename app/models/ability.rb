@@ -17,6 +17,15 @@ class Ability
 
       can :create, Comment
       can :read, Comment
+      can :comment, Comment do |comment|
+        if (proposal = Proposal.find_by(comment_id: comment.root.id))
+          proposal && proposal.stage == comment.stage
+
+          comment.root? || comment.stage == proposal.stage
+        else
+          false
+        end
+      end
       can :delete, Comment, user_id: user.id
       can :like, Comment do |comment|
         comment.user_like(user).nil?

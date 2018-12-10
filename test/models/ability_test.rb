@@ -19,12 +19,16 @@ class AbilityTest < ActiveSupport::TestCase
   end
 
   test 'user proposal comments abilities should work' do
-    this_comment = create(:comment)
+    this_proposal = create(:proposal)
+    this_comment = this_proposal.comment
     user_ability = Ability.new(this_comment.user)
 
     assert user_ability.can?(:read, Comment)
     assert user_ability.can?(:create, Comment)
     assert user_ability.can?(:delete, this_comment)
+    assert user_ability.can?(:comment, this_comment)
+
+    assert_not user_ability.can?(:comment, create(:comment))
 
     other_comment = create(:comment)
     other_ability = Ability.new(other_comment.user)

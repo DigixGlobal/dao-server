@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_12_04_054826) do
+ActiveRecord::Schema.define(version: 2018_12_07_001352) do
 
   create_table "challenges", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "challenge"
@@ -41,15 +41,13 @@ ActiveRecord::Schema.define(version: 2018_12_04_054826) do
     t.text "body"
     t.integer "stage", default: 1
     t.bigint "user_id"
-    t.bigint "proposal_id"
     t.integer "likes", default: 0
     t.integer "parent_id"
     t.datetime "discarded_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["discarded_at"], name: "index_comments_on_discarded_at"
-    t.index ["proposal_id", "stage"], name: "index_comments_on_proposal_id_and_stage"
-    t.index ["proposal_id"], name: "index_comments_on_proposal_id"
+    t.index ["stage"], name: "index_comments_on_stage"
     t.index ["user_id"], name: "index_comments_on_user_id"
   end
 
@@ -69,11 +67,16 @@ ActiveRecord::Schema.define(version: 2018_12_04_054826) do
   end
 
   create_table "proposals", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "proposal_id", default: "", null: false
+    t.string "string", default: "", null: false
     t.bigint "user_id"
     t.integer "stage", default: 1
     t.integer "likes", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "comment_id"
+    t.index ["comment_id"], name: "index_proposals_on_comment_id"
+    t.index ["proposal_id"], name: "index_proposals_on_proposal_id", unique: true
     t.index ["stage"], name: "index_proposals_on_stage"
     t.index ["user_id"], name: "index_proposals_on_user_id"
   end
@@ -108,8 +111,8 @@ ActiveRecord::Schema.define(version: 2018_12_04_054826) do
   end
 
   add_foreign_key "challenges", "users"
-  add_foreign_key "comments", "proposals"
   add_foreign_key "comments", "users"
+  add_foreign_key "proposals", "comments"
   add_foreign_key "proposals", "users"
   add_foreign_key "transactions", "users"
 end
