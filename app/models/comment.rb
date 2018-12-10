@@ -62,7 +62,7 @@ class Comment < ApplicationRecord
 
   def as_json(options = {})
     base_hash = serializable_hash(
-      except: %i[body replies discarded_at],
+      except: %i[body replies parent_id discarded_at],
       include: { user: { only: :address }, comment_likes: {} }
     )
 
