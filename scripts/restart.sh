@@ -6,12 +6,14 @@ if [[ $SKIP_DAO_CONTRACTS != "true" ]]
 then
   cd ../dao-contracts
   $NPM run dao:dev
-  # truffle exec scripts/send-dummy-tnxs.js > /dev/null &
+  node_modules/.bin/truffle exec scripts/send-dummy-tnxs.js > /dev/null &
 fi
 
 if [[ $SKIP_DAO_SERVER != "true" ]]
 then
   cd ../dao-server
+  killall ruby
+  export RAILS_ENV=development
   bin/rails db:drop
   bin/rails db:create
   bin/rails db:migrate
