@@ -1,10 +1,12 @@
+source scripts/variables.env
+
 pm2 del info-server:dev
 
 if [[ $SKIP_DAO_CONTRACTS != "true" ]]
 then
   cd ../dao-contracts
-  npm run dao:dev
-  truffle exec scripts/send-dummy-tnxs.js > /dev/null &
+  $NPM run dao:dev
+  # truffle exec scripts/send-dummy-tnxs.js > /dev/null &
 fi
 
 if [[ $SKIP_DAO_SERVER != "true" ]]
@@ -21,11 +23,11 @@ if [[ $SKIP_INFO_SERVER != "true" ]]
 then
   cd ../info-server
   service mongod restart
-  npm run dev
+  $NPM run dev
 fi
 
 if [[ $SKIP_UI != "true" ]]
 then
   cd ../governance-ui
-  npm start
+  $NPM start
 fi
