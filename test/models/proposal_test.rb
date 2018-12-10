@@ -8,8 +8,7 @@ class ProposalTest < ActiveSupport::TestCase
   test 'create new proposal should work' do
     user = create(:user)
     params = attributes_for(
-      :proposal,
-      id: generate(:proposal_id),
+      :info_proposal,
       proposer: user.address
     )
 
@@ -17,7 +16,7 @@ class ProposalTest < ActiveSupport::TestCase
 
     assert_equal :ok, ok,
                  'should work'
-    assert_equal params.fetch(:id), proposal.id,
+    assert_equal params.fetch(:proposal_id), proposal.proposal_id,
                  'proposal should respect the id'
     assert_equal :idea, proposal.stage.to_sym,
                  'proposal should be at the idea stage'
@@ -66,35 +65,6 @@ class ProposalTest < ActiveSupport::TestCase
 
     assert_equal :ok, ok,
                  'can reply to deleted comments/replies'
-  end
-
-  test 'threads property should work' do
-    proposal = create(:proposal_with_comments)
-    user = create(:user)
-
-    # Hack to force deterministic ordering with the created_at field
-    Comment.in_batches.each do |relation|
-      relation.update_all('created_at = FROM_UNIXTIME(id)')
-    end
-
-    threads = proposal.user_threads(user)
-    assert threads,
-           'should work'
-
-    comments = flatten_threads(threads)
-
-    assert_not comments.any?(&:discarded?),
-               'no deleted comments should exsist'
-    assert comments.all? { |comment| comment.proposal_id == proposal.id },
-           'comments should use the same proposal'
-    assert_equal Comment.where(proposal_id: proposal.id).size, comments.size,
-                 'comments should be the same'
-
-    new_comment = create(:comment, proposal: proposal, stage: proposal.stage)
-
-    assert_equal new_comment.id,
-                 proposal.user_threads(user).fetch(proposal.stage, []).first.id,
-                 'new comment should be first in the list'
   end
 
   private

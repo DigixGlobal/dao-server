@@ -7,6 +7,10 @@ class Proposal < ApplicationRecord
   belongs_to :comment
   has_many :proposal_likes
 
+  validates :proposal_id,
+            presence: true,
+            address: true,
+            uniqueness: true
   validates :stage,
             presence: true
   validates :user,
@@ -24,7 +28,7 @@ class Proposal < ApplicationRecord
   class << self
     def create_proposal(attrs)
       proposal = new(
-        id: attrs.fetch(:id, nil),
+        proposal_id: attrs.fetch(:proposal_id, nil),
         user: User.find_by(address: attrs.fetch(:proposer, nil)),
         stage: :idea
       )

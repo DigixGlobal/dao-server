@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 FactoryBot.define do
-  sequence(:proposal_id) { |_| Random.rand(100..1000) }
   sequence(:proposal_stage) { |_| Proposal.stages.keys.sample }
 
   factory :proposal, class: 'Proposal' do
+    proposal_id { generate(:address) }
     stage { generate(:proposal_stage) }
     association :user, factory: :user
     association :comment, factory: :comment
@@ -63,7 +63,7 @@ FactoryBot.define do
   end
 
   factory :info_proposal, class: 'Object' do
-    proposal_id { generate(:proposal_id) }
+    proposal_id { generate(:address) }
     proposer { generate(:address) }
   end
 end

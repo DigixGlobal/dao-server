@@ -93,12 +93,12 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
     _user, auth_headers, _key = create_auth_user
     comment = create(:comment)
 
-    get comments_path(comment.id),
+    get comment_threads_path(comment.id),
         headers: auth_headers
 
     assert_response :success,
                     'should work'
-    assert_match 'stage', @response.body,
+    assert_match 'hasMore', @response.body,
                  'response be ok'
   end
 

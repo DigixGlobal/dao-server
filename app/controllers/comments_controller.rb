@@ -23,14 +23,12 @@ class CommentsController < ApplicationController
 
   def select_threads
     attrs = select_thread_params
-    unless (comment = Comment.find_by(id: attrs.fetch(:id)))
+    unless (comment = Comment.find_by(id: attrs.fetch(:id, nil)))
       return render json: error_response(:comment_not_found),
                     status: :not_found
     end
 
-    proposal = Proposal.find_by(comment_id: comment.root.id)
-
-    if (stage = attrs.fetch(:stage, proposal.stage))
+    if (stage = attrs.fetch(:stage, comment.stage, nil))
       unless Comment.stages.key?(stage)
         return render json: error_response(:invalid_stage),
                       status: :not_found

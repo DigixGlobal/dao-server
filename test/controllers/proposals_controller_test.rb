@@ -47,7 +47,7 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
     user, auth_headers, _key = create_auth_user
     proposal = create(:proposal_with_comments, user: user)
 
-    get proposal_path(proposal.id),
+    get proposal_path(proposal.proposal_id),
         headers: auth_headers
 
     assert_response :success,

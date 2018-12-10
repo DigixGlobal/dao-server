@@ -34,7 +34,7 @@ Rails.application.routes.draw do
   post '/proposals',
        to: 'proposals#create',
        as: 'proposals'
-  get '/proposals/(:id)',
+  get '/proposals(/:proposal_id)',
       to: 'proposals#show',
       as: 'proposal'
   post '/proposals/(:id)/likes',
@@ -45,9 +45,10 @@ Rails.application.routes.draw do
 
   get '/comments/(:id)/threads',
       to: 'comments#select_threads',
-      as: 'comments'
+      as: 'comment_threads'
   post '/comments(/:id)',
-       to: 'comments#comment'
+       to: 'comments#comment',
+       as: 'comments'
   delete '/comments(/:id)',
          to: 'comments#delete'
 

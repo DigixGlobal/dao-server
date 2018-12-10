@@ -11,7 +11,7 @@ class ProposalsController < ApplicationController
   def create
     base_params = create_params
     attrs = {
-      id: base_params.fetch('proposal_id', nil),
+      proposal_id: base_params.fetch('proposal_id', nil),
       proposer: base_params.fetch('proposer', nil)
     }
 
@@ -26,7 +26,7 @@ class ProposalsController < ApplicationController
   end
 
   def show
-    case (proposal = Proposal.find_by(id: params.fetch(:id)))
+    case (proposal = Proposal.find_by(proposal_id: params.fetch(:proposal_id, nil)))
     when nil
       render json: error_response(:proposal_not_found),
              status: :not_found
