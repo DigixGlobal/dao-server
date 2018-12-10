@@ -22,21 +22,22 @@ class CommentsController < ApplicationController
   end
 
   def select_threads
-    unless (comment = Comment.find_by(id: params.fetch(:id)))
+    attrs = select_thread_params
+    unless (comment = Comment.find_by(id: attrs.fetch(:id)))
       return render json: error_response(:comment_not_found),
                     status: :not_found
     end
 
     proposal = Proposal.find_by(comment_id: comment.root.id)
 
-    if (stage = params.fetch(:stage, proposal.stage))
+    if (stage = attrs.fetch(:stage, proposal.stage))
       unless Comment.stages.key?(stage)
         return render json: error_response(:invalid_stage),
                       status: :not_found
       end
     end
 
-    comment_trees = comment.user_stage_comments(current_user, stage)
+    comment_trees = comment.user_stage_comments(current_user, stage, attrs)
 
     render json: result_response(
       user_comment_tree_view(
@@ -136,7 +137,7 @@ class CommentsController < ApplicationController
   end
 
   def select_thread_params
-    params.permit(:id, :stage)
+    params.permit(:id, :stage, :last_seen_id, :sort_by)
   end
 
   def throttle_commenting!

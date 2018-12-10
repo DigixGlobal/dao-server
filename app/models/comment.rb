@@ -10,14 +10,11 @@ class Comment < ApplicationRecord
                       .proposals['comment_max_depth']
                       .to_i
 
-  FUDGE_FACTOR = 2
-  FIRST_LEVEL_LIMIT = 10
-  SECOND_LEVEL_LIMIT = 5
-  THIRD_LEVEL_LIMIT = 3
+  DEPTH_LIMITS = [10, 5, 3].freeze
 
   include StageField
   include Discard::Model
-  has_closure_tree(order: 'created_at DESC')
+  has_closure_tree
 
   belongs_to :user
   has_many :comment_likes
@@ -30,37 +27,42 @@ class Comment < ApplicationRecord
   validates :user,
             presence: true
 
-  def user_stage_comments(user, stage)
-    comment_scope = self
+  def user_stage_comments(user, stage, criteria)
+    last_seen_child_id = criteria.fetch(:last_seen_id, '').to_i
+    sort_by = criteria.fetch(:sort_by, nil)
 
-    first_level = comment_scope
-                  .find_all_by_generation(1)
-                  .limit(FUDGE_FACTOR * FIRST_LEVEL_LIMIT)
-
-    second_level = comment_scope
-                   .find_all_by_generation(2)
-                   .limit(FUDGE_FACTOR * FIRST_LEVEL_LIMIT * SECOND_LEVEL_LIMIT)
-
-    third_level = comment_scope
-                  .find_all_by_generation(3)
-                  .limit(FUDGE_FACTOR * FIRST_LEVEL_LIMIT * SECOND_LEVEL_LIMIT * THIRD_LEVEL_LIMIT)
-
-    comments = first_level.union(second_level).union(third_level).all.to_a
-    comment_trees = build_comment_trees(comments, self)
-    paginate_comment_trees(comment_trees, 1)
-  end
-
-  def y
-    x
+    top_level =
+      Comment
+      .joins("INNER JOIN comment_hierarchies ON comment_hierarchies.ancestor_id = '#{id}' AND comment_hierarchies.generations = 1")
+      .order(comment_sorting(self, sort_by))
       .joins(:user)
       .joins("LEFT OUTER JOIN comment_likes ON comment_likes.comment_id = comments.id AND comment_likes.user_id = #{user.id}")
       .where(stage: stage)
-      .includes(:user)
+      .includes(:user, :comment_likes)
+      .all
+      .to_a
+
+    child_levels =
+      Comment
+      .joins("INNER JOIN comment_hierarchies ON comments.id = comment_hierarchies.descendant_id AND comment_hierarchies.ancestor_id = #{id} AND comment_hierarchies.generations IN (2, 3)")
+      .order('comments.created_at DESC')
+      .joins(:user)
+      .joins("LEFT OUTER JOIN comment_likes ON comment_likes.comment_id = comments.id AND comment_likes.user_id = #{user.id}")
+      .where(stage: stage)
+      .includes(:user, :comment_likes)
+      .all
+      .to_a
+
+    comments = top_level.concat(child_levels)
+
+    comment_trees = build_comment_trees(comments, self)
+    after_comment_trees = comments_after_seen(comment_trees, last_seen_child_id)
+    paginate_comment_trees(after_comment_trees, DEPTH_LIMITS)
   end
 
   def as_json(options = {})
     base_hash = serializable_hash(
-      except: %i[body replies parent_id discarded_at],
+      except: %i[body replies discarded_at],
       include: { user: { only: :address }, comment_likes: {} }
     )
 
@@ -78,6 +80,17 @@ class Comment < ApplicationRecord
   end
 
   private
+
+  def comment_sorting(comment, sort_by)
+    return 'comments.created_at DESC' if comment.depth == 1
+
+    case sort_by
+    when 'oldest'
+      'comments.created_at ASC'
+    else
+      'comments.created_at DESC'
+    end
+  end
 
   def build_comment_trees(comments, root_comment)
     return [] if comments.empty?
@@ -100,25 +113,28 @@ class Comment < ApplicationRecord
     comments.select { |comment| comment.parent_id == root_comment.id }
   end
 
-  def paginate_comment_trees(comment_trees, depth)
-    return DataWrapper.new(false, []) if comment_trees.empty?
+  def comments_after_seen(comments, last_seen_id)
+    return [] if comments.empty?
+    return comments unless last_seen_id
 
-    depth_limit =
-      case depth
-      when 1
-        FIRST_LEVEL_LIMIT
-      when 2
-        SECOND_LEVEL_LIMIT
-      when 3
-        THIRD_LEVEL_LIMIT
-      else
-        3
-      end
+    unless (last_seen_index = comments.index { |comment| comment.id == last_seen_id })
+      return comments
+    end
+
+    comments[(last_seen_index + 1)..-1]
+  end
+
+  def paginate_comment_trees(comment_trees, depth_limits)
+    if comment_trees.empty? || depth_limits.empty?
+      return DataWrapper.new(false, [])
+    end
+
+    depth_limit = depth_limits.first
 
     DataWrapper.new(
       comment_trees.size > depth_limit,
       comment_trees.take(depth_limit).map do |comment|
-        comment.replies = paginate_comment_trees(comment.replies, depth + 1)
+        comment.replies = paginate_comment_trees(comment.replies, depth_limits[1..-1])
         comment
       end
     )
