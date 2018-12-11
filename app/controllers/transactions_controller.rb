@@ -24,11 +24,11 @@ class TransactionsController < ApplicationController
     when 'confirmed'
       payload = confirmed_transactions_params
       success_txn_hashes = payload
-                           .fetch('success', [])
-                           .map { |e| e.fetch('txhash', '') }
+                           .fetch(:success, [])
+                           .map { |e| e.fetch(:txhash, '') }
       failed_txn_hashes = payload
-                          .fetch('failed', [])
-                          .map { |e| e.fetch('txhash', '') }
+                          .fetch(:failed, [])
+                          .map { |e| e.fetch(:txhash, '') }
 
       confirm_transactions(success_txn_hashes) unless success_txn_hashes.empty?
 
