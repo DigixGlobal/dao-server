@@ -79,17 +79,7 @@ class InfoServer
   # Given a request's method, path, nonce and payload, concatenate them
   # to create an unique message for authentication
   def access_message(method, path, nonce, payload)
-    "#{method.upcase}#{path}#{simplify_payload(payload).to_json}#{nonce}"
-  end
-
-  def simplify_payload(payload)
-    if payload.is_a?(Array)
-      payload.map { |item| simplify_payload(item) }
-    elsif payload.is_a?(Hash)
-      payload.deep_transform_keys! { |key| key.to_s.camelize(:lower) }
-    else
-      payload
-    end
+    "#{method.upcase}#{path}#{payload.to_json}#{nonce}"
   end
 
   # Like `access_message` but takes a HTTP request
@@ -98,7 +88,9 @@ class InfoServer
       request.method,
       request.original_fullpath,
       request.headers.fetch('ACCESS-NONCE', '').to_i,
-      request.params.fetch('payload', '')
+      # This should be params.payload but auto snake case interferes
+      request.raw_post.empty? ? request.params.fetch('payload', '')
+        : JSON.parse(request.raw_post).fetch('payload', '')
     )
   end
 

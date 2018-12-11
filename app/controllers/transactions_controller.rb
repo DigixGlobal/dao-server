@@ -9,28 +9,30 @@ class TransactionsController < ApplicationController
   def update_hashes
     case params.fetch(:type, nil)
     when 'seen'
-      payload = params.fetch('payload', {})
-      transactions = payload.fetch('transactions', [])
-      block_number = payload.fetch('blockNumber', '')
+      payload = seen_transactions_params
+      transactions = payload.fetch(:transactions, [])
+      block_number = payload.fetch(:block_number, '')
 
       unless transactions.empty?
         seen_transactions(
-          transactions.map { |e| e.fetch('txhash', '') },
+          transactions.map { |e| e.fetch(:txhash, '') },
           block_number
         )
       end
 
       render json: result_response(:seen)
     when 'confirmed'
-      payload = params.fetch('payload', {})
-      success_txn_hashes = payload.fetch('success', []).map { |e| e.fetch('txhash', '') }
-      failed_txn_hashes = payload.fetch('failed', []).map { |e| e.fetch('txhash', '') }
+      payload = confirmed_transactions_params
+      success_txn_hashes = payload
+                           .fetch('success', [])
+                           .map { |e| e.fetch('txhash', '') }
+      failed_txn_hashes = payload
+                          .fetch('failed', [])
+                          .map { |e| e.fetch('txhash', '') }
 
-      unless success_txn_hashes.empty?
-        confirm_transactions(success_txn_hashes)
+      confirm_transactions(success_txn_hashes) unless success_txn_hashes.empty?
 
-      unless failed_txn_hashes.empty?
-        fail_transactions(failed_txn_hashes)
+      fail_transactions(failed_txn_hashes) unless failed_txn_hashes.empty?
 
       render json: result_response(:confirmed)
     else
@@ -115,5 +117,17 @@ class TransactionsController < ApplicationController
 
   def transactions_params
     params.permit(:title, :txhash)
+  end
+
+  def seen_transactions_params
+    return {} if params.fetch(:payload, nil).nil?
+
+    params.require(:payload).permit(:block_number, transactions: [:txhash])
+  end
+
+  def confirmed_transactions_params
+    return {} if params.fetch(:payload, nil).nil?
+
+    params.require(:payload).permit(success: [:txhash], failed: [:txhash])
   end
 end

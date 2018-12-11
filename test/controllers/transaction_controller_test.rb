@@ -108,12 +108,11 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'confirm transactions should work' do
-    transactions = (1..10).map do |_|
-      create(:transaction)
-    end
+    successful_transactions = create_list(:transaction, 10)
+    failed_transactions = create_list(:transaction, 10)
 
     path = transactions_update_path('confirmed')
-    payload = transactions
+    payload = { success: successful_transactions, failed: failed_transactions }
 
     info_put path,
              payload: payload
@@ -123,8 +122,14 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
     assert_match 'confirmed', @response.body,
                  'response should be ok'
 
-    Transaction.all.each do |txn|
-      assert_equal 'confirmed', txn.status
+    Transaction.where(id: successful_transactions.map(&:id)).each do |txn|
+      assert_equal 'confirmed', txn.status,
+                   'successful transactions are confirmed'
+    end
+
+    Transaction.where(id: failed_transactions.map(&:id)).each do |txn|
+      assert_equal 'failed', txn.status,
+                   'failed transactions are failure'
     end
 
     put path,
@@ -199,21 +204,16 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
 
   test 'test server should work' do
     payload = generate(:txhash)
-    path = "#{transactions_ping_path}?payload=#{payload}"
 
-    get path,
-        headers: info_server_headers(
-          'GET',
-          path,
-          payload
-        )
+    info_get transactions_ping_path,
+             payload: payload
 
     assert_response :success,
                     'should work'
     assert_match 'ok', @response.body,
                  'response should say ok'
 
-    get path
+    get transactions_ping_path
 
     assert_response :forbidden,
                     'should fail without authorization'
