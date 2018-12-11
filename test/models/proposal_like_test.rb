@@ -3,8 +3,6 @@
 require 'test_helper'
 
 class ProposalLikeTest < ActiveSupport::TestCase
-  setup :database_fixture
-
   test 'liking a proposal should work' do
     proposal = create(:proposal)
     user = create(:user)

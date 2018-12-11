@@ -3,8 +3,6 @@
 require 'test_helper'
 
 class CommentTest < ActiveSupport::TestCase
-  setup :database_fixture
-
   test 'comment on post should work' do
     proposal = create(:proposal)
     root_comment = proposal.comment

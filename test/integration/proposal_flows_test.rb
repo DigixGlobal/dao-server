@@ -3,5 +3,4 @@
 require 'test_helper'
 
 class ProposalFlowsTest < ActionDispatch::IntegrationTest
-  setup :database_fixture
 end

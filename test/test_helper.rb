@@ -4,6 +4,7 @@ ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
 require 'rails/test_help'
 require 'webmock/minitest'
+require 'database_cleaner'
 
 require 'info_server'
 
@@ -14,6 +15,8 @@ puts 'Starting SimpleCov'
 module ActiveSupport
   class TestCase
     include FactoryBot::Syntax::Methods
+
+    setup :database_fixture
 
     INFO_SERVER_NAME = Rails.configuration.nonces['info_server_name']
 
@@ -56,14 +59,9 @@ module ActiveSupport
     end
 
     def database_fixture
-      Transaction.delete_all
-      CommentLike.delete_all
-      Comment.delete_all
-      CommentHierarchy.delete_all
-      ProposalLike.delete_all
-      Proposal.delete_all
-      User.delete_all
-      Nonce.delete_all
+      DatabaseCleaner.strategy = :transaction
+
+      DatabaseCleaner.clean
 
       create(:server_nonce, server: Rails.configuration.nonces['info_server_name'])
       create(:server_nonce, server: Rails.configuration.nonces['self_server_name'])

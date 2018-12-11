@@ -31,13 +31,15 @@ class Comment < ApplicationRecord
     last_seen_child_id = criteria.fetch(:last_seen_id, '').to_i
     sort_by = criteria.fetch(:sort_by, nil)
 
+    comment_stage = stage || self.stage
+
     top_level =
       Comment
-      .joins("INNER JOIN comment_hierarchies ON comment_hierarchies.ancestor_id = '#{id}' AND comment_hierarchies.generations = 1")
+      .where(parent_id: id)
       .order(comment_sorting(self, sort_by))
       .joins(:user)
       .joins("LEFT OUTER JOIN comment_likes ON comment_likes.comment_id = comments.id AND comment_likes.user_id = #{user.id}")
-      .where(stage: stage)
+      .where(stage: comment_stage)
       .includes(:user, :comment_likes)
       .all
       .to_a
@@ -48,7 +50,7 @@ class Comment < ApplicationRecord
       .order('comments.created_at DESC')
       .joins(:user)
       .joins("LEFT OUTER JOIN comment_likes ON comment_likes.comment_id = comments.id AND comment_likes.user_id = #{user.id}")
-      .where(stage: stage)
+      .where(stage: comment_stage)
       .includes(:user, :comment_likes)
       .all
       .to_a

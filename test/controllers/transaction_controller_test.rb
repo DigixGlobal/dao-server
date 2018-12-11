@@ -3,8 +3,6 @@
 require 'test_helper'
 
 class TransactionControllerTest < ActionDispatch::IntegrationTest
-  setup :database_fixture
-
   test 'create new transaction should work' do
     stub_request(:any, /transactions/)
       .to_return(body: {

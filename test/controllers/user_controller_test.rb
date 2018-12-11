@@ -3,8 +3,6 @@
 require 'test_helper'
 
 class UserControllerTest < ActionDispatch::IntegrationTest
-  setup :database_fixture
-
   test 'create user should work' do
     params = attributes_for(:user)
 

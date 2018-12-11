@@ -3,8 +3,6 @@
 require 'test_helper'
 
 class CommentsControllerTest < ActionDispatch::IntegrationTest
-  setup :database_fixture
-
   test 'comment on proposal should work' do
     user, auth_headers, _key = create_auth_user
     proposal = create(:proposal, user: user)
@@ -89,7 +87,7 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
                     'should fail without headers'
   end
 
-  test 'selecting a comment should work' do
+  test 'selecting comment threads should work' do
     _user, auth_headers, _key = create_auth_user
     comment = create(:comment)
 
