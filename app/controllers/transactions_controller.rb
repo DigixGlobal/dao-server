@@ -28,9 +28,11 @@ class TransactionsController < ApplicationController
 
       unless success_txn_hashes.empty?
         confirm_transactions(success_txn_hashes)
+      end
 
       unless failed_txn_hashes.empty?
         fail_transactions(failed_txn_hashes)
+      end
 
       render json: result_response(:confirmed)
     else
