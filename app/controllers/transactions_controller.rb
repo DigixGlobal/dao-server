@@ -22,8 +22,15 @@ class TransactionsController < ApplicationController
 
       render json: result_response(:seen)
     when 'confirmed'
-      txn_hashes = params.fetch('payload', []).map { |e| e.fetch('txhash', '') }
-      confirm_transactions(txn_hashes)
+      payload = params.fetch('payload', {})
+      success_txn_hashes = payload.fetch('success', []).map { |e| e.fetch('txhash', '') }
+      failed_txn_hashes = payload.fetch('failed', []).map { |e| e.fetch('txhash', '') }
+
+      unless success_txn_hashes.empty?
+        confirm_transactions(success_txn_hashes)
+
+      unless failed_txn_hashes.empty?
+        fail_transactions(failed_txn_hashes)
 
       render json: result_response(:confirmed)
     else
@@ -92,6 +99,12 @@ class TransactionsController < ApplicationController
     Transaction
       .where(txhash: txn_hashes)
       .update_all(status: 'confirmed')
+  end
+
+  def fail_transactions(txn_hashes)
+    Transaction
+      .where(txhash: txn_hashes)
+      .update_all(status: 'failed')
   end
 
   def seen_transactions(txn_hashes, block_number)
