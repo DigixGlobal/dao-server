@@ -9,13 +9,11 @@ class Proposal < ApplicationRecord
 
   validates :proposal_id,
             presence: true,
-            address: true,
             uniqueness: true
   validates :stage,
             presence: true
   validates :user,
-            presence: true,
-            uniqueness: true
+            presence: true
 
   def user_like(user)
     ProposalLike.find_by(proposal_id: id, user_id: user.id)

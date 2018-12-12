@@ -9,13 +9,7 @@ class ProposalsController < ApplicationController
                 only: %i[comment reply]
 
   def create
-    base_params = create_params
-    attrs = {
-      proposal_id: base_params.fetch('proposal_id', nil),
-      proposer: base_params.fetch('proposer', nil)
-    }
-
-    result, proposal_or_error = Proposal.create_proposal(attrs)
+    result, proposal_or_error = Proposal.create_proposal(create_params)
 
     case result
     when :invalid_data, :database_error
