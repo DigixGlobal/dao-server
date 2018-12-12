@@ -10,11 +10,13 @@ class Comment < ApplicationRecord
                       .proposals['comment_max_depth']
                       .to_i
 
-  DEPTH_LIMITS = [10, 5, 3].freeze
+  DEPTH_LIMITS = Rails
+                 .configuration
+                 .comments['depth_limits']
 
   include StageField
   include Discard::Model
-  has_closure_tree
+  has_closure_tree(order: 'created_at ASC')
 
   belongs_to :user
   has_many :comment_likes
@@ -47,7 +49,7 @@ class Comment < ApplicationRecord
     child_levels =
       Comment
       .joins("INNER JOIN comment_hierarchies ON comments.id = comment_hierarchies.descendant_id AND comment_hierarchies.ancestor_id = #{id} AND comment_hierarchies.generations IN (2, 3)")
-      .order('comments.created_at DESC')
+      .order('comments.created_at ASC')
       .joins(:user)
       .joins("LEFT OUTER JOIN comment_likes ON comment_likes.comment_id = comments.id AND comment_likes.user_id = #{user.id}")
       .where(stage: comment_stage)
@@ -87,10 +89,10 @@ class Comment < ApplicationRecord
     return 'comments.created_at DESC' if comment.depth == 1
 
     case sort_by
-    when 'oldest'
-      'comments.created_at ASC'
-    else
+    when :newest, 'newest'
       'comments.created_at DESC'
+    else
+      'comments.created_at ASC'
     end
   end
 

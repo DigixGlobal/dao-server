@@ -1,0 +1,17 @@
+development: &default
+  depth_limits:
+    - 10
+    - 5
+    - 3
+
+test:
+  depth_limits:
+    - 3
+    - 2
+    - 1
+
+production:
+  depth_limits:
+    - 10
+    - 5
+    - 3
