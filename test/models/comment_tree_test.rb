@@ -151,6 +151,8 @@ class CommentThreadTest < ActiveSupport::TestCase
   private
 
   def hack_comment_time
+    sleep(1.second)
+
     # Hack to force deterministic ordering with the created_at field
     Comment.in_batches.each do |relation|
       relation.update_all('created_at = FROM_UNIXTIME(id)')
