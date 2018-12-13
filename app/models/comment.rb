@@ -89,7 +89,7 @@ class Comment < ApplicationRecord
     return 'comments.created_at ASC' if comment.depth > 1
 
     case sort_by
-    when :newest, 'newest'
+    when :latest, 'latest'
       'comments.created_at DESC'
     else
       'comments.created_at ASC'

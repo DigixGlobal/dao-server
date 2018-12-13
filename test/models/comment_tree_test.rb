@@ -6,8 +6,8 @@ class CommentThreadTest < ActiveSupport::TestCase
   DEPTH_LIMITS = Rails.configuration.comments['depth_limits']
 
   test 'comment thread should work' do
-    proposal = create(:proposal, comment: create(:comment, id: 0, stage: :archived))
-    root_comment = proposal.comment
+    root_comment = create_root_comment(stage: :archived)
+    stage = root_comment.stage.to_sym
 
     eval_build_dsl(
       root_comment,
@@ -34,81 +34,118 @@ class CommentThreadTest < ActiveSupport::TestCase
 
     hack_comment_time
 
-    threads = root_comment.user_stage_comments(
-      proposal.user,
-      nil,
-      sort_by: :oldest
-    )
-
-    assert_equal [0, :archived,
-                  [1, :archived,
-                   [5, :archived,
-                    [10, :archived,
+    assert_equal [0, stage,
+                  [1, stage,
+                   [5, stage,
+                    [10, stage,
                      :more],
                     :more],
-                   [6, :archived,
-                    [13, :archived]],
+                   [6, stage,
+                    [13, stage]],
                    :more],
-                  [2, :archived,
-                   [14, :archived,
-                    [15, :archived]]],
-                  [3, :archived],
+                  [2, stage,
+                   [14, stage,
+                    [15, stage]]],
+                  [3, stage],
                   :more],
-                 threads_to_view_dsl(root_comment, threads),
+                 threads_to_view_dsl(
+                   root_comment,
+                   root_comment.user_stage_comments(
+                     root_comment.user,
+                     nil,
+                     sort_by: :oldest
+                   )
+                 ),
                  'thread should work'
 
-    next_threads = root_comment.user_stage_comments(
-      proposal.user,
-      nil,
-      sort_by: :oldest,
-      last_seen_id: 2
-    )
-
-    assert_equal [0, :archived,
-                  [3, :archived],
-                  [4, :archived]],
-                 threads_to_view_dsl(root_comment, next_threads),
+    assert_equal [0, stage,
+                  [3, stage],
+                  [4, stage]],
+                 threads_to_view_dsl(
+                   root_comment,
+                   root_comment.user_stage_comments(
+                     root_comment.user,
+                     nil,
+                     sort_by: :oldest,
+                     last_seen_id: 2
+                   )
+                 ),
                  'pagination should work'
   end
 
-  test 'inserting in threads should work' do
-    proposal = create(:proposal)
-    root_comment = proposal.comment
+  test 'inserting new comments should work' do
+    root_comment = create_root_comment(stage: :archived)
+    stage = root_comment.stage.to_sym
 
     eval_build_dsl(
       root_comment,
-      [
-        nil,
-        [
-          :parent,
-          [:parent],
-          [:parent],
-          [:parent],
-          [:parent]
-        ],
-        [
-          :parent
-        ],
-        [
-          :parent
-        ],
-        [
-          :parent
-        ]
-      ]
+      [nil,
+       [1, :parent,
+        [3, :parent]],
+       [2, :parent]]
+    )
+
+    _ok, new_comment = Comment.comment(
+      root_comment.user,
+      root_comment,
+      attributes_for(:comment)
     )
 
     hack_comment_time
 
-    threads = root_comment.user_stage_comments(
-      proposal.user,
-      nil,
-      sort_by: :oldest
+    assert_equal [0, stage,
+                  [1, stage,
+                   [3, stage]],
+                  [2, stage],
+                  [new_comment.id, stage]],
+                 threads_to_view_dsl(
+                   root_comment,
+                   root_comment.user_stage_comments(
+                     root_comment.user,
+                     nil,
+                     sort_by: :oldest
+                   )
+                 ),
+                 'new comments should be at the end'
+
+    _ok, newer_comment = Comment.comment(
+      root_comment.user,
+      root_comment,
+      attributes_for(:comment)
     )
 
-    assert_equal (comment_views = comment_to_paginated_dsl(root_comment)),
-                 (thread_views = threads_to_view_dsl(root_comment, threads)),
-                 'thread should work'
+    hack_comment_time
+
+    assert_equal [0, stage,
+                  [1, stage,
+                   [3, stage]],
+                  [2, stage],
+                  [new_comment.id, stage],
+                  :more],
+                 threads_to_view_dsl(
+                   root_comment,
+                   root_comment.user_stage_comments(
+                     root_comment.user,
+                     nil,
+                     sort_by: :oldest
+                   )
+                 ),
+                 'newer comments should be requested instead'
+
+    assert_equal [0, stage,
+                  [newer_comment.id, stage],
+                  [new_comment.id, stage],
+                  [2, stage],
+                  :more],
+                 threads_to_view_dsl(
+                   root_comment,
+                   root_comment.user_stage_comments(
+                     root_comment.user,
+                     nil,
+                     sort_by: :latest
+                   )
+                 ),
+                 ' comments should be requested instead'
   end
 
   private
@@ -118,6 +155,17 @@ class CommentThreadTest < ActiveSupport::TestCase
     Comment.in_batches.each do |relation|
       relation.update_all('created_at = FROM_UNIXTIME(id)')
     end
+  end
+
+  def create_root_comment(**kwargs)
+    stage = generate(:proposal_stage).to_sym
+    proposal = create(
+      :proposal,
+      stage: stage,
+      comment: create(:comment, id: 0, stage: stage, **kwargs)
+    )
+
+    proposal.comment
   end
 
   def filter_view_ids(views)
