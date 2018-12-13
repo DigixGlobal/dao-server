@@ -59,9 +59,15 @@ module ActiveSupport
     end
 
     def database_fixture
-      DatabaseCleaner.strategy = :transaction
-
-      DatabaseCleaner.clean
+      Transaction.delete_all
+      CommentLike.delete_all
+      ProposalLike.delete_all
+      Proposal.delete_all
+      Comment.delete_all
+      CommentHierarchy.delete_all
+      Challenge.delete_all
+      User.delete_all
+      Nonce.delete_all
 
       create(:server_nonce, server: Rails.configuration.nonces['info_server_name'])
       create(:server_nonce, server: Rails.configuration.nonces['self_server_name'])
