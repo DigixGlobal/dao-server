@@ -6,60 +6,30 @@ class CommentThreadTest < ActiveSupport::TestCase
   DEPTH_LIMITS = Rails.configuration.comments['depth_limits']
 
   test 'comment thread should work' do
-    proposal = create(:proposal)
+    proposal = create(:proposal, comment: create(:comment, id: 0, stage: :archived))
     root_comment = proposal.comment
 
-    base_id = Random.rand(1_000_000)
-
-    ids = eval_build_dsl(
+    eval_build_dsl(
       root_comment,
-      [
-        nil,
-        [
-          (first_id = base_id + 1),
-          :parent,
-          [
-            :parent,
-            [:parent],
-            [:parent]
-          ],
-          [
-            (child_id = base_id + 5),
-            :parent,
-            [:parent]
-          ],
-          [
-            :parent
-          ],
-          [
-            :parent
-          ],
-          [
-            :parent
-          ]
-        ],
-        [
-          (second_id = base_id + 2),
-          :parent,
-          [
-            :parent,
-            [:parent]
-          ]
-        ],
-        [
-          (top_id = base_id + 3),
-          :parent
-        ],
-        [
-          (next_top_id = base_id + 4),
-          :parent
-        ]
-      ]
+      [nil,
+       [1, :parent,
+        [5, :parent,
+         [10, :parent,
+          [12, :parent]],
+         [11, :parent]],
+        [6, :parent,
+         [13, :parent]],
+        [7, :parent],
+        [8, :parent],
+        [9, :parent]],
+       [2, :parent,
+        [14, :parent,
+         [15, :parent]]],
+       [3, :parent],
+       [4, :parent]]
     )
-          .flatten
-          .map { |item| item.fetch('id') }
 
-    assert_equal 15, Comment.count,
+    assert_equal 16, Comment.count,
                  'comments should be created'
 
     hack_comment_time
@@ -70,25 +40,35 @@ class CommentThreadTest < ActiveSupport::TestCase
       sort_by: :oldest
     )
 
-    assert_equal (comment_views = comment_to_paginated_dsl(root_comment)),
-                 (thread_views = threads_to_view_dsl(root_comment, threads)),
+    assert_equal [0, :archived,
+                  [1, :archived,
+                   [5, :archived,
+                    [10, :archived,
+                     :more],
+                    :more],
+                   [6, :archived,
+                    [13, :archived]],
+                   :more],
+                  [2, :archived,
+                   [14, :archived,
+                    [15, :archived]]],
+                  [3, :archived],
+                  :more],
+                 threads_to_view_dsl(root_comment, threads),
                  'thread should work'
-
-    puts comment_views.inspect
-    puts thread_views.inspect
 
     next_threads = root_comment.user_stage_comments(
       proposal.user,
       nil,
       sort_by: :oldest,
-      last_seen_id: top_id
+      last_seen_id: 2
     )
 
-    puts next_threads.inspect
-
-    puts next_top_id
-    puts threads_to_view_dsl(root_comment, threads).inspect
-    puts threads_to_view_dsl(root_comment, next_threads).inspect
+    assert_equal [0, :archived,
+                  [3, :archived],
+                  [4, :archived]],
+                 threads_to_view_dsl(root_comment, next_threads),
+                 'pagination should work'
   end
 
   test 'inserting in threads should work' do
@@ -176,11 +156,15 @@ class CommentThreadTest < ActiveSupport::TestCase
     )
   end
 
-  def comment_to_paginated_dsl(comment, depth_limits = DEPTH_LIMITS)
+  def comment_to_paginated_dsl(comment, depth_limits = DEPTH_LIMITS, after_child_id: nil)
     return [comment.id, comment.stage.to_sym] if depth_limits.empty?
 
     limit, *rest_limits = depth_limits
     children = comment.children.to_a
+
+    if after_child_id && (after_child_index = children.index { |child| child.id == after_child_id })
+      children = children[(after_child_index + 1)..-1]
+    end
 
     [comment.id, comment.stage.to_sym]
       .concat(
