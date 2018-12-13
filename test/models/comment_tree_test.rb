@@ -56,21 +56,7 @@ class CommentThreadTest < ActiveSupport::TestCase
                      sort_by: :oldest
                    )
                  ),
-                 'thread should work'
-
-    assert_equal [0, stage,
-                  [3, stage],
-                  [4, stage]],
-                 threads_to_view_dsl(
-                   root_comment,
-                   root_comment.user_stage_comments(
-                     root_comment.user,
-                     nil,
-                     sort_by: :oldest,
-                     last_seen_id: 2
-                   )
-                 ),
-                 'pagination should work'
+                 'thread view should work'
   end
 
   test 'inserting new comments should work' do
@@ -131,24 +117,9 @@ class CommentThreadTest < ActiveSupport::TestCase
                    )
                  ),
                  'newer comments should be requested instead'
-
-    assert_equal [0, stage,
-                  [newer_comment.id, stage],
-                  [new_comment.id, stage],
-                  [2, stage],
-                  :more],
-                 threads_to_view_dsl(
-                   root_comment,
-                   root_comment.user_stage_comments(
-                     root_comment.user,
-                     nil,
-                     sort_by: :latest
-                   )
-                 ),
-                 ' comments should be requested instead'
   end
 
-  test 'threads with different stages should be separated' do
+  test 'comments should be separated by stage' do
     root_comment = create_root_comment
     stage = root_comment.stage.to_sym
 
@@ -195,7 +166,7 @@ class CommentThreadTest < ActiveSupport::TestCase
                      sort_by: :oldest
                    )
                  ),
-                 'idea stage should work'
+                 'idea filter should work'
 
     assert_equal [0, stage,
                   [4, :draft],
@@ -210,7 +181,7 @@ class CommentThreadTest < ActiveSupport::TestCase
                      sort_by: :oldest
                    )
                  ),
-                 'draft stage and nesting should work'
+                 'draft filter and nesting should work'
 
     assert_equal [0, stage,
                   [7, :archived],
@@ -229,7 +200,7 @@ class CommentThreadTest < ActiveSupport::TestCase
                      sort_by: :oldest
                    )
                  ),
-                 'archived stage and pagination should work'
+                 'archived filter and pagination should work'
   end
 
   test 'thread pagination should work' do
@@ -413,7 +384,7 @@ class CommentThreadTest < ActiveSupport::TestCase
                      sort_by: :latest
                    )
                  ),
-                 'sorting option should not work on child comments'
+                 'sorting option should not work with child comment'
   end
 
   private
@@ -435,10 +406,6 @@ class CommentThreadTest < ActiveSupport::TestCase
     )
 
     proposal.comment
-  end
-
-  def filter_view_ids(views)
-    views.flatten.select { |view| view.is_a?(Integer) }
   end
 
   def eval_build_dsl(parent_comment, dsl)
@@ -465,31 +432,6 @@ class CommentThreadTest < ActiveSupport::TestCase
                .map { |child_dsl| eval_build_dsl(comment, child_dsl) }
 
     [comment.slice(:id, :stage, :parent_id).to_h].concat(children)
-  end
-
-  def comment_to_view_dsl(comment)
-    [comment.id, comment.stage.to_sym].concat(
-      comment.children.map { |child| comment_to_view_dsl(child) }
-    )
-  end
-
-  def comment_to_paginated_dsl(comment, depth_limits = DEPTH_LIMITS, after_child_id: nil)
-    return [comment.id, comment.stage.to_sym] if depth_limits.empty?
-
-    limit, *rest_limits = depth_limits
-    children = comment.children.to_a
-
-    if after_child_id && (after_child_index = children.index { |child| child.id == after_child_id })
-      children = children[(after_child_index + 1)..-1]
-    end
-
-    [comment.id, comment.stage.to_sym]
-      .concat(
-        children
-          .take(limit)
-          .map { |child| comment_to_paginated_dsl(child, rest_limits) }
-      )
-      .concat(children.size > limit ? [:more] : [])
   end
 
   def threads_to_view_dsl(parent_comment, data)
