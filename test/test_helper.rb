@@ -9,7 +9,13 @@ require 'database_cleaner'
 require 'info_server'
 
 require 'simplecov'
-SimpleCov.start 'rails'
+SimpleCov.start 'rails' do
+  add_filter '/app/channels/'
+  add_filter '/app/controllers/overrides'
+  add_filter '/app/jobs/'
+  add_filter '/app/mailers/'
+  add_filter '/bin/'
+end
 puts 'Starting SimpleCov'
 
 module ActiveSupport
