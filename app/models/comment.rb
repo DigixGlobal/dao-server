@@ -48,7 +48,7 @@ class Comment < ApplicationRecord
 
     child_levels =
       Comment
-      .joins("INNER JOIN comment_hierarchies ON comments.id = comment_hierarchies.descendant_id AND comment_hierarchies.ancestor_id = #{id} AND comment_hierarchies.generations IN (2, 3)")
+      .joins("INNER JOIN comment_hierarchies ON comments.id = comment_hierarchies.descendant_id AND comment_hierarchies.ancestor_id = #{id} AND comment_hierarchies.generations IN (2, 3, 4)")
       .order('comments.created_at ASC')
       .joins(:user)
       .joins("LEFT OUTER JOIN comment_likes ON comment_likes.comment_id = comments.id AND comment_likes.user_id = #{user.id}")
@@ -129,9 +129,8 @@ class Comment < ApplicationRecord
   end
 
   def paginate_comment_trees(comment_trees, depth_limits)
-    if comment_trees.empty? || depth_limits.empty?
-      return DataWrapper.new(false, [])
-    end
+    return DataWrapper.new(false, []) if comment_trees.empty?
+    return DataWrapper.new(!comment_trees.empty?, []) if depth_limits.empty?
 
     depth_limit = depth_limits.first
 
