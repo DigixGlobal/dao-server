@@ -37,10 +37,10 @@ Rails.application.routes.draw do
   get '/proposals(/:proposal_id)',
       to: 'proposals#show',
       as: 'proposal'
-  post '/proposals/(:id)/likes',
+  post '/proposals/(:proposal_id)/likes',
        to: 'proposals#like',
        as: 'proposal_likes'
-  delete '/proposals/(:id)/likes',
+  delete '/proposals/(:proposal_id)/likes',
          to: 'proposals#unlike'
 
   get '/comments/(:id)/threads',

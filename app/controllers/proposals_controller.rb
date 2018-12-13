@@ -26,7 +26,8 @@ class ProposalsController < ApplicationController
   end
 
   def show
-    case (proposal = Proposal.find_by(proposal_id: params.fetch(:proposal_id, nil)))
+    proposal_id = params.fetch(:proposal_id)
+    case (proposal = Proposal.find_by(proposal_id: proposal_id))
     when nil
       render json: error_response(:proposal_not_found),
              status: :not_found
@@ -36,7 +37,8 @@ class ProposalsController < ApplicationController
   end
 
   def like
-    unless (proposal = Proposal.find_by(id: params.fetch(:id)))
+    proposal_id = params.fetch(:proposal_id)
+    unless (proposal = Proposal.find_by(proposal_id: proposal_id))
       return render json: error_response(:proposal_not_found),
                     status: :not_found
     end
@@ -47,12 +49,15 @@ class ProposalsController < ApplicationController
     when :database_error, :already_liked
       render json: error_response(proposal_or_error || result)
     when :ok
-      render json: result_response(proposal_or_error)
+      render json: result_response(
+        user_proposal_view(current_user, proposal_or_error)
+      )
     end
   end
 
   def unlike
-    unless (proposal = Proposal.find_by(id: params.fetch(:id)))
+    proposal_id = params.fetch(:proposal_id)
+    unless (proposal = Proposal.find_by(proposal_id: proposal_id))
       return render json: error_response(:proposal_not_found),
                     status: :not_found
     end
@@ -63,7 +68,9 @@ class ProposalsController < ApplicationController
     when :database_error, :not_liked
       render json: error_response(proposal_or_error || result)
     when :ok
-      render json: result_response(proposal_or_error)
+      render json: result_response(
+        user_proposal_view(current_user, proposal_or_error)
+      )
     end
   end
 

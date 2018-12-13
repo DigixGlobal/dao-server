@@ -17,6 +17,11 @@ class Proposal < ApplicationRecord
             presence: true,
             uniqueness: true
 
+  def as_json(options = {})
+    serializable_hash(options.merge(except: %i[id]))
+      .deep_transform_keys! { |key| key.camelize(:lower) }
+  end
+
   def user_like(user)
     ProposalLike.find_by(proposal_id: id, user_id: user.id)
   end

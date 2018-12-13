@@ -54,6 +54,8 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
                     'should work'
     assert_match 'id', @response.body,
                  'response should contain id'
+    assert_match 'liked', @response.body,
+                 'response should contain liked'
 
     get proposal_path('NON_EXISTENT_ID'),
         headers: auth_headers
@@ -66,13 +68,15 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
     _user, auth_headers, _key = create_auth_user
     proposal = create(:proposal)
 
-    post proposal_likes_path(proposal.id),
+    post proposal_likes_path(proposal.proposal_id),
          headers: auth_headers
 
     assert_response :success,
                     'should work'
     assert_match 'id', @response.body,
                  'response should contain id'
+    assert_match 'liked', @response.body,
+                 'response should contain liked'
 
     post proposal_likes_path('NON_EXISTENT_ID'),
          headers: auth_headers
@@ -80,7 +84,7 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found,
                     'should fail to find proposal'
 
-    post proposal_likes_path(proposal.id),
+    post proposal_likes_path(proposal.proposal_id),
          headers: auth_headers
 
     assert_response :success,
@@ -92,14 +96,17 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
   test 'unliking a proposal should work' do
     user, auth_headers, _key = create_auth_user
     like = create(:proposal_like, user: user)
+    proposal = like.proposal
 
-    delete proposal_likes_path(like.proposal_id),
+    delete proposal_likes_path(proposal.proposal_id),
            headers: auth_headers
 
     assert_response :success,
                     'should work'
     assert_match 'id', @response.body,
                  'response should contain id'
+    assert_match 'liked', @response.body,
+                 'response should contain liked'
 
     delete proposal_likes_path('NON_EXISTENT_ID'),
            headers: auth_headers
@@ -107,7 +114,7 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found,
                     'should fail to find proposal'
 
-    delete proposal_likes_path(like.proposal_id),
+    delete proposal_likes_path(proposal.proposal_id),
            headers: auth_headers
 
     assert_response :success,

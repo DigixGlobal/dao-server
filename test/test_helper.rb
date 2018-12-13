@@ -58,10 +58,11 @@ module ActiveSupport
     def database_fixture
       Transaction.delete_all
       CommentLike.delete_all
-      Comment.delete_all
-      CommentHierarchy.delete_all
       ProposalLike.delete_all
       Proposal.delete_all
+      Comment.delete_all
+      CommentHierarchy.delete_all
+      Challenge.delete_all
       User.delete_all
       Nonce.delete_all
 
