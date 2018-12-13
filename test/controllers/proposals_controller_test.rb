@@ -50,8 +50,8 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success,
                     'should work'
-    assert_match 'id', @response.body,
-                 'response should contain id'
+    assert_match 'proposalId', @response.body,
+                 'response should contain proposal id'
     assert_match 'liked', @response.body,
                  'response should contain liked'
 
@@ -71,8 +71,8 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success,
                     'should work'
-    assert_match 'id', @response.body,
-                 'response should contain id'
+    assert_match 'proposalId', @response.body,
+                 'response should contain proposal Id'
     assert_match 'liked', @response.body,
                  'response should contain liked'
 
@@ -101,8 +101,8 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success,
                     'should work'
-    assert_match 'id', @response.body,
-                 'response should contain id'
+    assert_match 'proposalId', @response.body,
+                 'response should contain proposal Id'
     assert_match 'liked', @response.body,
                  'response should contain liked'
 

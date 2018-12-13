@@ -6,7 +6,7 @@ class CommentThreadTest < ActiveSupport::TestCase
   DEPTH_LIMITS = Rails.configuration.comments['depth_limits']
 
   test 'comment thread should work' do
-    root_comment = create_root_comment(stage: :archived)
+    root_comment = create_root_comment
     stage = root_comment.stage.to_sym
 
     eval_build_dsl(
@@ -74,7 +74,7 @@ class CommentThreadTest < ActiveSupport::TestCase
   end
 
   test 'inserting new comments should work' do
-    root_comment = create_root_comment(stage: :archived)
+    root_comment = create_root_comment
     stage = root_comment.stage.to_sym
 
     eval_build_dsl(
@@ -149,7 +149,7 @@ class CommentThreadTest < ActiveSupport::TestCase
   end
 
   test 'threads with different stages should be separated' do
-    root_comment = create_root_comment(stage: :archived)
+    root_comment = create_root_comment
     stage = root_comment.stage.to_sym
 
     eval_build_dsl(
@@ -230,6 +230,190 @@ class CommentThreadTest < ActiveSupport::TestCase
                    )
                  ),
                  'archived stage and pagination should work'
+  end
+
+  test 'thread pagination should work' do
+    root_comment = create_root_comment
+    stage = root_comment.stage.to_sym
+
+    eval_build_dsl(
+      root_comment,
+      [nil,
+       [1, :parent,
+        [8, :parent,
+         [12, :parent,
+          [14, :parent],
+          [15, :parent]],
+         [13, :parent]],
+        [9, :parent],
+        [10, :parent],
+        [11, :parent]],
+       [2, :parent],
+       [3, :parent],
+       [4, :parent],
+       [5, :parent],
+       [6, :parent],
+       [7, :parent]]
+    )
+
+    hack_comment_time
+
+    assert_equal [0, stage,
+                  [1, stage,
+                   [8, stage,
+                    [12, stage,
+                     :more],
+                    :more],
+                   [9, stage],
+                   :more],
+                  [2, stage],
+                  [3, stage],
+                  :more],
+                 threads_to_view_dsl(
+                   root_comment,
+                   root_comment.user_stage_comments(
+                     root_comment.user,
+                     stage,
+                     sort_by: :oldest
+                   )
+                 ),
+                 'initial pagination should work'
+
+    assert_equal [0, stage,
+                  [4, stage],
+                  [5, stage],
+                  [6, stage],
+                  :more],
+                 threads_to_view_dsl(
+                   root_comment,
+                   root_comment.user_stage_comments(
+                     root_comment.user,
+                     stage,
+                     sort_by: :oldest,
+                     last_seen_id: 3
+                   )
+                 ),
+                 'next set of data should be fetched'
+
+    assert_equal [0, stage,
+                  [7, stage]],
+                 threads_to_view_dsl(
+                   root_comment,
+                   root_comment.user_stage_comments(
+                     root_comment.user,
+                     stage,
+                     sort_by: :oldest,
+                     last_seen_id: 6
+                   )
+                 ),
+                 'last page of data should be fetched'
+
+    child_comment = Comment.find(1)
+
+    assert_equal [1, stage,
+                  [8, stage,
+                   [12, stage,
+                    [14, stage],
+                    :more],
+                   [13, stage]],
+                  [9, stage],
+                  [10, stage],
+                  :more],
+                 threads_to_view_dsl(
+                   child_comment,
+                   child_comment.user_stage_comments(
+                     child_comment.user,
+                     stage,
+                     sort_by: :oldest
+                   )
+                 ),
+                 'pagination should work for children'
+  end
+
+  test 'thread sorting should work' do
+    root_comment = create_root_comment
+    stage = root_comment.stage.to_sym
+
+    eval_build_dsl(
+      root_comment,
+      [nil,
+       [1, :parent,
+        [5, :parent],
+        [6, :parent],
+        [7, :parent],
+        [8, :parent]],
+       [2, :parent],
+       [3, :parent],
+       [4, :parent]]
+    )
+
+    hack_comment_time
+
+    assert_equal [0, stage,
+                  [1, stage,
+                   [5, stage],
+                   [6, stage],
+                   :more],
+                  [2, stage],
+                  [3, stage],
+                  :more],
+                 threads_to_view_dsl(
+                   root_comment,
+                   root_comment.user_stage_comments(
+                     root_comment.user,
+                     stage,
+                     sort_by: :oldest
+                   )
+                 ),
+                 'sorting by oldest should work'
+
+    assert_equal [0, stage,
+                  [4, stage],
+                  [3, stage],
+                  [2, stage],
+                  :more],
+                 threads_to_view_dsl(
+                   root_comment,
+                   root_comment.user_stage_comments(
+                     root_comment.user,
+                     stage,
+                     sort_by: :latest
+                   )
+                 ),
+                 'sorting by latest should work'
+
+    assert_equal [0, stage,
+                  [1, stage,
+                   [5, stage],
+                   [6, stage],
+                   :more]],
+                 threads_to_view_dsl(
+                   root_comment,
+                   root_comment.user_stage_comments(
+                     root_comment.user,
+                     stage,
+                     sort_by: :latest,
+                     last_seen_id: 2
+                   )
+                 ),
+                 'parent sorting should not affect children'
+
+    child_comment = Comment.find(1)
+
+    assert_equal [1, stage,
+                  [5, stage],
+                  [6, stage],
+                  [7, stage],
+                  :more],
+                 threads_to_view_dsl(
+                   child_comment,
+                   child_comment.user_stage_comments(
+                     child_comment.user,
+                     stage,
+                     sort_by: :latest
+                   )
+                 ),
+                 'sorting option should not work on child comments'
   end
 
   private

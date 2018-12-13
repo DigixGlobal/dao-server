@@ -86,7 +86,7 @@ class Comment < ApplicationRecord
   private
 
   def comment_sorting(comment, sort_by)
-    return 'comments.created_at ASC' if comment.depth > 1
+    return 'comments.created_at ASC' if comment.depth > 0
 
     case sort_by
     when :latest, 'latest'
