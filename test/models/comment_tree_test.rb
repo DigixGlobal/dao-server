@@ -148,12 +148,95 @@ class CommentThreadTest < ActiveSupport::TestCase
                  ' comments should be requested instead'
   end
 
+  test 'threads with different stages should be separated' do
+    root_comment = create_root_comment(stage: :archived)
+    stage = root_comment.stage.to_sym
+
+    eval_build_dsl(
+      root_comment,
+      [nil,
+       [1, :idea,
+        [2, :draft],
+        [3, :archived]],
+       [4, :draft,
+        [5, :idea],
+        [6, :archived]],
+       [7, :archived,
+        [8, :idea],
+        [9, :draft]],
+       [10, :idea,
+        [11, :idea],
+        [12, :draft]],
+       [13, :draft,
+        [14, :draft,
+         [15, :draft],
+         [16, :archived]],
+        [17, :archived]],
+       [18, :archived,
+        [19, :archived,
+         [20, :archived,
+          [21, :archived]],
+         [22, :archived]],
+        [23, :archived],
+        [24, :archived]]]
+    )
+
+    hack_comment_time
+
+    assert_equal [0, stage,
+                  [1, :idea],
+                  [10, :idea,
+                   [11, :idea]]],
+                 threads_to_view_dsl(
+                   root_comment,
+                   root_comment.user_stage_comments(
+                     root_comment.user,
+                     :idea,
+                     sort_by: :oldest
+                   )
+                 ),
+                 'idea stage should work'
+
+    assert_equal [0, stage,
+                  [4, :draft],
+                  [13, :draft,
+                   [14, :draft,
+                    [15, :draft]]]],
+                 threads_to_view_dsl(
+                   root_comment,
+                   root_comment.user_stage_comments(
+                     root_comment.user,
+                     :draft,
+                     sort_by: :oldest
+                   )
+                 ),
+                 'draft stage and nesting should work'
+
+    assert_equal [0, stage,
+                  [7, :archived],
+                  [18, :archived,
+                   [19, :archived,
+                    [20, :archived,
+                     :more],
+                    :more],
+                   [23, :archived],
+                   :more]],
+                 threads_to_view_dsl(
+                   root_comment,
+                   root_comment.user_stage_comments(
+                     root_comment.user,
+                     :archived,
+                     sort_by: :oldest
+                   )
+                 ),
+                 'archived stage and pagination should work'
+  end
+
   private
 
   def hack_comment_time
-    sleep(1.second)
-
     # Hack to force deterministic ordering with the created_at field
+    sleep(2.second)
     Comment.in_batches.each do |relation|
       relation.update_all('created_at = FROM_UNIXTIME(id)')
     end
