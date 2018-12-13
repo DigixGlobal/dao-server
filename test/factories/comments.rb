@@ -2,6 +2,7 @@
 
 FactoryBot.define do
   sequence(:comment_body) { |n| "comment-#{n}" }
+  sequence(:thread_sorting) { |_| %i[oldest latest].sample }
 
   factory :comment, class: 'Comment' do
     body { generate(:comment_body) }
@@ -28,5 +29,10 @@ FactoryBot.define do
 
   factory :proposal_comment, class: 'Object' do
     body { generate(:comment_body) }
+  end
+
+  factory :comment_thread, class: 'Object' do
+    stage { generate(:proposal_stage) }
+    sort_by { generate(:thread_sorting) }
   end
 end

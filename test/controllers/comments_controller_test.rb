@@ -90,14 +90,29 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
   test 'selecting comment threads should work' do
     _user, auth_headers, _key = create_auth_user
     comment = create(:comment)
+    params = attributes_for(:comment_thread)
 
     get comment_threads_path(comment.id),
+        params: params,
         headers: auth_headers
 
     assert_response :success,
                     'should work'
     assert_match 'hasMore', @response.body,
-                 'response be ok'
+                 'response should say it can fetch more'
+
+    get comment_threads_path('NON_EXISTENT_ID'),
+        headers: auth_headers
+
+    assert_response :not_found,
+                    'should not find the comment'
+
+    get comment_threads_path(comment.id),
+        params: { stage: 'NON_EXISTENT_STAGE' },
+        headers: auth_headers
+
+    assert_response :not_found,
+                    'should fail with invalid stage'
   end
 
   test 'liking a comment should work' do
