@@ -9,6 +9,7 @@ ruby '2.5.3'
 gem 'rails', '~> 5.2.1'
 # Use sqlite3 as the database for Active Record
 gem 'api-pagination', '>= 4.8.1'
+gem 'apipie-rails', '>= 0.5.14'
 gem 'cancancan', '>= 2.3.0'
 gem 'closure_tree', '>= 7.0.0 '
 gem 'devise'

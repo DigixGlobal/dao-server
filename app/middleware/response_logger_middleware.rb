@@ -15,8 +15,8 @@ class ResponseLoggerMiddleware
 
       Rails.logger.debug('Response Data:')
       Rails.logger.debug(JSON.pretty_generate(data))
-    rescue JSON::ParserError
-      Rails.logger.debug("Could not parse payload: #{response.body}")
+    rescue StandardError
+      Rails.logger.debug('Could not parse payload')
     end
 
     [status, headers, response]
