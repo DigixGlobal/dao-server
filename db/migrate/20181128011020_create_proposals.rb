@@ -3,7 +3,7 @@
 class CreateProposals < ActiveRecord::Migration[5.2]
   def change
     create_table :proposals do |t|
-      t.string :proposal_id, :string, null: false, default: ''
+      t.string :proposal_id, null: false, default: ''
       t.references :user, foreign_key: true
       t.integer :stage, default: 1
       t.integer :likes, default: 0

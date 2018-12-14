@@ -68,7 +68,6 @@ ActiveRecord::Schema.define(version: 2018_12_07_001352) do
 
   create_table "proposals", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "proposal_id", default: "", null: false
-    t.string "string", default: "", null: false
     t.bigint "user_id"
     t.integer "stage", default: 1
     t.integer "likes", default: 0
