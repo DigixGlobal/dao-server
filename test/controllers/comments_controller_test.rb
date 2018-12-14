@@ -17,6 +17,8 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
                     'should work'
     assert_match 'id', @response.body,
                  'response should contain id'
+    assert_match 'hasMore', @response.body,
+                 'response should contain a paginated wrapper for uniformity'
 
     post comments_path(root_comment.id),
          headers: auth_headers

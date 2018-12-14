@@ -74,7 +74,7 @@ class Comment < ApplicationRecord
 
     base_hash.merge(
       'body' => discarded? ? nil : body,
-      'replies' => replies&.as_json,
+      'replies' => replies&.as_json || DataWrapper.new(false, []),
       'liked' => !user_likes.empty?
     ).deep_transform_keys! { |key| key.camelize(:lower) }
   end
