@@ -9,29 +9,23 @@ class ProposalsController < ApplicationController
                 only: %i[comment reply]
 
   def_param_group :proposal do
-    property :proposal_id, /0x\w+{64}/,
-             desc: <<~EOS
-               The proposal's id.
-
-               No plain id field since it is created by the info server
-             EOS
+    property :proposal_id, String, desc: <<~EOS
+      The proposal's id.
+      No plain id field since it is created by the info server
+    EOS
     property :user_id, Integer, desc: "Proposer's user id"
     property :stage, Proposal.stages.keys, desc: 'Current stage/phase of the proposal'
     property :likes, Integer, desc: 'Number of likes'
-    property :liked, [true, false],
-             desc: <<~EOS
-               True if the current use liked this proposal.
-
-               Not present if request comes from the info server.
-             EOS
+    property :liked, [true, false], desc: <<~EOS
+      True if the current use liked this proposal.
+      Not present if request comes from the info server.
+    EOS
     property :created_at, String, desc: 'Creation UTC date time'
     property :updated_at, String, desc: 'Last modified UTC date time'
-    property :comment_id, Integer,
-             desc: <<~EOS
-               Root comment id for the proposal.
-
-               When making a top level comment, use this id.
-             EOS
+    property :comment_id, Integer, desc: <<~EOS
+      Root comment id for the proposal.
+      When making a top level comment, use this id.
+    EOS
   end
 
   api :POST, 'proposals', 'Create a proposal. Used by info-server.'
@@ -107,20 +101,18 @@ class ProposalsController < ApplicationController
   end
 
   api :POST, 'proposals/:proposal_id/likes', 'Like a proposal'
-  param :proposal_id, /0x\w+{64}/, desc: 'The id address of the proposal.',
+  param :proposal_id, /0x\w+{64}/, desc: 'The id address of the proposal',
                                    required: true
   formats [:json]
-  returns :proposal,
-          desc: <<~EOS
-            Liked proposal.
-
-            The property liked should be true and likes increased by one.
-          EOS
+  returns :proposal, desc: <<~EOS
+    Liked proposal.
+    The property liked should be true and likes increased by one.
+  EOS
   error code: :ok,
         desc: 'Proposal not found given the proposal id',
         meta: { error: :proposal_not_found }
   error code: :ok,
-        desc: 'Liked proposal cannot be liked',
+        desc: 'Cannot like a liked proposal',
         meta: { error: :already_liked }
   error code: :ok,
         desc: 'Database error. Should not happen.',
@@ -159,21 +151,19 @@ class ProposalsController < ApplicationController
   end
 
   api :DELETE, 'proposals/:proposal_id/likes', 'Unlike a liked proposal'
-  param :proposal_id, /0x\w+{64}/, desc: 'The id address of the proposal.',
+  param :proposal_id, /0x\w+{64}/, desc: 'The id address of the proposal',
                                    required: true
   formats [:json]
-  returns :proposal,
-          desc: <<~EOS
-            Proposal with the user's liked removed.
-
-            The property liked should be false and likes decreased by one.
-          EOS
+  returns :proposal, desc: <<~EOS
+    Proposal with the user's liked removed.
+    The property liked should be false and likes decreased by one.
+  EOS
   error code: :ok,
         desc: 'Proposal not found given the proposal id',
         meta: { error: :proposal_not_found }
   error code: :ok,
-        desc: 'Unliked proposal cannot be unliked',
-        meta: { error: :already_liked }
+        desc: 'Cannot unlike an unliked proposal',
+        meta: { error: :not_liked }
   error code: :ok,
         desc: 'Database error. Should not happen.',
         meta: { error: :database_error }
