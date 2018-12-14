@@ -9,7 +9,12 @@ class ProposalsController < ApplicationController
                 only: %i[comment reply]
 
   def_param_group :proposal do
-    property :proposal_id, /0x\w+{64}/, desc: 'Proposal id, no '
+    property :proposal_id, /0x\w+{64}/,
+             desc: <<~EOS
+               The proposal's id.
+
+               No plain id field since it is created by the info server
+             EOS
     property :user_id, Integer, desc: "Proposer's user id"
     property :stage, Proposal.stages.keys, desc: 'Current stage/phase of the proposal'
     property :likes, Integer, desc: 'Number of likes'
@@ -47,7 +52,7 @@ class ProposalsController < ApplicationController
   example <<~EOS
     {
       "result": {
-        "proposalId": "0xcef1400cde60a2e17dfdc68c35466d204a5dcf83",
+        "proposalId": "0x6ed7c6b98cb9af985b24be5de1ce81ba58a38c14e28c18b91f6b93895173ec09",
         "userId": 82,
         "stage": "idea",
         "likes": 0,
@@ -68,31 +73,25 @@ class ProposalsController < ApplicationController
     end
   end
 
-  api :GET, 'proposals/:proposal_id', 'Get a proposal given its proposal id'
-  param :payload, Hash, desc: 'Info Server payload wrapper' do
-    param :proposal_id, /0x\w+{64}/, desc: 'The id address of the proposal.',
-                                     required: true
-    param :proposer, /0x\w+{40}/, desc: "The proposer's address",
-                                  required: true
-  end
-  tags [:info_server]
+  api :GET, 'proposals/:proposal_id', 'Get a proposal given its id'
+  param :proposal_id, /0x\w+{64}/, desc: 'The id address of the proposal.',
+                                   required: true
   formats [:json]
-  returns :proposal, desc: 'Created proposal'
-  error code: :ok, desc: 'Validation errors',
-        meta: { error: { field: [:validation_error] } }
+  returns :proposal, desc: 'Proposal with said proposal id'
   error code: :ok,
-        desc: 'Database error. Commonly the proposal id already exists.',
-        meta: { error: :database_error }
+        desc: 'Proposal not found given the proposal id',
+        meta: { error: :proposal_not_found }
   example <<~EOS
     {
       "result": {
-        "proposalId": "0xcef1400cde60a2e17dfdc68c35466d204a5dcf83",
-        "userId": 82,
-        "stage": "idea",
+        "proposalId": "0x6ed7c6b98cb9af985b24be5de1ce81ba58a38c14e28c18b91f6b93895173ec09",
+        "userId": 1,
+        "stage": "archived",
         "likes": 0,
-        "createdAt": "2018-12-14T11:06:10.000+08:00",
-        "updatedAt": "2018-12-14T11:06:10.000+08:00",
-        "commentId": 79
+        "createdAt": "2018-12-14T11:01:59.000+08:00",
+        "updatedAt": "2018-12-14T11:01:59.000+08:00",
+        "commentId": 1,
+        "liked": false
       }
     }
   EOS
@@ -107,6 +106,39 @@ class ProposalsController < ApplicationController
     end
   end
 
+  api :POST, 'proposals/:proposal_id/likes', 'Like a proposal'
+  param :proposal_id, /0x\w+{64}/, desc: 'The id address of the proposal.',
+                                   required: true
+  formats [:json]
+  returns :proposal,
+          desc: <<~EOS
+            Liked proposal.
+
+            The property liked should be true and likes increased by one.
+          EOS
+  error code: :ok,
+        desc: 'Proposal not found given the proposal id',
+        meta: { error: :proposal_not_found }
+  error code: :ok,
+        desc: 'Liked proposal cannot be liked',
+        meta: { error: :already_liked }
+  error code: :ok,
+        desc: 'Database error. Should not happen.',
+        meta: { error: :database_error }
+  example <<~EOS
+    {
+      "result": {
+        "likes": 1,
+        "userId": 1,
+        "commentId": 1,
+        "proposalId": "0x6ed7c6b98cb9af985b24be5de1ce81ba58a38c14e28c18b91f6b93895173ec09",
+        "stage": "archived",
+        "createdAt": "2018-12-14T11:01:59.000+08:00",
+        "updatedAt": "2018-12-14T13:11:11.000+08:00",
+        "liked": true
+      }
+    }
+  EOS
   def like
     proposal_id = params.fetch(:proposal_id)
     unless (proposal = Proposal.find_by(proposal_id: proposal_id))
@@ -126,6 +158,39 @@ class ProposalsController < ApplicationController
     end
   end
 
+  api :DELETE, 'proposals/:proposal_id/likes', 'Unlike a liked proposal'
+  param :proposal_id, /0x\w+{64}/, desc: 'The id address of the proposal.',
+                                   required: true
+  formats [:json]
+  returns :proposal,
+          desc: <<~EOS
+            Proposal with the user's liked removed.
+
+            The property liked should be false and likes decreased by one.
+          EOS
+  error code: :ok,
+        desc: 'Proposal not found given the proposal id',
+        meta: { error: :proposal_not_found }
+  error code: :ok,
+        desc: 'Unliked proposal cannot be unliked',
+        meta: { error: :already_liked }
+  error code: :ok,
+        desc: 'Database error. Should not happen.',
+        meta: { error: :database_error }
+  example <<~EOS
+    {
+      "result": {
+        "likes": 0,
+        "userId": 1,
+        "commentId": 1,
+        "proposalId": "0x6ed7c6b98cb9af985b24be5de1ce81ba58a38c14e28c18b91f6b93895173ec09",
+        "stage": "archived",
+        "createdAt": "2018-12-14T11:01:59.000+08:00",
+        "updatedAt": "2018-12-14T13:11:11.000+08:00",
+        "liked": false
+      }
+    }
+  EOS
   def unlike
     proposal_id = params.fetch(:proposal_id)
     unless (proposal = Proposal.find_by(proposal_id: proposal_id))
