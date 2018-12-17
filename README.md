@@ -1,6 +1,10 @@
 ### SETUP INSTRUCTIONS
 Please refer [HERE](https://gist.github.com/roynalnaruto/52f2be795f256ed7b0f156666108f8fc). The DAO-server runs together with [DigixDAO contracts](https://github.com/DigixGlobal/dao-contracts/tree/dev-info-server) and [Info-server](https://github.com/DigixGlobal/info-server/tree/dev)
 
+### API Documentation
+
+    Similar to Swagger, you can check the API documentation with `apipie` via `http://localhost:3005/apipie`
+
 ### Proposals
 [link](PROPOSALS.md)
 

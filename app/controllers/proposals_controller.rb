@@ -111,7 +111,7 @@ class ProposalsController < ApplicationController
     end
   end
 
-  api :POST, 'proposals/:proposal_id/likes', 'Like a proposal'
+  api :POST, 'proposals/:proposal_id/likes', 'As the current user, like the proposal'
   param :proposal_id, /0x\w+{64}/, desc: 'The id address of the proposal',
                                    required: true
   formats [:json]
@@ -163,7 +163,8 @@ class ProposalsController < ApplicationController
     end
   end
 
-  api :DELETE, 'proposals/:proposal_id/likes', 'Unlike a liked proposal'
+  api :DELETE, 'proposals/:proposal_id/likes',
+      'As the current user, unlike the liked proposal'
   param :proposal_id, /0x\w+{64}/, desc: 'The id address of the proposal',
                                    required: true
   formats [:json]

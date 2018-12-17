@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Transaction < ApplicationRecord
+  STATUSES = %i[pending failed confirmed].freeze
+
   belongs_to :user
 
   validates :title,

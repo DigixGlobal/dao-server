@@ -303,7 +303,8 @@ class CommentsController < ApplicationController
     end
   end
 
-  api :POST, 'comments/:id/likes', 'Like a comment'
+  api :POST, 'comments/:id/likes',
+      'As the current user, like the comment'
   param :id, Integer, desc: 'The id of the comment',
                       required: true
   formats [:json]
@@ -360,7 +361,8 @@ class CommentsController < ApplicationController
     end
   end
 
-  api :DELETE, 'comments/:id/likes', 'Unlike a liked comment'
+  api :DELETE, 'comments/:id/likes',
+      'As the current user, unlike a liked comment'
   param :id, Integer, desc: 'The id of the comment',
                       required: true
   formats [:json]
