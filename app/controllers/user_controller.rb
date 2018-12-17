@@ -18,7 +18,7 @@ class UserController < ApplicationController
         Used by info-server.
       EOS
   param :payload, Hash, desc: 'Info Server payload wrapper' do
-    param :address, /0x\w+{40}/, desc: "The user's  address",
+    param :address, /0x\w+{40}/, desc: "The user's address",
                                  required: true
   end
   tags [:info_server]

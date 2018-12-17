@@ -11,7 +11,7 @@ class UserControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success,
                     'should work'
-    assert_match 'uid', @response.body,
+    assert_match 'address', @response.body,
                  'response should be an ok'
 
     info_post user_path,
@@ -37,7 +37,7 @@ class UserControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success,
                     'should owrk'
-    assert_match 'uid', @response.body,
+    assert_match 'address', @response.body,
                  'should work'
 
     get user_path
