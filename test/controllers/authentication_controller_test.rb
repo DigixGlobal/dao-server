@@ -7,8 +7,6 @@ class AuthenticationControllerTest < ActionDispatch::IntegrationTest
     user = create(:user)
     params = { address: user.address }
 
-    headers = { 'CONTENT-TYPE': 'application/json' }
-
     post authorization_path,
          params: params
 

@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class AuthenticationController < ApplicationController
-  CHALLENGE_LENGTH = 10
-
   def_param_group :challenge do
   end
 
@@ -33,21 +31,13 @@ class AuthenticationController < ApplicationController
     }
   EOS
   def challenge
-    address = params.fetch(:address, '').downcase
-
-    unless (user = User.find_by(address: address))
-      return render json: { error: :address_not_found },
-                    status: :not_found
-    end
-
-    result, challenge_or_error = create_new_challenge(
-      challenge: rand(36 * CHALLENGE_LENGTH).to_s(CHALLENGE_LENGTH),
-      user: user
-    )
+    result, challenge_or_error =
+      Challenge.create_new_challenge(challenge_params)
 
     case result
-    when :invalid_data, :database_error
-      render json: error_response(challenge_or_error)
+    when :user_not_found
+      render json: error_response(challenge_or_error || result),
+             status: :not_found
     else # :ok
       render json: result_response(challenge_or_error)
     end
@@ -147,13 +137,8 @@ class AuthenticationController < ApplicationController
 
   private
 
-  def create_new_challenge(attrs)
-    challenge = Challenge.new(attrs)
-
-    return [:invalid_data, challenge.errors] unless challenge.valid?
-    return [:database_error, challenge.errors] unless challenge.save
-
-    [:ok, challenge]
+  def challenge_params
+    params.permit(:address)
   end
 
   def recover_address(message, signature)
