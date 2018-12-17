@@ -41,8 +41,9 @@ class ProposalsController < ApplicationController
   error code: :ok, desc: 'Validation errors',
         meta: { error: { field: [:validation_error] } }
   error code: :ok,
-        desc: 'Database error. Commonly the proposal id already exists.',
-        meta: { error: :database_error }
+        meta: { error: :database_error },
+        desc: 'Database error. Commonly the proposal id already exists.'
+  meta authorization: :nonce
   example <<~EOS
     {
       "result": {
@@ -73,8 +74,9 @@ class ProposalsController < ApplicationController
   formats [:json]
   returns :proposal, desc: 'Proposal with said proposal id'
   error code: :ok,
-        desc: 'Proposal not found given the proposal id',
-        meta: { error: :proposal_not_found }
+        meta: { error: :proposal_not_found },
+        desc: 'Proposal not found given the proposal id'
+  meta authorization: :access_token
   example <<~EOS
     {
       "result": {
@@ -109,14 +111,15 @@ class ProposalsController < ApplicationController
     The property liked should be true and likes increased by one.
   EOS
   error code: :ok,
-        desc: 'Proposal not found given the proposal id',
-        meta: { error: :proposal_not_found }
+        meta: { error: :proposal_not_found },
+        desc: 'Proposal not found given the proposal id'
   error code: :ok,
-        desc: 'Cannot like a liked proposal',
-        meta: { error: :already_liked }
+        meta: { error: :already_liked },
+        desc: 'Cannot like a liked proposal'
   error code: :ok,
-        desc: 'Database error. Should not happen.',
-        meta: { error: :database_error }
+        meta: { error: :database_error },
+        desc: 'Database error. Should not happen.'
+  meta authorization: :access_token
   example <<~EOS
     {
       "result": {
@@ -159,14 +162,15 @@ class ProposalsController < ApplicationController
     The property liked should be false and likes decreased by one.
   EOS
   error code: :ok,
-        desc: 'Proposal not found given the proposal id',
-        meta: { error: :proposal_not_found }
+        meta: { error: :proposal_not_found },
+        desc: 'Proposal not found given the proposal id'
   error code: :ok,
-        desc: 'Cannot unlike an unliked proposal',
-        meta: { error: :not_liked }
+        meta: { error: :not_liked },
+        desc: 'Cannot unlike an unliked proposal'
   error code: :ok,
         desc: 'Database error. Should not happen.',
         meta: { error: :database_error }
+  meta authorization: :access_token
   example <<~EOS
     {
       "result": {

@@ -14,6 +14,8 @@ class Comment < ApplicationRecord
                  .configuration
                  .comments['depth_limits']
 
+  SORTING_OPTIONS = %i[latest oldest].freeze
+
   include StageField
   include Discard::Model
   has_closure_tree(order: 'created_at ASC')

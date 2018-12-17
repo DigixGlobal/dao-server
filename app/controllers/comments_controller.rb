@@ -24,7 +24,8 @@ class CommentsController < ApplicationController
     end
     property :body, String, desc: <<~EOS
       Plain string body of text.
-      When a comment is deleted, this is null or empty
+
+      When a comment is deleted, this is null or empty.
     EOS
     property :replies, Hash, desc: 'Replies wrapped in a paginated wrapper' do
       property :has_more, [true, false],
@@ -45,6 +46,57 @@ class CommentsController < ApplicationController
            status: :forbidden
   end
 
+  api :POST, 'comments/:id/threads?stage=:stage&last_seen_id=:last_seen_id&sort_by=:sort_by',
+      <<~EOS
+        Given a parent/root comment, fetch comments/replies in batches.
+
+        Uses `Load More` pagination so to accomodate that
+        each batch is wrapped inside a object with `hasMore` and `data` property.
+        The idea is to render the comments in `data`, show a load more button if `hasMore` is `true`
+        and if so use the last comment id in `data` for the `last_seen_id` for the next batch.
+
+        Also, deleted comments are still fetched but their `body` property is `null`.
+      EOS
+  param :id, Integer, desc: 'The id of the parent/root comment',
+                      required: true
+  param :stage, Comment.stages.keys,
+        desc: <<~EOS
+          Filter comments by stage/phase.
+
+          At the moment, a child comment and its replies have the same stage
+          since you cannot comment on a previous stage/phase.
+          So make sure you set this to `null` or the same stage as the comment
+          if its not the root comment.
+        EOS
+  param :last_seen_id, Integer,
+        desc: <<~EOS
+          Specify where the next batch of records should start given the comment's child id.
+
+          Primarily meant for `Load More` pagination strategy.
+          The idea is to request for an initial batch and take the last comment/reply id from `data`
+          and use that id here until `hasMore` is `true` or exhausted.
+        EOS
+  param :sort_by, Comment::SORTING_OPTIONS,
+        desc: <<~EOS
+          Specify how the root comments should be sorted. The following options are available:
+
+          - latest ::
+            Sort by descending `createdAt` order
+          - oldest ::
+            Sort by ascending `createdAt` order.
+            Default sorting if the option is `null` or not valid
+
+          Note, this option does not work with child comment
+          since they are sorted in ascending `createdAt` order.
+        EOS
+  formats [:json]
+  returns :comment, desc: 'Created comment/reply'
+  error code: :ok, desc: 'Validation errors',
+        meta: { error: { field: [:validation_error] } }
+  error code: :ok,
+        desc: 'Database error. Should not happen.',
+        meta: { error: :database_error }
+  meta authorization: :access_token
   def select_threads
     attrs = select_thread_params
     unless (comment = Comment.find_by(id: attrs.fetch(:id, nil)))
@@ -71,8 +123,11 @@ class CommentsController < ApplicationController
 
   api :POST, 'comments', <<~EOS
     Comment/reply to a comment.
+
     To comment on a proposal, use the root comment id(`proposal.comment_id`) of that proposal.
   EOS
+  param :id, Integer, desc: 'The id of the comment',
+                      required: true
   param :body, String, desc: 'Plain string body',
                        required: true
   formats [:json]
@@ -80,8 +135,14 @@ class CommentsController < ApplicationController
   error code: :ok, desc: 'Validation errors',
         meta: { error: { field: [:validation_error] } }
   error code: :ok,
-        desc: 'Database error. Should not happen.',
-        meta: { error: :database_error }
+        meta: { error: :database_error },
+        desc: 'Database error. Should not happen.'
+  error code: :forbidden,
+        meta: { error: { field: [:validation_error] } },
+        desc: <<~EOS
+          Action throttled. You can only comment around #{COMMENT_THROTTLE_PERIOD} seconds.
+        EOS
+  meta authorization: :access_token
   example <<~EOS
     {
       "result": {
@@ -127,21 +188,23 @@ class CommentsController < ApplicationController
 
   api :DELETE, 'comments', <<~EOF
     Soft delete a comment or reply.
-    Also, deleted comments can still be displayed except that the body is hidden.
   EOF
+  param :id, Integer, desc: 'The id of the comment',
+                      required: true
   param :body, String, desc: 'Plain string body',
                        required: true
   formats [:json]
   returns :comment, desc: 'Deleted comment or reply'
   error code: :ok,
-        desc: 'Cannot delete comments of other users',
-        meta: { error: :unauthorized_action }
+        meta: { error: :unauthorized_action },
+        desc: 'Cannot delete comments of other users'
   error code: :ok,
-        desc: 'Cannot delete deleted comments',
-        meta: { error: :unauthorized_action }
+        meta: { error: :unauthorized_action },
+        desc: 'Cannot delete deleted comments'
   error code: :ok,
-        desc: 'Database error. Should not happen.',
-        meta: { error: :database_error }
+        meta: { error: :database_error },
+        desc: 'Database error. Should not happen.'
+  meta authorization: :access_token
   example <<~EOS
     {
       "result": {
@@ -199,14 +262,15 @@ class CommentsController < ApplicationController
     The property liked should be true and likes increased by one.
   EOS
   error code: :ok,
-        desc: 'Comment not found given the id',
-        meta: { error: :comment_not_found }
+        meta: { error: :comment_not_found },
+        desc: 'Comment not found given the id'
   error code: :ok,
-        desc: 'Cannot like a liked comment',
-        meta: { error: :already_liked }
+        meta: { error: :already_liked },
+        desc: 'Cannot like a liked comment'
   error code: :ok,
-        desc: 'Database error. Should not happen.',
-        meta: { error: :database_error }
+        meta: { error: :database_error },
+        desc: 'Database error. Should not happen.'
+  meta authorization: :access_token
   example <<~EOS
     {
       "result": {
@@ -253,14 +317,15 @@ class CommentsController < ApplicationController
     The property liked should be false and likes decreased by one.
   EOS
   error code: :ok,
-        desc: 'Comment not found given the comment id',
-        meta: { error: :comment_not_found }
+        meta: { error: :comment_not_found },
+        desc: 'Comment not found given the comment id'
   error code: :ok,
-        desc: 'Cannot unlike an unliked comment',
-        meta: { error: :not_liked }
+        meta: { error: :not_liked },
+        desc: 'Cannot unlike an unliked comment'
   error code: :ok,
-        desc: 'Database error. Should not happen.',
-        meta: { error: :database_error }
+        meta: { error: :database_error },
+        desc: 'Database error. Should not happen.'
+  meta authorization: :access_token
   example <<~EOS
     {
       "result": {
