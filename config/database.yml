@@ -12,15 +12,13 @@
 default: &default
   adapter: mysql2
   encoding: utf8
-  pool: <%= ENV.fetch('RAILS_MAX_THREADS') { 5 } %>
+  pool: 20
   username: root
-  password:
-  socket: /tmp/mysql.sock
+  password: mysql3141
 
 development:
   <<: *default
   database: dao_dev
-  password: digixtest
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
@@ -28,7 +26,6 @@ development:
 test:
   <<: *default
   database: dao_test
-  password: digixtest
 
 # As with config/secrets.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
