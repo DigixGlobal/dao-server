@@ -29,7 +29,10 @@ class CommentsController < ApplicationController
     EOS
     property :replies, Hash, desc: 'Replies wrapped in a paginated wrapper' do
       property :has_more, [true, false],
-               desc: 'A flag to indicate if more siblings can be fetched'
+               desc: <<~EOS
+                 A flag to indicate if more siblings can be fetched
+                 beyond the last item of `data`
+               EOS
       property :data, Array, of: Comment, desc: 'List of replies of the comment'
     end
     property :stage, Comment.stages.keys, desc: 'Comment stage/phase'
@@ -54,6 +57,11 @@ class CommentsController < ApplicationController
         each batch is wrapped inside a object with `hasMore` and `data` property.
         The idea is to render the comments in `data`, show a load more button if `hasMore` is `true`
         and if so use the last comment id in `data` for the `last_seen_id` for the next batch.
+
+        Data fetched are paginated by depth: #{Comment::DEPTH_LIMITS.join(',')}.
+        In this case, there are #{Comment::DEPTH_LIMITS[0]} top level comments
+        and for each of its children have #{Comment::DEPTH_LIMITS[1]} child comments
+        and so on.
 
         Also, deleted comments are still fetched but their `body` property is `null`.
       EOS
@@ -97,6 +105,50 @@ class CommentsController < ApplicationController
         desc: 'Database error. Should not happen.',
         meta: { error: :database_error }
   meta authorization: :access_token
+  example <<~EOS
+    {
+      "result": {
+        "hasMore": true,
+        "data": [
+          {
+            "id": 4,
+            "stage": "draft",
+            "userId": 5,
+            "likes": 0,
+            "createdAt": "2018-12-14T11:02:00.000+08:00",
+            "updatedAt": "2018-12-14T11:02:00.000+08:00",
+            "user": {
+              "address": "0x8cdf8d9af01541b26878032b864796957c08ae74"
+            },
+            "body": "comment-4",
+            "replies": {
+              "hasMore": false,
+              "data": [
+                {
+                  "id": 11,
+                  "stage": "draft",
+                  "userId": 12,
+                  "likes": 0,
+                  "createdAt": "2018-12-14T11:02:03.000+08:00",
+                  "updatedAt": "2018-12-14T11:02:03.000+08:00",
+                  "user": {
+                    "address": "0x281fadbf3e8ee1fa709ab511ac6350f99c005be1"
+                  },
+                  "body": "comment-11",
+                  "replies": {
+                    "hasMore": false,
+                    "data": []
+                  },
+                  "liked": false
+                }
+              ]
+            },
+            "liked": false
+          }
+        ]
+      }
+    }
+  EOS
   def select_threads
     attrs = select_thread_params
     unless (comment = Comment.find_by(id: attrs.fetch(:id, nil)))
@@ -126,7 +178,7 @@ class CommentsController < ApplicationController
 
     To comment on a proposal, use the root comment id(`proposal.comment_id`) of that proposal.
   EOS
-  param :id, Integer, desc: 'The id of the comment',
+  param :id, Integer, desc: 'The parent comment id of the comment to reply/comment',
                       required: true
   param :body, String, desc: 'Plain string body',
                        required: true

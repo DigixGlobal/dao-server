@@ -11,6 +11,7 @@ class ProposalsController < ApplicationController
   def_param_group :proposal do
     property :proposal_id, String, desc: <<~EOS
       The proposal's id.
+
       No plain id field since it is created by the info server
     EOS
     property :user_id, Integer, desc: "Proposer's user id"
@@ -18,17 +19,24 @@ class ProposalsController < ApplicationController
     property :likes, Integer, desc: 'Number of likes'
     property :liked, [true, false], desc: <<~EOS
       True if the current use liked this proposal.
+
       Not present if request comes from the info server.
     EOS
     property :created_at, String, desc: 'Creation UTC date time'
     property :updated_at, String, desc: 'Last modified UTC date time'
     property :comment_id, Integer, desc: <<~EOS
       Root comment id for the proposal.
+
       When making a top level comment, use this id.
     EOS
   end
 
-  api :POST, 'proposals', 'Create a proposal. Used by info-server.'
+  api :POST, 'proposals',
+      <<~EOS
+        Create a proposal.
+
+        Used by info-server.
+      EOS
   param :payload, Hash, desc: 'Info Server payload wrapper' do
     param :proposal_id, /0x\w+{64}/, desc: 'The id address of the proposal.',
                                      required: true
@@ -68,7 +76,7 @@ class ProposalsController < ApplicationController
     end
   end
 
-  api :GET, 'proposals/:proposal_id', 'Get a proposal given its id'
+  api :GET, 'proposals/:proposal_id', 'Get a proposal given its proposal id'
   param :proposal_id, /0x\w+{64}/, desc: 'The id address of the proposal.',
                                    required: true
   formats [:json]
@@ -108,6 +116,7 @@ class ProposalsController < ApplicationController
   formats [:json]
   returns :proposal, desc: <<~EOS
     Liked proposal.
+
     The property liked should be true and likes increased by one.
   EOS
   error code: :ok,
@@ -159,6 +168,7 @@ class ProposalsController < ApplicationController
   formats [:json]
   returns :proposal, desc: <<~EOS
     Proposal with the user's liked removed.
+
     The property liked should be false and likes decreased by one.
   EOS
   error code: :ok,
