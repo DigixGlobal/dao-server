@@ -61,7 +61,7 @@ class CommentsController < ApplicationController
         Data fetched are paginated by depth: #{Comment::DEPTH_LIMITS.join(',')}.
         In this case, there are #{Comment::DEPTH_LIMITS[0]} top level comments
         and for each of its children have #{Comment::DEPTH_LIMITS[1]} child comments
-        and so on.
+        and so forth and so on.
 
         Also, deleted comments are still fetched but their `body` property is `null`.
       EOS

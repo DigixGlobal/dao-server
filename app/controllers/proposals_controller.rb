@@ -33,7 +33,7 @@ class ProposalsController < ApplicationController
 
   api :POST, 'proposals',
       <<~EOS
-        Create a proposal.
+        Create a new proposal.
 
         Used by info-server.
       EOS
@@ -50,7 +50,7 @@ class ProposalsController < ApplicationController
         meta: { error: { field: [:validation_error] } }
   error code: :ok,
         meta: { error: :database_error },
-        desc: 'Database error. Commonly the proposal id already exists.'
+        desc: "Database error. Only if the proposal's id already exists."
   meta authorization: :nonce
   example <<~EOS
     {
@@ -76,7 +76,8 @@ class ProposalsController < ApplicationController
     end
   end
 
-  api :GET, 'proposals/:proposal_id', 'Get a proposal given its proposal id'
+  api :GET, 'proposals/:proposal_id',
+      "Get a proposal's details given its proposal id"
   param :proposal_id, /0x\w+{64}/, desc: 'The id address of the proposal.',
                                    required: true
   formats [:json]
