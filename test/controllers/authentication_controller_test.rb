@@ -3,8 +3,6 @@
 require 'test_helper'
 
 class AuthenticationControllerTest < ActionDispatch::IntegrationTest
-  setup :database_fixture
-
   test 'create challenge should work' do
     user = create(:user)
     params = { address: user.address }

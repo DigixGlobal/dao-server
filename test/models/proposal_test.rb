@@ -3,8 +3,6 @@
 require 'test_helper'
 
 class ProposalTest < ActiveSupport::TestCase
-  setup :database_fixture
-
   test 'create new proposal should work' do
     user = create(:user)
     params = attributes_for(
@@ -65,22 +63,5 @@ class ProposalTest < ActiveSupport::TestCase
 
     assert_equal :ok, ok,
                  'can reply to deleted comments/replies'
-  end
-
-  private
-
-  def flatten_threads(threads)
-    threads
-      .values
-      .map do |stage_comments|
-        stage_comments.map { |comment| flatten_comment_tree(comment) }
-      end
-      .flatten
-  end
-
-  def flatten_comment_tree(comment)
-    replies = comment.replies || []
-    comment.replies = nil
-    [comment, replies.map { |reply| flatten_comment_tree(reply) }].flatten
   end
 end

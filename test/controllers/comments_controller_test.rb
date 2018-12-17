@@ -3,8 +3,6 @@
 require 'test_helper'
 
 class CommentsControllerTest < ActionDispatch::IntegrationTest
-  setup :database_fixture
-
   test 'comment on proposal should work' do
     user, auth_headers, _key = create_auth_user
     proposal = create(:proposal, user: user)
@@ -19,6 +17,8 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
                     'should work'
     assert_match 'id', @response.body,
                  'response should contain id'
+    assert_match 'hasMore', @response.body,
+                 'response should contain a paginated wrapper for uniformity'
 
     post comments_path(root_comment.id),
          headers: auth_headers
@@ -89,17 +89,32 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
                     'should fail without headers'
   end
 
-  test 'selecting a comment should work' do
+  test 'selecting comment threads should work' do
     _user, auth_headers, _key = create_auth_user
     comment = create(:comment)
+    params = attributes_for(:comment_thread)
 
     get comment_threads_path(comment.id),
+        params: params,
         headers: auth_headers
 
     assert_response :success,
                     'should work'
     assert_match 'hasMore', @response.body,
-                 'response be ok'
+                 'response should say it can fetch more'
+
+    get comment_threads_path('NON_EXISTENT_ID'),
+        headers: auth_headers
+
+    assert_response :not_found,
+                    'should not find the comment'
+
+    get comment_threads_path(comment.id),
+        params: { stage: 'NON_EXISTENT_STAGE' },
+        headers: auth_headers
+
+    assert_response :not_found,
+                    'should fail with invalid stage'
   end
 
   test 'liking a comment should work' do

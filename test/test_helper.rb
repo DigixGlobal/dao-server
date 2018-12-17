@@ -8,12 +8,20 @@ require 'webmock/minitest'
 require 'info_server'
 
 require 'simplecov'
-SimpleCov.start 'rails'
+SimpleCov.start 'rails' do
+  add_filter '/app/channels/'
+  add_filter '/app/controllers/overrides'
+  add_filter '/app/jobs/'
+  add_filter '/app/mailers/'
+  add_filter '/bin/'
+end
 puts 'Starting SimpleCov'
 
 module ActiveSupport
   class TestCase
     include FactoryBot::Syntax::Methods
+
+    setup :database_fixture
 
     INFO_SERVER_NAME = Rails.configuration.nonces['info_server_name']
 

@@ -3,8 +3,6 @@
 require 'test_helper'
 
 class ProposalsControllerTest < ActionDispatch::IntegrationTest
-  setup :database_fixture
-
   test 'create new proposal should work' do
     payload = attributes_for(:info_proposal)
     create(:user, address: payload.fetch(:proposer))
@@ -52,8 +50,8 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success,
                     'should work'
-    assert_match 'id', @response.body,
-                 'response should contain id'
+    assert_match 'proposalId', @response.body,
+                 'response should contain proposal id'
     assert_match 'liked', @response.body,
                  'response should contain liked'
 
@@ -73,8 +71,8 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success,
                     'should work'
-    assert_match 'id', @response.body,
-                 'response should contain id'
+    assert_match 'proposalId', @response.body,
+                 'response should contain proposal Id'
     assert_match 'liked', @response.body,
                  'response should contain liked'
 
@@ -103,8 +101,8 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success,
                     'should work'
-    assert_match 'id', @response.body,
-                 'response should contain id'
+    assert_match 'proposalId', @response.body,
+                 'response should contain proposal Id'
     assert_match 'liked', @response.body,
                  'response should contain liked'
 

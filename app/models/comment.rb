@@ -10,11 +10,13 @@ class Comment < ApplicationRecord
                       .proposals['comment_max_depth']
                       .to_i
 
-  DEPTH_LIMITS = [10, 5, 3].freeze
+  DEPTH_LIMITS = Rails
+                 .configuration
+                 .comments['depth_limits']
 
   include StageField
   include Discard::Model
-  has_closure_tree
+  has_closure_tree(order: 'created_at ASC')
 
   belongs_to :user
   has_many :comment_likes
@@ -31,24 +33,26 @@ class Comment < ApplicationRecord
     last_seen_child_id = criteria.fetch(:last_seen_id, '').to_i
     sort_by = criteria.fetch(:sort_by, nil)
 
+    comment_stage = stage || self.stage
+
     top_level =
       Comment
-      .joins("INNER JOIN comment_hierarchies ON comment_hierarchies.ancestor_id = '#{id}' AND comment_hierarchies.generations = 1")
+      .where(parent_id: id)
       .order(comment_sorting(self, sort_by))
       .joins(:user)
       .joins("LEFT OUTER JOIN comment_likes ON comment_likes.comment_id = comments.id AND comment_likes.user_id = #{user.id}")
-      .where(stage: stage)
+      .where(stage: comment_stage)
       .includes(:user, :comment_likes)
       .all
       .to_a
 
     child_levels =
       Comment
-      .joins("INNER JOIN comment_hierarchies ON comments.id = comment_hierarchies.descendant_id AND comment_hierarchies.ancestor_id = #{id} AND comment_hierarchies.generations IN (2, 3)")
-      .order('comments.created_at DESC')
+      .joins("INNER JOIN comment_hierarchies ON comments.id = comment_hierarchies.descendant_id AND comment_hierarchies.ancestor_id = #{id} AND comment_hierarchies.generations IN (2, 3, 4)")
+      .order('comments.created_at ASC')
       .joins(:user)
       .joins("LEFT OUTER JOIN comment_likes ON comment_likes.comment_id = comments.id AND comment_likes.user_id = #{user.id}")
-      .where(stage: stage)
+      .where(stage: comment_stage)
       .includes(:user, :comment_likes)
       .all
       .to_a
@@ -70,7 +74,7 @@ class Comment < ApplicationRecord
 
     base_hash.merge(
       'body' => discarded? ? nil : body,
-      'replies' => replies&.as_json,
+      'replies' => replies&.as_json || DataWrapper.new(false, []),
       'liked' => !user_likes.empty?
     ).deep_transform_keys! { |key| key.camelize(:lower) }
   end
@@ -82,13 +86,13 @@ class Comment < ApplicationRecord
   private
 
   def comment_sorting(comment, sort_by)
-    return 'comments.created_at DESC' if comment.depth == 1
+    return 'comments.created_at ASC' if comment.depth > 0
 
     case sort_by
-    when 'oldest'
-      'comments.created_at ASC'
-    else
+    when :latest, 'latest'
       'comments.created_at DESC'
+    else
+      'comments.created_at ASC'
     end
   end
 
@@ -125,9 +129,8 @@ class Comment < ApplicationRecord
   end
 
   def paginate_comment_trees(comment_trees, depth_limits)
-    if comment_trees.empty? || depth_limits.empty?
-      return DataWrapper.new(false, [])
-    end
+    return DataWrapper.new(false, []) if comment_trees.empty?
+    return DataWrapper.new(!comment_trees.empty?, []) if depth_limits.empty?
 
     depth_limit = depth_limits.first
 
