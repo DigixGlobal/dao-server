@@ -34,9 +34,11 @@ Rails.application.routes.draw do
   get '/transaction',
       to: 'transactions#find'
 
+  get '/proposals',
+      to: 'proposals#select',
+      as: 'proposals'
   post '/proposals',
-       to: 'proposals#create',
-       as: 'proposals'
+       to: 'proposals#create'
   get '/proposals(/:proposal_id)',
       to: 'proposals#show',
       as: 'proposal'

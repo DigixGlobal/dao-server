@@ -16,8 +16,16 @@ class Proposal < ApplicationRecord
             presence: true
 
   def as_json(options = {})
-    serializable_hash(options.merge(except: %i[id]))
-      .deep_transform_keys! { |key| key.camelize(:lower) }
+    base_hash = serializable_hash(
+      except: %i[id],
+      include: { user: { only: :address }, proposal_likes: {} }
+    )
+
+    user_likes = base_hash.delete 'proposal_likes'
+
+    base_hash.merge(
+      'liked' => !user_likes.empty?
+    ).deep_transform_keys! { |key| key.camelize(:lower) }
   end
 
   def user_like(user)
@@ -29,6 +37,33 @@ class Proposal < ApplicationRecord
   end
 
   class << self
+    def select_user_proposals(user, attrs)
+      query = Proposal.joins <<~EOS
+        LEFT OUTER JOIN proposal_likes
+        ON proposal_likes.proposal_id = proposals.id
+        AND proposal_likes.user_id = #{user.id}
+      EOS
+
+      if (ids = attrs.fetch(:proposal_ids, nil))
+        query = query.where(proposal_id: ids)
+      end
+
+      if (stage = attrs.fetch(:stage, nil))
+        query = query.where(stage: stage)
+      end
+
+      case attrs.fetch(:sort_by, nil)
+      when :asc, 'asc'
+        query = query.order('created_at ASC')
+      when :desc, 'desc'
+        query = query.order('created_at DESC')
+      else
+        query = query.order('created_at ASC')
+      end
+
+      query.all
+    end
+
     def create_proposal(attrs)
       proposal = new(
         proposal_id: attrs.fetch(:proposal_id, nil),
