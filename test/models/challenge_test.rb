@@ -135,4 +135,44 @@ class ChallengeTest < ActiveSupport::TestCase
     assert_equal :challenge_failed, challenge_failed,
                  'other user should not be able to prove the challenge'
   end
+
+  test 'cleanup challenge should work' do
+    old_challenge = create(
+      :user_challenge,
+      proven: true,
+      created_at: 1.year.ago
+    )
+    hot_challenge = create(
+      :user_challenge,
+      proven: true,
+      created_at: 1.minute.ago
+    )
+    unproven_challenge = create(
+      :user_challenge,
+      proven: false,
+      created_at: 1.year.ago
+    )
+
+    ok, count = Challenge.cleanup_challenges
+
+    assert_equal :ok, ok,
+                 'should work'
+    assert_equal 1, count,
+                 'should only delete the old challenge'
+    assert_not Challenge.find_by(id: old_challenge.id),
+               'old challenge should be deleted'
+    assert Challenge.find_by(id: unproven_challenge.id),
+           'unproven challenge should not be deleted'
+    assert Challenge.find_by(id: hot_challenge.id),
+           'recent challenge should not be deleted'
+
+    hot_challenge.update(created_at: 1.week.ago)
+
+    _ok, count = Challenge.cleanup_challenges
+
+    assert_equal 1, count,
+                 'should only delete the recent challenge'
+    assert_not Challenge.find_by(id: hot_challenge.id),
+               'recent challenge should now be deleted'
+  end
 end

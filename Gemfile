@@ -17,6 +17,7 @@ gem 'devise_token_auth'
 gem 'discard', '>= 1.0.0'
 gem 'kaminari', '>= 1.1.1'
 gem 'mysql2', '>= 0.3.18', '< 0.5'
+gem 'rufus-scheduler', '>= 3.5.2'
 # Use Puma as the app server
 gem 'puma', '~> 3.11'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder

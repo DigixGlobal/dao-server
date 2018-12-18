@@ -1,7 +1,15 @@
 # frozen_string_literal: true
 
 class Challenge < ApplicationRecord
-  CHALLENGE_LENGTH = 10
+  CHALLENGE_LENGTH = Rails
+                     .configuration
+                     .challenges['challenge_length']
+                     .to_i
+
+  CHALLENGE_AGE = Rails
+                  .configuration
+                  .challenges['challenge_age']
+                  .to_i
 
   belongs_to :user
 
@@ -50,6 +58,14 @@ class Challenge < ApplicationRecord
       challenge.update(proven: true)
 
       [:ok, challenge]
+    end
+
+    def cleanup_challenges
+      deleted_records = Challenge
+                        .where('created_at < ? AND proven = ?', CHALLENGE_AGE.day.ago, true)
+                        .delete_all
+
+      [:ok, deleted_records]
     end
 
     private
