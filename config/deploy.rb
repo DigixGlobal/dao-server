@@ -4,6 +4,8 @@ lock "~> 3.11.0"
 set :application, "dao_server"
 set :repo_url, "git@github.com:DigixGlobal/dao-server.git"
 
+set :branch, "staging"
+
 set :linked_dirs, fetch(:linked_dirs, []).push('log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'vendor/bundle', 'public/system', 'public/uploads')
 set :linked_files, fetch(:linked_files, []).push('config/database.yml', 'config/secrets.yml')
 set :deploy_to, "/home/appuser/apps/dao_server"
@@ -21,7 +23,7 @@ set :puma_preload_app, true
 set :puma_worker_timeout, nil
 set :puma_init_active_record, true  # Change to false when not using ActiveRecord
 set :rvm_type, :user                     # Defaults to: :auto
-set :rvm_ruby_version, '2.5.0@daoserver'
+set :rvm_ruby_version, '2.5.3@daoserver'
 
 
 set :puma_conf, "#{shared_path}/config/puma.rb"
