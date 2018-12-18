@@ -1,11 +1,6 @@
 # frozen_string_literal: true
 
 class Challenge < ApplicationRecord
-  CHALLENGE_LENGTH = Rails
-                     .configuration
-                     .challenges['challenge_length']
-                     .to_i
-
   CHALLENGE_AGE = Rails
                   .configuration
                   .challenges['challenge_age']
@@ -30,7 +25,7 @@ class Challenge < ApplicationRecord
       end
 
       challenge = Challenge.new(
-        challenge: rand(36 * CHALLENGE_LENGTH).to_s(CHALLENGE_LENGTH),
+        challenge: SecureRandom.hex,
         user: user
       )
 

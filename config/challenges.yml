@@ -1,12 +1,8 @@
 development: &default
-  challenge_length: 10
   challenge_age: 7 # In days
 
-
 test:
-  challenge_length: 3
   challenge_age: 1   # In days
 
 production:
-  challenge_length: 10
   challenge_age: 7   # In days
