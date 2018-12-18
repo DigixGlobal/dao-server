@@ -6,6 +6,71 @@ class TransactionsController < ApplicationController
   before_action :authenticate_user!,
                 only: %i[new list]
 
+  def_param_group :transaction do
+    property :id, Integer, desc: 'Transaction id'
+    property :user_id, Integer, desc: 'Creator user id of the transaction'
+    property :title, String, desc: 'Transaction title'
+    property :txhash, String, desc: 'Transaction hash'
+    property :status, Transaction::STATUSES, desc: 'Transaction status'
+    property :block_number, String, desc: 'Transaction block number'
+    property :created_at, String, desc: 'Creation UTC date time'
+    property :updated_at, String, desc: 'Last modified UTC date time'
+  end
+
+  api :PUT, 'transactions/seen',
+      <<~EOS
+        Update transactions to be seen.
+
+        Used by info-server.
+      EOS
+  param :payload, Hash, desc: 'Info Server payload wrapper' do
+    param :transactions, Array, desc: 'Transactions to be marked as seen',
+                                required: true do
+      param :txhash, String, desc: 'Transaction hash'
+    end
+    param :block_number, String, desc: 'Transaction block number',
+                                 required: true
+  end
+  meta authorization: :nonce
+  tags [:info_server]
+  formats [:json]
+  returns desc: 'Seen response' do
+    property :result, String, 'Seen constant'
+  end
+  example <<~EOS
+    {
+            "result": "seen"
+    }
+  EOS
+
+  api :PUT, 'transactions/confirmed',
+      <<~EOS
+        Update transactions to be confirmed or failed.
+
+        Used by info-server.
+      EOS
+  param :payload, Hash, desc: 'Info Server payload wrapper' do
+    param :success, Array, desc: 'Transactions to be marked as confirmed',
+                           required: true do
+      param :txhash, String, desc: 'Transaction hash'
+    end
+    param :failed, Array, desc: 'Transactions to be marked as failed',
+                          required: true do
+      param :txhash, String, desc: 'Transaction hash'
+    end
+  end
+  meta authorization: :nonce
+  tags [:info_server]
+  formats [:json]
+  returns desc: 'Confirmed response' do
+    property :result, String, 'Confirmed constant'
+  end
+  example <<~EOS
+    {
+            "result": "confirmed"
+    }
+  EOS
+
   def update_hashes
     case params.fetch(:type, nil)
     when 'seen'
@@ -41,6 +106,36 @@ class TransactionsController < ApplicationController
     end
   end
 
+  api :POST, 'transactions',
+      <<~EOS
+        Create a new transaction
+      EOS
+  param :title, String, desc: "The transaction's address",
+                        required: true
+  param :txhash, String, desc: "The transaction's hash",
+                         required: true
+  formats [:json]
+  returns :transaction, desc: 'Created transaction'
+  error code: :ok, desc: 'Validation errors',
+        meta: { error: { field: [:validation_error] } }
+  error code: :ok,
+        meta: { error: :database_error },
+        desc: 'Database error. Only if the transaction hash already exists.'
+  meta authorization: :access_token
+  example <<~EOS
+    {
+      "result": {
+        "id": 1,
+        "title": "Random Hash 0x0000000000000000000001257255554755254994",
+        "txhash": "0x0000000000000000000001257255554755254994",
+        "status": "pending",
+        "blockNumber": null,
+        "userId": 82,
+        "createdAt": "2018-12-17T10:43:18.000+08:00",
+        "updatedAt": "2018-12-17T10:43:18.000+08:00"
+      }
+    }
+  EOS
   def new
     result, transaction_or_error = add_new_transaction(
       current_user,
@@ -57,6 +152,31 @@ class TransactionsController < ApplicationController
     end
   end
 
+  api :GET, 'transactions?page=:page&per_page=:per_page',
+      <<~EOS
+        Fetch a batch of transactions via standard table pagination.
+      EOS
+  param :page, Integer, desc: 'Batch page'
+  param :per_page, Integer, desc: 'Batch page size'
+  formats [:json]
+  returns array_of: :transaction, desc: 'List of paginated transaction'
+  meta authorization: :access_token
+  example <<~EOS
+    {
+      "result": [
+        {
+          "id": 1,
+          "title": "Random Hash 0x0000000000000000000001257255554755254994",
+          "txhash": "0x0000000000000000000001257255554755254994",
+          "status": null,
+          "blockNumber": null,
+          "userId": 82,
+          "createdAt": "2018-12-17T10:43:18.000+08:00",
+          "updatedAt": "2018-12-17T10:43:18.000+08:00"
+        }
+      ]
+    }
+  EOS
   def list
     paginated_transactions = paginate(
       current_user.transactions,
@@ -67,6 +187,30 @@ class TransactionsController < ApplicationController
     render json: result_response(paginated_transactions)
   end
 
+  api :GET, 'transaction',
+      <<~EOS
+        Get a transaction's detail by its transaction hash
+      EOS
+  param :txhash, String, desc: 'Transaction hash'
+  formats [:json]
+  returns :transaction, desc: 'Transaction with the given hash'
+  error code: :ok,
+        meta: { error: :transaction_not_found },
+        desc: 'Transaction with the given hash not found'
+  example <<~EOS
+    {
+      "result": {
+        "id": 1,
+        "title": "Random Hash 0x0000000000000000000001257255554755254994",
+        "txhash": "0x0000000000000000000001257255554755254994",
+        "status": "pending",
+        "blockNumber": null,
+        "userId": 82,
+        "createdAt": "2018-12-17T10:43:18.000+08:00",
+        "updatedAt": "2018-12-17T10:43:18.000+08:00"
+      }
+    }
+  EOS
   def find
     case (transaction = Transaction.find_by(txhash: params.fetch(:txhash, '')))
     when nil
@@ -76,6 +220,14 @@ class TransactionsController < ApplicationController
     end
   end
 
+  api :POST, 'transactions/ping', <<~EOS
+    An extra endpoint for testing the nonce validation.
+  EOS
+  meta authorization: :nonce
+  formats [:json]
+  returns desc: 'A blank response' do
+    property :result, String, desc: 'Blank response'
+  end
   def ping
     Rails.logger.info("body from test_server: #{request.body.inspect}")
 

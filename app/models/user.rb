@@ -15,4 +15,9 @@ class User < ApplicationRecord
             presence: true,
             uniqueness: true,
             address: true
+
+  def as_json(options = {})
+    serializable_hash(options.merge(except: %i[provider uid]))
+      .deep_transform_keys! { |key| key.camelize(:lower) }
+  end
 end

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
+  apipie
   mount_devise_token_auth_for 'User', at: 'auth', controllers: {
     # confirmations:      'devise_token_auth/confirmations',
     # passwords:          'devise_token_auth/passwords',
