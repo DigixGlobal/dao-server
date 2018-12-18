@@ -41,6 +41,56 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
                     'should fail without authorization'
   end
 
+  test 'select proposal should work' do
+    user, auth_headers, _key = create_auth_user
+    proposal = create(:proposal_with_comments, user: user)
+
+    get proposals_path,
+        headers: auth_headers
+
+    assert_response :success,
+                    'should work'
+    assert_match 'proposalId', @response.body,
+                 'response should contain proposal id'
+    assert_match 'liked', @response.body,
+                 'response should contain liked property'
+
+    get proposals_path,
+        params: {
+          proposal_ids: [proposal.proposal_id]
+        },
+        headers: auth_headers
+
+    assert_response :success,
+                    'should work with ids filter'
+    assert_match 'proposalId', @response.body,
+                 'response should contain proposal id'
+
+    get proposals_path,
+        params: {
+          stage: proposal.stage
+        },
+        headers: auth_headers
+
+    assert_response :success,
+                    'should work stage filter'
+    assert_match 'proposalId', @response.body,
+                 'response should contain proposal id'
+
+    %i[asc desc].each do |sort|
+      get proposals_path,
+          params: {
+            sort_by: sort
+          },
+          headers: auth_headers
+
+      assert_response :success,
+                      "should work #{sort} sorting"
+      assert_match 'proposalId', @response.body,
+                   'response should contain proposal id'
+    end
+  end
+
   test 'find proposal should work' do
     user, auth_headers, _key = create_auth_user
     proposal = create(:proposal_with_comments, user: user)
