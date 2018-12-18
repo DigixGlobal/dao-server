@@ -108,5 +108,15 @@ module ActiveSupport
           env: { 'RAW_POST_DATA' => { payload: payload }.to_json },
           **kwargs)
     end
+
+    def info_delete(path, payload: {}, headers: {}, **kwargs)
+      info_headers = info_server_headers('DELETE', path, payload)
+
+      delete(path,
+             params: { payload: payload }.to_json,
+             headers: headers.merge(info_headers),
+             env: { 'RAW_POST_DATA' => { payload: payload }.to_json },
+             **kwargs)
+    end
   end
 end

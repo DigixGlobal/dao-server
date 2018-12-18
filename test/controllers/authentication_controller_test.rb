@@ -95,4 +95,18 @@ class AuthenticationControllerTest < ActionDispatch::IntegrationTest
     assert_match 'challenge_failed', @response.body,
                  'response should contain address challenge failed status'
   end
+
+  test 'cleanup old challenges should work' do
+    info_delete authorizations_old_path,
+                payload: {}
+
+    assert_response :success,
+                    'should work'
+
+    delete authorizations_old_path,
+           params: {}
+
+    assert_response :forbidden,
+                    'should fail without authorization'
+  end
 end

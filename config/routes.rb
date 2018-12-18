@@ -19,6 +19,8 @@ Rails.application.routes.draw do
        to: 'authentication#challenge'
   put '/authorization',
       to: 'authentication#prove'
+  delete '/authorizations/old',
+         to: 'authentication#cleanup_challenges'
 
   get '/transactions/ping',
       to: 'transactions#ping'

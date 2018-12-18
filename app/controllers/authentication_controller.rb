@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class AuthenticationController < ApplicationController
+  before_action :check_info_server_request, only: %i[cleanup_challenges]
+
   def_param_group :challenge do
   end
 
@@ -115,6 +117,34 @@ class AuthenticationController < ApplicationController
       sign_in(:user, challenge.user)
       auth_token = challenge.user.create_new_auth_token
       render json: result_response(auth_token)
+    end
+  end
+
+  api :DELETE, 'authorizations/old',
+      <<~EOS
+        Delete old #{Challenge::CHALLENGE_AGE} day(s) proven challenges.
+
+        Triggered by a scheduler internally. Not to be used directly.
+      EOS
+  formats [:json]
+  returns desc: 'Number of old challenges deleted' do
+    property :result, Integer, desc: 'Result data'
+  end
+  meta authorization: :nonce
+  example <<~EOS
+    {
+      "result": 1
+    }
+  EOS
+  def cleanup_challenges
+    result, count = Challenge.cleanup_challenges
+
+    case result
+    when :ok
+      render json: result_response(count)
+    else # Should not happen
+      render json: error_response,
+             status: :server_error
     end
   end
 
