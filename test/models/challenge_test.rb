@@ -52,4 +52,87 @@ class ChallengeTest < ActiveSupport::TestCase
     assert Challenge.find(my_new_challenge.id),
            'should not cleanup previously proven challenge'
   end
+
+  test 'prove challenge should work' do
+    key = Eth::Key.new
+    user = create(:user, address: key.address.downcase)
+    challenge = create(:user_challenge, user_id: user.id)
+
+    user_challenge = challenge.challenge
+    attrs = {
+      address: user.address,
+      signature: key.personal_sign(user_challenge),
+      message: user_challenge
+    }
+
+    ok, proven_challenge = Challenge.prove_challenge(
+      challenge,
+      attrs
+    )
+
+    assert_equal :ok, ok,
+                 'should work'
+    assert proven_challenge.proven,
+           'challenge should be proven'
+
+    challenge_already_proven, = Challenge.prove_challenge(
+      challenge,
+      attrs
+    )
+
+    assert_equal :challenge_already_proven, challenge_already_proven,
+                 'should fail with a proven challenge'
+  end
+
+  test 'prove challenge should fail safely' do
+    key = Eth::Key.new
+    user = create(:user, address: key.address.downcase)
+    challenge = create(:user_challenge, user_id: user.id)
+
+    user_challenge = challenge.challenge
+    attrs = {
+      address: user.address,
+      signature: key.personal_sign(user_challenge),
+      message: user_challenge
+    }
+
+    address_not_equal, = Challenge.prove_challenge(
+      challenge,
+      {}
+    )
+
+    assert_equal :address_not_equal, address_not_equal,
+                 'should fail with empty data'
+
+    challenge_failed, = Challenge.prove_challenge(
+      challenge,
+      address: user.address
+    )
+
+    assert_equal :challenge_failed, challenge_failed,
+                 'should fail without signature or message'
+
+    challenge_failed, = Challenge.prove_challenge(
+      challenge,
+      address: user.address,
+      signature: 'INVALID_SIGNATURE',
+      message: user_challenge
+    )
+
+    assert_equal :challenge_failed, challenge_failed,
+                 'should fail with invalid signature'
+
+    other_key = Eth::Key.new
+    create(:user, address: other_key.address.downcase)
+
+    challenge_failed, = Challenge.prove_challenge(
+      challenge,
+      address: user.address,
+      signature: other_key.personal_sign(user_challenge),
+      message: user_challenge
+    )
+
+    assert_equal :challenge_failed, challenge_failed,
+                 'other user should not be able to prove the challenge'
+  end
 end

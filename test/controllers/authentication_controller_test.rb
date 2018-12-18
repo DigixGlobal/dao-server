@@ -47,6 +47,7 @@ class AuthenticationControllerTest < ActionDispatch::IntegrationTest
                  'response should contain access-token'
 
     put authorization_path, params: params
+
     assert_response :success,
                     'should fail on re-proving'
     assert_match 'challenge_already_proven', @response.body,
@@ -70,8 +71,8 @@ class AuthenticationControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success,
                     'should fail with empty data'
-    assert_match 'invalid_data', @response.body,
-                 'response should contain invalid parameter status'
+    assert_match 'challenge_not_found', @response.body,
+                 'response should say the challenge was not found'
 
     put authorization_path, params: params.merge(challenge_id: :incorrect_id)
 

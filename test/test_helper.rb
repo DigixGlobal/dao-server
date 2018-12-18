@@ -9,6 +9,7 @@ require 'info_server'
 
 require 'simplecov'
 SimpleCov.start 'rails' do
+  add_filter 'Rakefile'
   add_filter '/app/channels/'
   add_filter '/app/controllers/overrides'
   add_filter '/app/jobs/'

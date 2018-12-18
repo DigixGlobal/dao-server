@@ -98,41 +98,24 @@ class AuthenticationController < ApplicationController
     }
   EOS
   def prove
-    unless params.key?(:address) &&
-           params.key?(:challenge_id) &&
-           params.key?(:signature) &&
-           params.key?(:message)
-      return render json: error_response(:invalid_data)
-    end
-
-    challenge_id = params.fetch(:challenge_id, '')
+    challenge_id = prove_params.fetch(:challenge_id, '')
     unless (challenge = Challenge.find_by(id: challenge_id))
       return render json: error_response(:challenge_not_found)
     end
 
-    if challenge.proven?
-      return render json: error_response(:challenge_already_proven)
-    end
-
-    address = params.fetch(:address, '').downcase
-    unless challenge.user.address == address
-      return render json: { error: :address_not_equal }
-    end
-
-    recovered_address = recover_address(
-      params.fetch(:message, ''),
-      params.fetch(:signature, '')
+    result, challenge_or_error = Challenge.prove_challenge(
+      challenge,
+      prove_params
     )
 
-    unless recovered_address == address
-      return render json: error_response(:challenge_failed)
+    case result
+    when :challenge_already_proven, :challenge_failed, :address_not_equal
+      render json: error_response(challenge_or_error || result)
+    else
+      sign_in(:user, challenge.user)
+      auth_token = challenge.user.create_new_auth_token
+      render json: result_response(auth_token)
     end
-
-    prove_challenge(challenge)
-
-    sign_in(:user, challenge.user)
-    auth_token = challenge.user.create_new_auth_token
-    render json: result_response(auth_token)
   end
 
   private
@@ -141,13 +124,7 @@ class AuthenticationController < ApplicationController
     params.permit(:address)
   end
 
-  def recover_address(message, signature)
-    Eth::Utils.public_key_to_address(
-      Eth::Key.personal_recover(message, signature)
-    ).downcase
-  end
-
-  def prove_challenge(challenge)
-    challenge.update(proven: true)
+  def prove_params
+    params.permit(:address, :challenge_id, :message, :signature)
   end
 end

@@ -32,5 +32,32 @@ class Challenge < ApplicationRecord
 
       [:ok, challenge]
     end
+
+    def prove_challenge(challenge, attrs)
+      return [:challenge_already_proven, nil] if challenge.proven?
+
+      address = attrs.fetch(:address, '').downcase
+
+      return [:address_not_equal, nil] unless challenge.user.address == address
+
+      recovered_address = recover_address(
+        attrs.fetch(:message, ''),
+        attrs.fetch(:signature, '')
+      )
+
+      return [:challenge_failed, nil] unless recovered_address == address
+
+      challenge.update(proven: true)
+
+      [:ok, challenge]
+    end
+
+    private
+
+    def recover_address(message, signature)
+      Eth::Utils.public_key_to_address(Eth::Key.personal_recover(message, signature)).downcase
+    rescue TypeError, NoMethodError
+      ''
+    end
   end
 end
