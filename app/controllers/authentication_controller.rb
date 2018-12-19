@@ -3,7 +3,43 @@
 class AuthenticationController < ApplicationController
   before_action :check_info_server_request, only: %i[cleanup_challenges]
 
-  def_param_group :challenge do
+  api :POST, 'authorization',
+      <<~EOS
+        Get an access token by requesting for a authentication challenge.
+      EOS
+  see 'authentication#prove'
+  param :address, /0x\w+{40}/, desc: "The user's address",
+                               required: true
+  formats [:json]
+  returns desc: 'User challenge' do
+    property :id, Integer, desc: 'Challenge id'
+    property :challenge, String, desc: 'Challenge string'
+    property :created_at, String, desc: 'Creation UTC date time'
+    property :updated_at, String, desc: 'Last modified UTC date time'
+  end
+  error code: :ok,
+        meta: { error: :address_not_found }
+  example <<~EOS
+    {
+      "result": {
+        "id": 3,
+        "challenge": "260",
+        "createdAt": "2018-12-17T09:54:17.000+08:00",
+        "updatedAt": "2018-12-17T09:54:17.000+08:00"
+      }
+    }
+  EOS
+  def challenge
+    result, challenge_or_error =
+      Challenge.create_new_challenge(challenge_params)
+
+    case result
+    when :user_not_found
+      render json: error_response(challenge_or_error || result),
+             status: :not_found
+    else # :ok
+      render json: result_response(challenge_or_error)
+    end
   end
 
   api :POST, 'authorization',
