@@ -1,0 +1,43 @@
+defaults: &defaults
+  docker:
+    - image: circleci/ruby:2.5.3-node-browsers-legacy 
+  working_directory: ~/digix-dao-server
+
+version: 2.0
+
+jobs:
+  brakeman:
+    <<: *defaults
+    steps:
+      
+      - checkout
+
+      - save_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/digix-dao-server
+      
+      - run:
+          name: checkout branch
+          command: git fetch && git checkout `fix/authorization-cleanup`
+      
+      - run:
+          name: Bundle Install brakeman
+          command: gem install brakeman
+      
+      - run:
+          name: Run brakeman 
+          command: brakeman --run-all-checks 
+
+      - store_test_results:
+          name: Store Test Report
+          path: ~/digix-dao-server
+          destination: test
+
+      - store_artifacts:
+          path: ~/digix-dao-server
+
+workflows:
+  version: 2
+  security-analysis:
+    -  brakeman
