@@ -148,9 +148,10 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
       create(:transaction)
     end
 
+    block_number = generate(:block_number)
     payload = {
       transactions: transactions,
-      block_number: generate(:block_number)
+      block_number: block_number
     }
 
     path = transactions_update_path('seen')
@@ -164,7 +165,10 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
                  'response should say ok'
 
     Transaction.all.each do |txn|
-      assert_equal 'seen', txn.status
+      assert_equal 'seen', txn.status,
+                   'transactions should be seen'
+      assert_equal block_number, txn.block_number,
+                   'transactions should have the correct block number'
     end
 
     put path,

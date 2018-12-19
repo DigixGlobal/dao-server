@@ -17,6 +17,8 @@ gem 'devise_token_auth'
 gem 'discard', '>= 1.0.0'
 gem 'kaminari', '>= 1.1.1'
 gem 'mysql2', '>= 0.3.18', '< 0.5'
+gem 'rufus-scheduler', '>= 3.5.2'
+gem 'typhoeus', '>= 1.3.1'
 # Use Puma as the app server
 gem 'puma', '~> 3.11'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
@@ -58,6 +60,8 @@ group :development do
   gem 'capistrano3-puma'
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
+
+  gem 'brakeman', '>= 4.3.1', require: false
 end
 
 group :test do

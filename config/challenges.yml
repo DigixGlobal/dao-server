@@ -1,0 +1,8 @@
+development: &default
+  challenge_age: 7 # In days
+
+test:
+  challenge_age: 1   # In days
+
+production:
+  challenge_age: 7   # In days

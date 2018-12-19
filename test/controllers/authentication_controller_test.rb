@@ -7,8 +7,6 @@ class AuthenticationControllerTest < ActionDispatch::IntegrationTest
     user = create(:user)
     params = { address: user.address }
 
-    headers = { 'CONTENT-TYPE': 'application/json' }
-
     post authorization_path,
          params: params
 
@@ -49,6 +47,7 @@ class AuthenticationControllerTest < ActionDispatch::IntegrationTest
                  'response should contain access-token'
 
     put authorization_path, params: params
+
     assert_response :success,
                     'should fail on re-proving'
     assert_match 'challenge_already_proven', @response.body,
@@ -72,8 +71,8 @@ class AuthenticationControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success,
                     'should fail with empty data'
-    assert_match 'invalid_data', @response.body,
-                 'response should contain invalid parameter status'
+    assert_match 'challenge_not_found', @response.body,
+                 'response should say the challenge was not found'
 
     put authorization_path, params: params.merge(challenge_id: :incorrect_id)
 
@@ -95,5 +94,19 @@ class AuthenticationControllerTest < ActionDispatch::IntegrationTest
                     'should fail with incorrect message'
     assert_match 'challenge_failed', @response.body,
                  'response should contain address challenge failed status'
+  end
+
+  test 'cleanup old challenges should work' do
+    info_delete authorizations_old_path,
+                payload: {}
+
+    assert_response :success,
+                    'should work'
+
+    delete authorizations_old_path,
+           params: {}
+
+    assert_response :forbidden,
+                    'should fail without authorization'
   end
 end
