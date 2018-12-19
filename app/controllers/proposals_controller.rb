@@ -4,7 +4,7 @@ class ProposalsController < ApplicationController
   around_action :check_and_update_info_server_request,
                 only: %i[create]
   before_action :authenticate_user!,
-                only: %i[find show]
+                only: %i[find show select]
   before_action :throttle_commenting!,
                 only: %i[comment reply]
 

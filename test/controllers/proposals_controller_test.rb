@@ -89,6 +89,11 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
       assert_match 'proposalId', @response.body,
                    'response should contain proposal id'
     end
+
+    get proposals_path
+
+    assert_response :unauthorized,
+                    'should fail without authorization'
   end
 
   test 'find proposal should work' do
