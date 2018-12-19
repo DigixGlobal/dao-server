@@ -37,26 +37,13 @@ class Comment < ApplicationRecord
 
     comment_stage = stage || self.stage
 
-    top_ids =
-      Comment
-      .where(parent_id: id)
-      .order(comment_sorting(self, sort_by))
-      .joins("LEFT OUTER JOIN comment_likes ON comment_likes.comment_id = comments.id AND comment_likes.user_id = #{user.id}")
-      .pluck(:id)
-
-    pruned_ids = comment_ids_after_seen(
-      top_ids,
-      last_seen_child_id,
-      DEPTH_LIMITS.first
-    )
-
     top_level =
       Comment
       .where(parent_id: id)
       .order(comment_sorting(self, sort_by))
       .joins(:user)
       .joins("LEFT OUTER JOIN comment_likes ON comment_likes.comment_id = comments.id AND comment_likes.user_id = #{user.id}")
-      .where(stage: comment_stage, id: pruned_ids)
+      .where(stage: comment_stage)
       .includes(:user, :comment_likes)
       .all
       .to_a
@@ -64,11 +51,9 @@ class Comment < ApplicationRecord
     child_levels =
       Comment
       .joins("INNER JOIN comment_hierarchies ON comments.id = comment_hierarchies.descendant_id AND comment_hierarchies.ancestor_id = #{id} AND comment_hierarchies.generations IN (2, 3, 4)")
-      .joins('INNER JOIN comment_hierarchies as parent_comment ON comments.id = parent_comment.descendant_id')
       .order('comments.created_at ASC')
       .joins(:user)
       .joins("LEFT OUTER JOIN comment_likes ON comment_likes.comment_id = comments.id AND comment_likes.user_id = #{user.id}")
-      .where('parent_comment.ancestor_id IN (?)', pruned_ids)
       .where(stage: comment_stage)
       .includes(:user, :comment_likes)
       .all
@@ -77,7 +62,8 @@ class Comment < ApplicationRecord
     comments = top_level.concat(child_levels)
 
     comment_trees = build_comment_trees(comments, self)
-    paginate_comment_trees(comment_trees, DEPTH_LIMITS)
+    after_comment_trees = comments_after_seen(comment_trees, last_seen_child_id)
+    paginate_comment_trees(after_comment_trees, DEPTH_LIMITS)
   end
 
   def as_json(options = {})
@@ -133,15 +119,15 @@ class Comment < ApplicationRecord
     comments.select { |comment| comment.parent_id == root_comment.id }
   end
 
-  def comment_ids_after_seen(comment_ids, last_seen_child_id, limit)
-    return comment_ids if comment_ids.empty?
-    return comment_ids.take(limit + 1) unless last_seen_child_id
+  def comments_after_seen(comments, last_seen_id)
+    return [] if comments.empty?
+    return comments unless last_seen_id
 
-    unless (last_seen_index = comment_ids.index { |comment_id| comment_id == last_seen_child_id })
-      return comment_ids.take(limit + 1)
+    unless (last_seen_index = comments.index { |comment| comment.id == last_seen_id })
+      return comments
     end
 
-    comment_ids[(last_seen_index + 1)..-1].take(limit + 1)
+    comments[(last_seen_index + 1)..-1]
   end
 
   def paginate_comment_trees(comment_trees, depth_limits)
