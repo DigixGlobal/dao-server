@@ -6,8 +6,10 @@ class UserControllerTest < ActionDispatch::IntegrationTest
   test 'create user should work' do
     params = attributes_for(:user)
 
-    info_post user_path,
-              payload: params
+    assert_self_nonce_increased do
+      info_post user_path,
+                payload: params
+    end
 
     assert_response :success,
                     'should work'

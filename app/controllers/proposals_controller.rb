@@ -131,7 +131,12 @@ class ProposalsController < ApplicationController
 
           Prefer to put this in the request body since addresess are big strings.
         EOS
-  param :stage, Proposal.stages.keys, desc: 'Proposal stage to filter'
+  param :stage, Proposal.stages.keys,
+        desc: <<~EOS
+          Proposal stage to filter.
+
+          Leave this blank if you want all proposals.
+        EOS
   param :sort_by, %i[asc desc],
         desc: <<~EOS
           Sort the proposal by creation date.
