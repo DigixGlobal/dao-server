@@ -1,0 +1,15 @@
+language: ruby
+rvm:
+  - 2.5.3
+
+env:
+  - TRAVIS_BUILD=true
+  
+before_install:
+  - git fetch && git checkout `fix/authorization-cleanup`
+
+install:
+  - gem install brakeman
+
+script:
+  - brakeman --run-all-checks
