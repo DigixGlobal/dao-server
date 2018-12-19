@@ -60,6 +60,8 @@ group :development do
   gem 'capistrano3-puma'
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
+
+  gem 'brakeman', '>= 4.3.1', require: false
 end
 
 group :test do
