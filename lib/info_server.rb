@@ -28,9 +28,6 @@ class InfoServer
 
   # Get the current seen nonce by the info server
   def current_nonce
-    puts "SERVER_NAME", SERVER_NAME
-    puts Nonce.find_by(server: SERVER_NAME).inspect
-    puts Nonce.all
     Nonce.find_by(server: SERVER_NAME).nonce
   end
 

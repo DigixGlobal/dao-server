@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
 class UserController < ApplicationController
-  before_action :check_info_server_request, only: [:new_user]
+
+  around_action :check_and_update_info_server_request,
+                only: %i[:new_user]
+
   before_action :authenticate_user!, only: [:details]
 
   def_param_group :user do
