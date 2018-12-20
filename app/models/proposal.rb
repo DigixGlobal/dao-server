@@ -52,6 +52,15 @@ class Proposal < ApplicationRecord
         query = query.where(stage: stage)
       end
 
+      if (liked = attrs.fetch(:liked, nil))
+        query = case liked
+                when 'not'
+                  query.where('proposal_likes.user_id IS NULL')
+                else
+                  query.where('proposal_likes.user_id IS NOT NULL')
+                end
+      end
+
       case attrs.fetch(:sort_by, nil)
       when :asc, 'asc'
         query = query.order('created_at ASC')

@@ -100,7 +100,7 @@ class UserController < ApplicationController
 
   def user_params
     params
-      .permit(payload: [:address])
+      .permit(:user, payload: [:address])
       .to_hash
       .fetch('payload', {})
       .slice('address')
