@@ -313,11 +313,14 @@ class ProposalsController < ApplicationController
   def create_params
     return {} if params.fetch(:payload, nil).nil?
 
-    params.require(:payload).permit(:proposal_id, :proposer)
+    params
+      .require(:payload)
+      .permit(:proposal_id, :proposer, proposal: {})
   end
 
   def select_params
-    params.permit(:proposal, :stage, :sort_by, :liked, proposal_ids: [])
+    params
+      .permit(:proposal, :stage, :sort_by, :liked, proposal_ids: [])
   end
 
   def user_proposal_view(user, proposal)

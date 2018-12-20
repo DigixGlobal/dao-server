@@ -99,10 +99,10 @@ class UserController < ApplicationController
   end
 
   def user_params
+    return {} if params.fetch(:payload, nil).nil?
+
     params
-      .permit(:user, payload: [:address])
-      .to_hash
-      .fetch('payload', {})
-      .slice('address')
+      .require(:payload)
+      .permit(:address)
   end
 end
