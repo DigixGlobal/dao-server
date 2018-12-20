@@ -112,8 +112,10 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
     path = transactions_update_path('confirmed')
     payload = { success: successful_transactions, failed: failed_transactions }
 
-    info_put path,
-             payload: payload
+    assert_self_nonce_increased do
+      info_put path,
+               payload: payload
+    end
 
     assert_response :success,
                     'should work'
@@ -148,15 +150,18 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
       create(:transaction)
     end
 
+    block_number = generate(:block_number)
     payload = {
       transactions: transactions,
-      block_number: generate(:block_number)
+      block_number: block_number
     }
 
     path = transactions_update_path('seen')
 
-    info_put path,
-             payload: payload
+    assert_self_nonce_increased do
+      info_put path,
+               payload: payload
+    end
 
     assert_response :success,
                     'should work'
@@ -164,7 +169,10 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
                  'response should say ok'
 
     Transaction.all.each do |txn|
-      assert_equal 'seen', txn.status
+      assert_equal 'seen', txn.status,
+                   'transactions should be seen'
+      assert_equal block_number, txn.block_number,
+                   'transactions should have the correct block number'
     end
 
     put path,
@@ -203,8 +211,10 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
   test 'test server should work' do
     payload = generate(:txhash)
 
-    info_get transactions_ping_path,
-             payload: payload
+    assert_self_nonce_increased do
+      info_get transactions_ping_path,
+               payload: payload
+    end
 
     assert_response :success,
                     'should work'

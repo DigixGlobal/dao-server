@@ -42,6 +42,7 @@ module DaoServer
       end
     end
 
+    config.challenges = config_for(:challenges)
     config.comments = config_for(:comments)
     config.nonces = config_for(:nonces)
     config.proposals = config_for(:proposals)

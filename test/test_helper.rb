@@ -9,6 +9,7 @@ require 'info_server'
 
 require 'simplecov'
 SimpleCov.start 'rails' do
+  add_filter 'Rakefile'
   add_filter '/app/channels/'
   add_filter '/app/controllers/overrides'
   add_filter '/app/jobs/'
@@ -106,6 +107,22 @@ module ActiveSupport
           headers: headers.merge(info_headers),
           env: { 'RAW_POST_DATA' => { payload: payload }.to_json },
           **kwargs)
+    end
+
+    def info_delete(path, payload: {}, headers: {}, **kwargs)
+      info_headers = info_server_headers('DELETE', path, payload)
+
+      delete(path,
+             params: { payload: payload }.to_json,
+             headers: headers.merge(info_headers),
+             env: { 'RAW_POST_DATA' => { payload: payload }.to_json },
+             **kwargs)
+    end
+
+    def assert_self_nonce_increased
+      current_nonce = InfoServer.current_nonce
+      yield
+      assert_operator InfoServer.current_nonce, :>, current_nonce
     end
   end
 end

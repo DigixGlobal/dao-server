@@ -1,9 +1,45 @@
 # frozen_string_literal: true
 
 class AuthenticationController < ApplicationController
-  CHALLENGE_LENGTH = 10
+  before_action :check_info_server_request, only: %i[cleanup_challenges]
 
-  def_param_group :challenge do
+  api :POST, 'authorization',
+      <<~EOS
+        Get an access token by requesting for a authentication challenge.
+      EOS
+  see 'authentication#prove'
+  param :address, /0x\w+{40}/, desc: "The user's address",
+                               required: true
+  formats [:json]
+  returns desc: 'User challenge' do
+    property :id, Integer, desc: 'Challenge id'
+    property :challenge, String, desc: 'Challenge string'
+    property :created_at, String, desc: 'Creation UTC date time'
+    property :updated_at, String, desc: 'Last modified UTC date time'
+  end
+  error code: :ok,
+        meta: { error: :address_not_found }
+  example <<~EOS
+    {
+      "result": {
+        "id": 3,
+        "challenge": "260",
+        "createdAt": "2018-12-17T09:54:17.000+08:00",
+        "updatedAt": "2018-12-17T09:54:17.000+08:00"
+      }
+    }
+  EOS
+  def challenge
+    result, challenge_or_error =
+      Challenge.create_new_challenge(challenge_params)
+
+    case result
+    when :user_not_found
+      render json: error_response(challenge_or_error || result),
+             status: :not_found
+    else # :ok
+      render json: result_response(challenge_or_error)
+    end
   end
 
   api :POST, 'authorization',
@@ -33,21 +69,13 @@ class AuthenticationController < ApplicationController
     }
   EOS
   def challenge
-    address = params.fetch(:address, '').downcase
-
-    unless (user = User.find_by(address: address))
-      return render json: { error: :address_not_found },
-                    status: :not_found
-    end
-
-    result, challenge_or_error = create_new_challenge(
-      challenge: rand(36 * CHALLENGE_LENGTH).to_s(CHALLENGE_LENGTH),
-      user: user
-    )
+    result, challenge_or_error =
+      Challenge.create_new_challenge(challenge_params)
 
     case result
-    when :invalid_data, :database_error
-      render json: error_response(challenge_or_error)
+    when :user_not_found
+      render json: error_response(challenge_or_error || result),
+             status: :not_found
     else # :ok
       render json: result_response(challenge_or_error)
     end
@@ -108,61 +136,61 @@ class AuthenticationController < ApplicationController
     }
   EOS
   def prove
-    unless params.key?(:address) &&
-           params.key?(:challenge_id) &&
-           params.key?(:signature) &&
-           params.key?(:message)
-      return render json: error_response(:invalid_data)
-    end
-
-    challenge_id = params.fetch(:challenge_id, '')
+    challenge_id = prove_params.fetch(:challenge_id, '')
     unless (challenge = Challenge.find_by(id: challenge_id))
       return render json: error_response(:challenge_not_found)
     end
 
-    if challenge.proven?
-      return render json: error_response(:challenge_already_proven)
-    end
-
-    address = params.fetch(:address, '').downcase
-    unless challenge.user.address == address
-      return render json: { error: :address_not_equal }
-    end
-
-    recovered_address = recover_address(
-      params.fetch(:message, ''),
-      params.fetch(:signature, '')
+    result, challenge_or_error = Challenge.prove_challenge(
+      challenge,
+      prove_params
     )
 
-    unless recovered_address == address
-      return render json: error_response(:challenge_failed)
+    case result
+    when :challenge_already_proven, :challenge_failed, :address_not_equal
+      render json: error_response(challenge_or_error || result)
+    else
+      sign_in(:user, challenge.user)
+      auth_token = challenge.user.create_new_auth_token
+      render json: result_response(auth_token)
     end
+  end
 
-    prove_challenge(challenge)
+  api :DELETE, 'authorizations/old',
+      <<~EOS
+        Delete old #{Challenge::CHALLENGE_AGE} day(s) proven challenges.
 
-    sign_in(:user, challenge.user)
-    auth_token = challenge.user.create_new_auth_token
-    render json: result_response(auth_token)
+        Triggered by a scheduler internally. Not to be used directly.
+      EOS
+  formats [:json]
+  returns desc: 'Number of old challenges deleted' do
+    property :result, Integer, desc: 'Result data'
+  end
+  meta authorization: :nonce
+  example <<~EOS
+    {
+      "result": 1
+    }
+  EOS
+  def cleanup_challenges
+    result, count = Challenge.cleanup_challenges
+
+    case result
+    when :ok
+      render json: result_response(count)
+    else # Should not happen
+      render json: error_response,
+             status: :server_error
+    end
   end
 
   private
 
-  def create_new_challenge(attrs)
-    challenge = Challenge.new(attrs)
-
-    return [:invalid_data, challenge.errors] unless challenge.valid?
-    return [:database_error, challenge.errors] unless challenge.save
-
-    [:ok, challenge]
+  def challenge_params
+    params.permit(:address)
   end
 
-  def recover_address(message, signature)
-    Eth::Utils.public_key_to_address(
-      Eth::Key.personal_recover(message, signature)
-    ).downcase
-  end
-
-  def prove_challenge(challenge)
-    challenge.update(proven: true)
+  def prove_params
+    params.permit(:address, :challenge_id, :message, :signature)
   end
 end
