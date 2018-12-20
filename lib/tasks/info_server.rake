@@ -33,7 +33,7 @@ namespace :info_server do
     proposals = Proposal.where(proposal_id: proposal_ids).to_a
     users = User.where(address: addresses).to_a
 
-    unless proposals
+    if proposals.empty?
       puts 'No proposals found. Sync up with info server first.'
       exit
     end
