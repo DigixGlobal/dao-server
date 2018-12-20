@@ -3,11 +3,11 @@
 require 'typhoeus'
 require 'factory_bot'
 
-FactoryBot.find_definitions
-
 namespace :info_server do
   desc 'Info Server Proposal Comment Seeding'
   task comment_seed: :environment do
+    FactoryBot.find_definitions
+
     response = Typhoeus::Request.get(
       'http://localhost:3001/proposals/all',
       headers: { 'Content-Type' => 'application/json' },
