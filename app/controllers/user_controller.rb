@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class UserController < ApplicationController
-  before_action :check_info_server_request, only: %i[new_user]
+  around_action :check_and_update_info_server_request, only: %i[new_user]
   before_action :authenticate_user!, only: [:details]
 
   def_param_group :user do
@@ -99,10 +99,10 @@ class UserController < ApplicationController
   end
 
   def user_params
+    return {} if params.fetch(:payload, nil).nil?
+
     params
-      .permit(payload: [:address])
-      .to_hash
-      .fetch('payload', {})
-      .slice('address')
+      .require(:payload)
+      .permit(:address)
   end
 end

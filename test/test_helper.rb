@@ -118,5 +118,11 @@ module ActiveSupport
              env: { 'RAW_POST_DATA' => { payload: payload }.to_json },
              **kwargs)
     end
+
+    def assert_self_nonce_increased
+      current_nonce = InfoServer.current_nonce
+      yield
+      assert_operator InfoServer.current_nonce, :>, current_nonce
+    end
   end
 end

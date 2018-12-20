@@ -112,8 +112,10 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
     path = transactions_update_path('confirmed')
     payload = { success: successful_transactions, failed: failed_transactions }
 
-    info_put path,
-             payload: payload
+    assert_self_nonce_increased do
+      info_put path,
+               payload: payload
+    end
 
     assert_response :success,
                     'should work'
@@ -156,8 +158,10 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
 
     path = transactions_update_path('seen')
 
-    info_put path,
-             payload: payload
+    assert_self_nonce_increased do
+      info_put path,
+               payload: payload
+    end
 
     assert_response :success,
                     'should work'
@@ -207,8 +211,10 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
   test 'test server should work' do
     payload = generate(:txhash)
 
-    info_get transactions_ping_path,
-             payload: payload
+    assert_self_nonce_increased do
+      info_get transactions_ping_path,
+               payload: payload
+    end
 
     assert_response :success,
                     'should work'

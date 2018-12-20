@@ -4,7 +4,7 @@ class ProposalsController < ApplicationController
   around_action :check_and_update_info_server_request,
                 only: %i[create]
   before_action :authenticate_user!,
-                only: %i[find show]
+                only: %i[find show select]
   before_action :throttle_commenting!,
                 only: %i[comment reply]
 
@@ -131,7 +131,12 @@ class ProposalsController < ApplicationController
 
           Prefer to put this in the request body since addresess are big strings.
         EOS
-  param :stage, Proposal.stages.keys, desc: 'Proposal stage to filter'
+  param :stage, Proposal.stages.keys,
+        desc: <<~EOS
+          Proposal stage to filter.
+
+          Leave this blank if you want all proposals regardless of stage.
+        EOS
   param :sort_by, %i[asc desc],
         desc: <<~EOS
           Sort the proposal by creation date.
@@ -141,6 +146,18 @@ class ProposalsController < ApplicationController
             Default sorting option
           - asc ::
             Sort by ascending 'createdAt' order.
+        EOS
+  param :liked, [true, false],
+        desc: <<~EOS
+          Filter proposals if they were liked or not by the current user.
+
+          - 'not' ::
+            Filter all proposals that are not liked by the current user
+          - '' ::
+            Filter all proposals that are liked the the current user.
+            Default filter if the liked parameter exist.
+
+          Leave this blank if you want all proposals wheter its liked or not
         EOS
   formats [:json]
   returns desc: 'Proposals satisfying the criteria' do
@@ -296,11 +313,14 @@ class ProposalsController < ApplicationController
   def create_params
     return {} if params.fetch(:payload, nil).nil?
 
-    params.require(:payload).permit(:proposal_id, :proposer)
+    params
+      .require(:payload)
+      .permit(:proposal_id, :proposer, proposal: {})
   end
 
   def select_params
-    params.permit(:stage, :sort_by, proposal_ids: [])
+    params
+      .permit(:proposal, :stage, :sort_by, :liked, proposal_ids: [])
   end
 
   def user_proposal_view(user, proposal)
