@@ -6,3 +6,6 @@ test:
 
 production:
   challenge_age: 7   # In days
+
+staging:
+  challenge_age: 7   # In days
