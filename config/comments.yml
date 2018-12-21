@@ -1,4 +1,4 @@
-development: &default
+development: &defaults
   depth_limits:
     - 10
     - 5
@@ -9,6 +9,12 @@ test:
     - 3
     - 2
     - 1
+
+staging:
+  depth_limits:
+    - 10
+    - 5
+    - 3
 
 production:
   depth_limits:

@@ -3,6 +3,7 @@
 require 'cancancan'
 
 class Comment < ApplicationRecord
+  attribute :comment_like_id
   attribute :replies
 
   COMMENT_MAX_DEPTH = Rails
@@ -39,24 +40,23 @@ class Comment < ApplicationRecord
 
     top_level =
       Comment
-      .where(parent_id: id)
-      .order(comment_sorting(self, sort_by))
       .joins(:user)
       .joins("LEFT OUTER JOIN comment_likes ON comment_likes.comment_id = comments.id AND comment_likes.user_id = #{user.id}")
-      .where(stage: comment_stage)
-      .includes(:user, :comment_likes)
-      .all
+      .where(stage: comment_stage, parent_id: id)
+      .select('comment_likes.id AS comment_like_id', :id, :user_id, :parent_id, :body, :likes, :stage, :user_id, :created_at, :updated_at, :discarded_at)
+      .order(comment_sorting(self, sort_by))
+      .preload(:user)
       .to_a
 
     child_levels =
       Comment
       .joins("INNER JOIN comment_hierarchies ON comments.id = comment_hierarchies.descendant_id AND comment_hierarchies.ancestor_id = #{id} AND comment_hierarchies.generations IN (2, 3, 4)")
-      .order('comments.created_at ASC')
       .joins(:user)
       .joins("LEFT OUTER JOIN comment_likes ON comment_likes.comment_id = comments.id AND comment_likes.user_id = #{user.id}")
       .where(stage: comment_stage)
-      .includes(:user, :comment_likes)
-      .all
+      .select('comment_likes.id AS comment_like_id', :id, :user_id, :parent_id, :body, :likes, :stage, :user_id, :created_at, :updated_at, :discarded_at)
+      .order('comments.created_at ASC')
+      .preload(:user)
       .to_a
 
     comments = top_level.concat(child_levels)
@@ -69,15 +69,15 @@ class Comment < ApplicationRecord
   def as_json(options = {})
     base_hash = serializable_hash(
       except: %i[body replies parent_id discarded_at],
-      include: { user: { only: :address }, comment_likes: {} }
+      include: { user: { only: :address } }
     )
 
-    user_likes = base_hash.delete 'comment_likes'
+    user_comment_like_id = base_hash.delete 'comment_like_id'
 
     base_hash.merge(
       'body' => discarded? ? nil : body,
       'replies' => replies&.as_json || DataWrapper.new(false, []),
-      'liked' => !user_likes.empty?
+      'liked' => !user_comment_like_id.nil?
     ).deep_transform_keys! { |key| key.camelize(:lower) }
   end
 
