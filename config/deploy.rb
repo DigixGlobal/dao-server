@@ -26,7 +26,7 @@ set :rvm_type, :user                     # Defaults to: :auto
 set :rvm_ruby_version, '2.5.3@daoserver'
 
 
-set :puma_conf, "#{shared_path}/config/puma.rb"
+# set :puma_conf, "#{shared_path}/config/puma.rb"
 
 namespace :deploy do
   before 'check:linked_files', 'puma:config'

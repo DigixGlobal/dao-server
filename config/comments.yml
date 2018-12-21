@@ -15,3 +15,9 @@ production:
     - 10
     - 5
     - 3
+
+staging:
+  depth_limits:
+    - 10
+    - 5
+    - 3
