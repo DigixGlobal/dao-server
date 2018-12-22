@@ -40,23 +40,22 @@ class Comment < ApplicationRecord
 
     top_level =
       Comment
-      .joins(:user)
+      .preload(:user)
       .joins("LEFT OUTER JOIN comment_likes ON comment_likes.comment_id = comments.id AND comment_likes.user_id = #{user.id}")
       .where(stage: comment_stage, parent_id: id)
       .select('comment_likes.id AS comment_like_id', :id, :user_id, :parent_id, :body, :likes, :stage, :user_id, :created_at, :updated_at, :discarded_at)
       .order(comment_sorting(self, sort_by))
-      .preload(:user)
       .to_a
 
     child_levels =
       Comment
+      .preload(:user)
       .joins("INNER JOIN comment_hierarchies ON comments.id = comment_hierarchies.descendant_id AND comment_hierarchies.ancestor_id = #{id} AND comment_hierarchies.generations IN (2, 3, 4)")
-      .joins(:user)
+      .includes(:user)
       .joins("LEFT OUTER JOIN comment_likes ON comment_likes.comment_id = comments.id AND comment_likes.user_id = #{user.id}")
       .where(stage: comment_stage)
       .select('comment_likes.id AS comment_like_id', :id, :user_id, :parent_id, :body, :likes, :stage, :user_id, :created_at, :updated_at, :discarded_at)
       .order('comments.created_at ASC')
-      .preload(:user)
       .to_a
 
     comments = top_level.concat(child_levels)
