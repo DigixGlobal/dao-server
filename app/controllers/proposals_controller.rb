@@ -320,7 +320,7 @@ class ProposalsController < ApplicationController
 
   def select_params
     params
-      .permit(:proposal, :stage, :sort_by, :liked, proposal_ids: [])
+      .permit(:stage, :sort_by, :liked, proposal_ids: [], proposal: {})
   end
 
   def user_proposal_view(user, proposal)
