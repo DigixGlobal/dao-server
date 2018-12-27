@@ -64,4 +64,31 @@ class ProposalTest < ActiveSupport::TestCase
     assert_equal :ok, ok,
                  'can reply to deleted comments/replies'
   end
+
+  test 'select user proposals should be correctly liked' do
+    proposal = create(:proposal)
+    user = create(:user)
+
+    proposals = Proposal.select_user_proposals(user, {})
+
+    assert_not proposals.as_json({}).dig(0, 'liked'),
+               'should not be liked'
+
+    ok, _liked_proposal = Proposal.like(user, proposal)
+
+    assert_equal :ok, ok,
+                 'like should work'
+
+    liked_proposals = Proposal.select_user_proposals(user, liked: true)
+
+    assert liked_proposals.as_json({}).dig(0, 'liked'),
+           'should be liked now'
+
+    other_user = create(:user)
+
+    unliked_proposals = Proposal.select_user_proposals(other_user, liked: true)
+
+    assert_not unliked_proposals.as_json({}).dig(0, 'liked'),
+               'should be not liked'
+  end
 end

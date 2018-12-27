@@ -387,6 +387,57 @@ class CommentThreadTest < ActiveSupport::TestCase
                  'sorting option should not work with child comment'
   end
 
+  test 'thread view should work' do
+    root_comment = create_root_comment
+    stage = root_comment.stage
+    user = create(:user)
+
+    ok, comment = Comment.comment(user, root_comment, body: 'ONLY_COMMENT')
+
+    assert_equal :ok, ok,
+                 'should insert comment'
+
+    result = root_comment
+             .user_stage_comments(
+               user,
+               stage,
+               {}
+             )
+             .as_json({})
+
+    assert_not result.dig('data', 0, 'liked'),
+               'should not be liked'
+
+    ok, _liked_comment = Comment.like(user, comment)
+
+    assert_equal :ok, ok,
+                 'should like comment'
+
+    liked_result = root_comment
+                   .user_stage_comments(
+                     user,
+                     stage,
+                     {}
+                   )
+                   .as_json({})
+
+    assert liked_result.dig('data', 0, 'liked'),
+           'should now be liked'
+
+    other_user = create(:user)
+
+    unliked_result = root_comment
+                     .user_stage_comments(
+                       other_user,
+                       stage,
+                       {}
+                     )
+                     .as_json({})
+
+    assert_not unliked_result.dig('data', 0, 'liked'),
+               'should not be liked with the other user'
+  end
+
   private
 
   def hack_comment_time

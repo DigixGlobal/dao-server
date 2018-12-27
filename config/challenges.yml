@@ -1,11 +1,11 @@
-development: &default
+development: &defaults
   challenge_age: 7 # In days
 
 test:
-  challenge_age: 1   # In days
-
-production:
-  challenge_age: 7   # In days
+  challenge_age: 1
 
 staging:
-  challenge_age: 7   # In days
+  challenge_age: 7
+
+production:
+  challenge_age: 7
