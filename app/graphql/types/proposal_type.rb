@@ -2,7 +2,6 @@
 
 module Types
   class ProposalType < Types::BaseObject
-    implements [LikeableType]
     description 'DAO proposals/projects to be voted and funded for'
 
     field :proposal_id, String,
@@ -25,5 +24,9 @@ module Types
     field :updated_at, GraphQL::Types::ISO8601DateTime,
           null: false,
           description: 'Date when the proposal was last updated'
+
+    def self.authorized?(object, context)
+      super && context.fetch(:current_user, nil)
+    end
   end
 end

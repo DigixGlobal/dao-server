@@ -1,16 +1,12 @@
 # frozen_string_literal: true
 
 class GraphqlController < ApplicationController
-  before_action :authenticate_user!,
-                only: %i[find show select]
-
   def execute
     variables = ensure_hash(params[:variables])
     query = params[:query]
     operation_name = params[:operation_name]
     context = {
-      # Query context goes here, for example:
-      # current_user: current_user,
+      current_user: current_user
     }
 
     result = DaoServerSchema.execute(
