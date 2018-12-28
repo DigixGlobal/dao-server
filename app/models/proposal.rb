@@ -70,7 +70,7 @@ class Proposal < ApplicationRecord
         query = query.order('created_at ASC')
       end
 
-      query.all.to_a
+      query.all
     end
 
     def create_proposal(attrs)

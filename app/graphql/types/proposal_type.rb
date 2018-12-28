@@ -6,7 +6,7 @@ module Types
 
     field :proposal_id, String,
           null: false,
-          description: 'Proposal address'
+          description: 'Eth contract address of the proposal'
     field :stage, StageType,
           null: false,
           description: 'Stage/phase the proposal is in'
@@ -16,14 +16,16 @@ module Types
           description: 'Number of user who liked this proposal'
     field :liked, Boolean,
           null: false,
-          description: 'A flag to indicate if the current user liked this proposal'
+          description: 'A flag to indicate if the current user liked this proposal',
+          method: :user_liked
 
     field :created_at, GraphQL::Types::ISO8601DateTime,
           null: false,
           description: 'Date when the proposal was published'
-    field :updated_at, GraphQL::Types::ISO8601DateTime,
+
+    field :user, UserType,
           null: false,
-          description: 'Date when the proposal was last updated'
+          description: 'Publisher of this proposal'
 
     def self.authorized?(object, context)
       super && context.fetch(:current_user, nil)
@@ -31,6 +33,10 @@ module Types
 
     def self.visible?(context)
       authorized?(nil, context)
+    end
+
+    def user_liked
+      !object.proposal_like_id.nil?
     end
   end
 end

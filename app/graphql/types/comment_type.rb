@@ -10,6 +10,9 @@ module Types
     field :stage, StageType,
           null: false,
           description: 'Stage/phase the comment was published'
+    field :body, String,
+          null: false,
+          description: 'Message/body of the comment'
 
     field :likes, Integer,
           null: false,
@@ -21,9 +24,10 @@ module Types
     field :created_at, GraphQL::Types::ISO8601DateTime,
           null: false,
           description: 'Date when the comment was published'
-    field :updated_at, GraphQL::Types::ISO8601DateTime,
+
+    field :user, UserType,
           null: false,
-          description: 'Date when the comment was last updated'
+          description: 'Poster of this comment'
 
     def self.authorized?(object, context)
       super && context.fetch(:current_user, nil)
