@@ -16,18 +16,20 @@ module GraphiQLRailsEditorsControllerDecorator
       user_auth_token = user.create_new_auth_token
 
       GraphiQL::Rails.config.headers['access-token'] = ->(context) { user_auth_token['access-token'] }
-      GraphiQL::Rails.config.headers['token-type'] = ->(context) { user_auth_token['token-type'] }
       GraphiQL::Rails.config.headers['client'] = ->(context) { user_auth_token['client'] }
-      GraphiQL::Rails.config.headers['expiry'] = ->(context) { user_auth_token['expiry'] }
       GraphiQL::Rails.config.headers['uid'] = ->(context) { user_auth_token['uid'] }
 
       GraphiQL::Rails.config.logo = "Current User Address: #{user.address}"
+      GraphiQL::Rails.config.title = 'DAO API GraphiQL'
     else
+      GraphiQL::Rails.config.headers['access-token'] = ->(context) { '' }
+      GraphiQL::Rails.config.headers['client'] = ->(context) { '' }
+      GraphiQL::Rails.config.headers['uid'] = ->(context) { '' }
+
+      GraphiQL::Rails.config.logo = 'No Current User. Add the query param `user_id` and restart if you need it.'
       GraphiQL::Rails.config.title = 'DAO GraphQL unauthorized'
     end
   end
 end
 
-GraphiQL::Rails.config.logo = 'No Current User. Add the query param `user_id` and restart if you need it.'
-GraphiQL::Rails.config.title = 'DAO API GraphiQL'
 GraphiQL::Rails::EditorsController.send :prepend, GraphiQLRailsEditorsControllerDecorator
