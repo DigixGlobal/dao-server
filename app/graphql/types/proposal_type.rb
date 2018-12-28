@@ -16,8 +16,7 @@ module Types
           description: 'Number of user who liked this proposal'
     field :liked, Boolean,
           null: false,
-          description: 'A flag to indicate if the current user liked this proposal',
-          method: :user_liked
+          description: 'A flag to indicate if the current user liked this proposal'
 
     field :created_at, GraphQL::Types::ISO8601DateTime,
           null: false,
@@ -33,10 +32,6 @@ module Types
 
     def self.visible?(context)
       authorized?(nil, context)
-    end
-
-    def user_liked
-      !object.proposal_like_id.nil?
     end
   end
 end
