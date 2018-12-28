@@ -125,6 +125,10 @@ GEM
       raabro (~> 1.1)
     globalid (0.4.1)
       activesupport (>= 4.2.0)
+    graphiql-rails (1.5.0)
+      railties
+      sprockets-rails
+    graphql (1.8.11)
     hashdiff (0.3.7)
     i18n (1.1.1)
       concurrent-ruby (~> 1.0)
@@ -277,6 +281,8 @@ DEPENDENCIES
   eth
   factory_bot (>= 4.0.0)
   factory_bot_rails (>= 4.0.0)
+  graphiql-rails (>= 1.5.0)
+  graphql (>= 1.8.11)
   kaminari (>= 1.1.1)
   listen (>= 3.0.5, < 3.2)
   mysql2 (>= 0.3.18, < 0.5)
