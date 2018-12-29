@@ -3,7 +3,7 @@
 require 'self_server'
 
 # Module to manage info server communication and utilities
-class InfoServer
+module InfoServer
   SERVER_URL = ENV.fetch('INFO_SERVER_URL') { 'http://localhost:3001' }
   SERVER_SECRET = ENV.fetch(
     'DAO_INFO_SERVER_SECRET',
@@ -96,7 +96,7 @@ class InfoServer
 
   # Given a request path and payload, make the HTTP request to the info
   # server and return a tagged tupple of result or error
-  def request_info_server(endpoint, payload)
+  def request_info_server(endpoint, payload = {})
     new_nonce = SelfServer.increment_nonce
 
     signature = InfoServer.access_signature('POST', endpoint, new_nonce, payload)

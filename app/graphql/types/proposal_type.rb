@@ -25,6 +25,14 @@ module Types
     field :user, UserType,
           null: false,
           description: 'Publisher of this proposal'
+    field :comment, CommentType,
+          null: false,
+          description: <<~EOS
+            Root comment of this proposal.
+
+            In particular, the `id` field is used as the starting point
+            to expand/search comments by stage.
+          EOS
 
     def self.authorized?(object, context)
       super && context.fetch(:current_user, nil)

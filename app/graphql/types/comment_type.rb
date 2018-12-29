@@ -11,8 +11,12 @@ module Types
           null: false,
           description: 'Stage/phase the comment was published'
     field :body, String,
-          null: false,
-          description: 'Message/body of the comment'
+          null: true,
+          description: <<~EOS
+            Message/body of the comment.
+
+            This is `null` if this message is deleted.
+          EOS
 
     field :likes, Integer,
           null: false,
@@ -28,6 +32,9 @@ module Types
     field :user, UserType,
           null: false,
           description: 'Poster of this comment'
+    field :replies, [CommentType],
+          null: false,
+          description: 'Replies/comments about this comment'
 
     def self.authorized?(object, context)
       super && context.fetch(:current_user, nil)
