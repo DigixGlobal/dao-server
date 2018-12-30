@@ -3,7 +3,7 @@
 require 'self_server'
 
 # Module to manage info server communication and utilities
-module InfoServer
+class InfoServer
   SERVER_URL = ENV.fetch('INFO_SERVER_URL') { 'http://localhost:3001' }
   SERVER_SECRET = ENV.fetch(
     'DAO_INFO_SERVER_SECRET',
@@ -67,6 +67,42 @@ module InfoServer
     [:ok, nil]
   end
 
+  # Given a request method, path and payload, make the HTTP request to the info
+  # server and return a tagged tupple of result or error
+  def request_info_server(method, endpoint, payload = {})
+    new_nonce = SelfServer.increment_nonce
+
+    signature = InfoServer.access_signature(method, endpoint, new_nonce, payload)
+
+    uri = URI.parse("#{SERVER_URL}#{endpoint}")
+    https = Net::HTTP.new(uri.host, uri.port)
+    # https.use_ssl = true
+    request_class = case method.upcase
+                    when 'POST'
+                      Net::HTTP::Post
+                    when 'GET'
+                      Net::HTTP::Get
+                    else
+                      return [:invalid_method, nil]
+                    end
+
+    req = request_class.new(uri.path,
+                            'Content-Type' => 'application/json',
+                            'ACCESS-SIGN' => signature,
+                            'ACCESS-NONCE' => new_nonce.to_s)
+    req.body = { payload: payload }.to_json
+
+    begin
+      res = https.request(req)
+
+      result = JSON.parse(res.body).dig('result')
+
+      [:ok, result]
+    rescue StandardError
+      [:error, nil]
+    end
+  end
+
     private
 
   # Given a string, hash it with the info server secret
@@ -92,33 +128,6 @@ module InfoServer
       request.raw_post.empty? ? request.params.fetch('payload', '')
         : JSON.parse(request.raw_post).fetch('payload', '')
     )
-  end
-
-  # Given a request path and payload, make the HTTP request to the info
-  # server and return a tagged tupple of result or error
-  def request_info_server(endpoint, payload = {})
-    new_nonce = SelfServer.increment_nonce
-
-    signature = InfoServer.access_signature('POST', endpoint, new_nonce, payload)
-
-    uri = URI.parse("#{SERVER_URL}#{endpoint}")
-    https = Net::HTTP.new(uri.host, uri.port)
-    # https.use_ssl = true
-    req = Net::HTTP::Post.new(uri.path,
-                              'Content-Type' => 'application/json',
-                              'ACCESS-SIGN' => signature,
-                              'ACCESS-NONCE' => new_nonce.to_s)
-    req.body = { payload: payload }.to_json
-
-    begin
-      res = https.request(req)
-
-      result = JSON.parse(res.body).dig('result')
-
-      [:ok, result]
-    rescue StandardError
-      [:error, nil]
-    end
   end
   end
 

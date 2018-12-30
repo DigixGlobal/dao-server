@@ -2,10 +2,10 @@
 
 require 'info_server'
 
-module InfoApi
+class InfoApi
   class << self
     def list_proposals
-      unwrap_result(InfoServer.request_info_server('/proposals/all'))
+      unwrap_result(InfoServer.request_info_server('GET', '/proposals/all', {}))
     end
 
     private
@@ -16,7 +16,7 @@ module InfoApi
       if success == :ok
         data = result[1]
 
-        [:ok, convert_hash_keys(data).fetch('result', nil)]
+        [:ok, convert_hash_keys(data)]
       else
         result
       end

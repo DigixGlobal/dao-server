@@ -44,8 +44,6 @@ module Types
                description: 'Sorting options for the proposals'
     end
 
-    private
-
     def search_proposals(**attrs)
       dao_proposals = Proposal.select_user_proposals(
         context[:current_user],
@@ -56,8 +54,10 @@ module Types
 
       raise GraphQL::ExecutionError, 'Network failure' unless result == :ok
 
-      merge_by_keys(dao_proposals, info_proposals_or_error)
+      merge_by_keys(dao_proposals, info_proposals_or_error, :proposal_id)
     end
+
+    private
 
     def merge_by_keys(left, right, key)
       return [] if left.nil? || left.empty?
