@@ -5,6 +5,7 @@ require 'cancancan'
 class Comment < ApplicationRecord
   attribute :comment_like_id
   attribute :replies
+  attribute :liked
 
   COMMENT_MAX_DEPTH = Rails
                       .configuration
@@ -31,6 +32,30 @@ class Comment < ApplicationRecord
             presence: true
   validates :user,
             presence: true
+
+  def query_user_proposal_threads(user, criteria)
+    comment_stage = criteria.fetch(:stage, stage)
+    sort_by = criteria.fetch(:sort_by, nil)
+
+    Comment
+      .preload(:user)
+      .joins("LEFT OUTER JOIN comment_likes ON comment_likes.comment_id = comments.id AND comment_likes.user_id = #{user.id}")
+      .where(stage: comment_stage, parent_id: id)
+      .select(
+        'comment_likes.id AS liked',
+        :id,
+        :user_id,
+        :parent_id,
+        :body,
+        :likes,
+        :stage,
+        :user_id,
+        :created_at,
+        :updated_at,
+        :discarded_at
+      )
+      .order(comment_sorting(self, sort_by))
+  end
 
   def user_stage_comments(user, stage, criteria)
     last_seen_child_id = criteria.fetch(:last_seen_id, '').to_i

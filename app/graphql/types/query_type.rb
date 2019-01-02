@@ -10,6 +10,13 @@ module Types
           value: 'asc'
   end
 
+  class ThreadSortByType < Types::BaseEnum
+    value 'LATEST', 'Sort in descending creation time',
+          value: 'latest'
+    value 'OLDEST', 'Sort in ascending creation time',
+          value: 'oldest'
+  end
+
   class QueryType < Types::BaseObject
     field :search_proposals, [ProposalType],
           null: false,
@@ -29,19 +36,19 @@ module Types
                description: 'Sorting options for the proposals'
     end
 
-    field :search_comments, [CommentType],
+    field :search_proposal_threads, CommentType.connection_type,
           null: false,
           description: 'Proposals' do
+      argument :proposal_id, String,
+               required: true,
+               description: 'Search proposal threads by proposal id address'
       argument :stage, StageType,
+               required: true,
+               description: 'Filter comments by stage/phase'
+      argument :sort_by, ThreadSortByType,
                required: false,
-               description: 'Filter proposals by its stage/phase'
-      argument :liked, Boolean,
-               required: false,
-               description: 'Filter proposals if it is liked or not by the current user'
-      argument :sort_by, SortByType,
-               required: false,
-               default_value: 'desc',
-               description: 'Sorting options for the proposals'
+               default_value: 'latest',
+               description: 'Sorting options for the threads'
     end
 
     def search_proposals(**attrs)
@@ -55,6 +62,17 @@ module Types
       raise GraphQL::ExecutionError, 'Network failure' unless result == :ok
 
       merge_by_keys(dao_proposals, info_proposals_or_error, :proposal_id)
+    end
+
+    def search_proposal_threads(proposal_id:, **attrs)
+      unless (proposal = Proposal.find_by(proposal_id: proposal_id))
+        raise GraphQL::ExecutionError, "Proposal #{proposal_id} does not exist"
+      end
+
+      proposal.comment.query_user_proposal_threads(
+        context[:current_user],
+        attrs
+      )
     end
 
     private

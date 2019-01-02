@@ -32,9 +32,17 @@ module Types
     field :user, UserType,
           null: false,
           description: 'Poster of this comment'
-    field :replies, [CommentType],
+    field :replies, CommentType.connection_type,
           null: false,
           description: 'Replies/comments about this comment'
+
+    def liked
+      !object.liked.nil?
+    end
+
+    def replies(**attrs)
+      []
+    end
 
     def self.authorized?(object, context)
       super && context.fetch(:current_user, nil)
