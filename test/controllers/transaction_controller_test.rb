@@ -76,6 +76,15 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
     assert_match 'title', @response.body,
                  'response should contain ok status'
 
+    get transactions_path,
+        params: { all: '' },
+        headers: auth_headers
+
+    assert_response :success,
+                    'should work with pagination disabled'
+    assert_match 'title', @response.body,
+                 'response should contain results'
+
     get transactions_path
 
     assert_response :unauthorized,
