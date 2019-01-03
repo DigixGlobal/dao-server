@@ -33,30 +33,6 @@ class Comment < ApplicationRecord
   validates :user,
             presence: true
 
-  def query_user_proposal_threads(user, criteria)
-    comment_stage = criteria.fetch(:stage, stage)
-    sort_by = criteria.fetch(:sort_by, nil)
-
-    Comment
-      .preload(:user)
-      .joins("LEFT OUTER JOIN comment_likes ON comment_likes.comment_id = comments.id AND comment_likes.user_id = #{user.id}")
-      .where(stage: comment_stage, parent_id: id)
-      .select(
-        'comment_likes.id AS liked',
-        :id,
-        :user_id,
-        :parent_id,
-        :body,
-        :likes,
-        :stage,
-        :user_id,
-        :created_at,
-        :updated_at,
-        :discarded_at
-      )
-      .order(comment_sorting(self, sort_by))
-  end
-
   def user_stage_comments(user, stage, criteria)
     last_seen_child_id = criteria.fetch(:last_seen_id, '').to_i
     sort_by = criteria.fetch(:sort_by, nil)
@@ -192,6 +168,39 @@ class Comment < ApplicationRecord
   end
 
   class << self
+    def select_batch_user_comment_replies(comment_ids, user, criteria)
+      sorting = case criteria.fetch(:sort_by, nil)
+                when :latest, 'latest'
+                  'comments.created_at DESC'
+                else
+                  'comments.created_at ASC'
+                end
+
+      query =
+        Comment
+        .joins("LEFT OUTER JOIN comment_likes ON comment_likes.comment_id = comments.id AND comment_likes.user_id = #{user.id}")
+        .joins("INNER JOIN (SELECT @prev := '', @n := 0) AS init")
+        .select(
+          '@n := IF(parent_id != @prev, 1, @n + 1) AS n',
+          '@prev := parent_id',
+          :parent_id,
+          :id,
+          :body,
+          :stage,
+          :created_at
+        )
+        .order(:parent_id, sorting)
+        .where(['@n <= ?', 3])
+        .where(['parent_id IN (?)', comment_ids])
+        .limit(999_999)
+
+      if (stage = criteria.fetch(:stage, nil))
+        query = query.where(stage: stage)
+      end
+
+      query.all
+    end
+
     def comment(user, parent_comment, attrs)
       if parent_comment.depth >= COMMENT_MAX_DEPTH
         return [:maximum_comment_depth, nil]

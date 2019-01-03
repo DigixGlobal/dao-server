@@ -50,6 +50,7 @@ GEM
     apipie-rails (0.5.14)
       rails (>= 4.1)
     arel (9.0.0)
+    batch-loader (1.2.2)
     bcrypt (3.1.12)
     brakeman (4.3.1)
     builder (3.2.3)
@@ -263,6 +264,7 @@ PLATFORMS
 DEPENDENCIES
   api-pagination (>= 4.8.1)
   apipie-rails (>= 0.5.14)
+  batch-loader (= 1.2.2)
   brakeman (>= 4.3.1)
   byebug
   cancancan (>= 2.3.0)
@@ -282,7 +284,7 @@ DEPENDENCIES
   factory_bot (>= 4.0.0)
   factory_bot_rails (>= 4.0.0)
   graphiql-rails (>= 1.5.0)
-  graphql (>= 1.8.11)
+  graphql (= 1.8.11)
   kaminari (>= 1.1.1)
   listen (>= 3.0.5, < 3.2)
   mysql2 (>= 0.3.18, < 0.5)

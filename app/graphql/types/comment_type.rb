@@ -14,8 +14,7 @@ module Types
           null: true,
           description: <<~EOS
             Message/body of the comment.
-
-            This is `null` if this message is deleted.
+             This is `null` if this message is deleted.
           EOS
 
     field :likes, Integer,
@@ -40,8 +39,18 @@ module Types
       !object.liked.nil?
     end
 
-    def replies(**attrs)
-      []
+    def replies
+      BatchLoader.for(object.id).batch(default_value: []) do |comment_ids, loader|
+        replies = Comment.select_batch_user_comment_replies(
+          comment_ids,
+          context[:current_user],
+          {}
+        ).all
+
+        replies.each do |reply|
+          loader.call(reply.parent_id) { |thread| thread << reply }
+        end
+      end
     end
 
     def self.authorized?(object, context)
