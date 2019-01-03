@@ -160,7 +160,7 @@ class TransactionsController < ApplicationController
   param :page, Integer, desc: 'Batch page'
   param :per_page, Integer, desc: 'Batch page size'
   formats [:json]
-  returns array_of: :transaction, desc: 'List of paginated transaction'
+  returns array_of: :transaction, desc: 'List of paginated transaction sorted by latest transaction'
   meta authorization: :access_token
   example <<~EOS
     {
