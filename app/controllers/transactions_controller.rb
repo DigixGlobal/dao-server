@@ -156,10 +156,11 @@ class TransactionsController < ApplicationController
       <<~EOS
         Fetch a batch of transactions via standard table pagination.
       EOS
+  param :all, String, desc: 'A flag to disable pagination and return all transactions if present'
   param :page, Integer, desc: 'Batch page'
   param :per_page, Integer, desc: 'Batch page size'
   formats [:json]
-  returns array_of: :transaction, desc: 'List of paginated transaction'
+  returns array_of: :transaction, desc: 'List of paginated transaction sorted by latest transaction'
   meta authorization: :access_token
   example <<~EOS
     {
@@ -178,11 +179,17 @@ class TransactionsController < ApplicationController
     }
   EOS
   def list
-    paginated_transactions = paginate(
-      current_user.transactions,
-      per_page: params.fetch(:per_page, 10),
-      page: params.fetch(:page, 1)
-    )
+    transactions = current_user.transactions.order('created_at DESC')
+
+    paginated_transactions = if params.fetch(:all, nil)
+                               transactions
+                             else
+                               paginate(
+                                 transactions,
+                                 per_page: params.fetch(:per_page, 10),
+                                 page: params.fetch(:page, 1)
+                               )
+                             end
 
     render json: result_response(paginated_transactions)
   end
