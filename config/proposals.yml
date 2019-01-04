@@ -6,10 +6,6 @@ test:
   comment_max_depth: 10
   comment_throttle_period: 2
 
-staging:
-  comment_max_depth: 10
-  comment_throttle_period: 2
-
 production:
   comment_max_depth: 10
   comment_throttle_period: 2

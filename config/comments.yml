@@ -10,19 +10,7 @@ test:
     - 2
     - 1
 
-staging:
-  depth_limits:
-    - 10
-    - 5
-    - 3
-
 production:
-  depth_limits:
-    - 10
-    - 5
-    - 3
-
-staging:
   depth_limits:
     - 10
     - 5
