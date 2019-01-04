@@ -110,8 +110,8 @@ module Types
       return [] if left.nil? || left.empty?
       return left if right.nil? || right.empty?
 
-      right_hash = Hash[right.map { |item| [item[key], item] }]
-      left.map { |item| item.merge(right_hash.fetch(item[key], {})) }
+      right_hash = Hash[right.map { |item| [item[key], item.to_h] }]
+      left.map { |item| item.class.new(item.attributes.merge(right_hash.fetch(item[key], {}))) }
     end
   end
 end
