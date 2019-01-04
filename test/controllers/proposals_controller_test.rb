@@ -4,7 +4,7 @@ require 'test_helper'
 
 class ProposalsControllerTest < ActionDispatch::IntegrationTest
   test 'create new proposal should work' do
-    payload = attributes_for(:info_proposal)
+    payload = attributes_for(:create_proposal)
     create(:user, address: payload.fetch(:proposer))
     path = proposals_path
 
