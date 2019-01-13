@@ -28,6 +28,9 @@ module Types
           null: false,
           description: 'Date when the comment was published'
 
+    field :parent_id, String,
+          null: false,
+          description: 'Parent id of the comment'
     field :user, UserType,
           null: false,
           description: 'Poster of this comment'

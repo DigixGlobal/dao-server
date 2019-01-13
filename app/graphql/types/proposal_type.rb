@@ -22,6 +22,10 @@ module Types
           null: false,
           description: 'Date when the proposal was published'
 
+    field :comment_id, String,
+          null: false,
+          description: 'Root comment id of the proposal'
+
     field :user, UserType,
           null: false,
           description: 'Publisher of this proposal'

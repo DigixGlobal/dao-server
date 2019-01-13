@@ -16,6 +16,9 @@ type Comment {
   # Number of user who liked this comment
   likes: Int!
 
+  # Parent id of the comment
+  parentId: String!
+
   # Replies/comments about this comment
   replies(
     # Returns the elements in the list that come after the specified cursor.
@@ -84,6 +87,9 @@ type PageInfo {
 
 # DAO proposals/projects to be voted and funded for
 type Proposal {
+  # Root comment id of the proposal
+  commentId: String!
+
   # Date when the proposal was published
   createdAt: ISO8601DateTime!
 

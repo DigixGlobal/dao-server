@@ -185,6 +185,7 @@ class Comment < ApplicationRecord
           '@prev := parent_id',
           :parent_id,
           :id,
+          :user_id,
           :body,
           :stage,
           :created_at
@@ -192,6 +193,7 @@ class Comment < ApplicationRecord
         .order(:parent_id, sorting)
         .where(['@n <= ?', 3])
         .where(['parent_id IN (?)', comment_ids])
+        .preload(:user)
         .limit(999_999)
 
       if (stage = criteria.fetch(:stage, nil))
