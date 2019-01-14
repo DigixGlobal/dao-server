@@ -97,4 +97,31 @@ class UserTest < ActiveSupport::TestCase
     assert_equal :invalid_data, invalid_data,
                  'should fail with empty email'
   end
+
+  test 'change email should be audited' do
+    user = create(:user)
+    email = generate(:email)
+
+    ok, tracked_user = User.change_email(user, email)
+
+    assert_equal :ok, ok,
+                 'should work'
+
+    audit = UserAudit.where(user_id: user.id).order(created_at: :desc).first
+    assert_equal email, audit.new_value,
+                 'new email should be tracked'
+    assert_equal '', audit.old_value,
+                 'old email should be tracked'
+    assert_equal 'EMAIL_CHANGE', audit.event,
+                 'event should be tracked'
+
+    ok, updated_user = User.change_email(tracked_user, generate(:email))
+
+    next_audit = UserAudit.where(user_id: user.id).order(created_at: :desc).first
+
+    assert_equal updated_user.email, next_audit.new_value,
+                 'new email should be tracked'
+    assert_equal email, next_audit.old_value,
+                 'old email should be tracked'
+  end
 end

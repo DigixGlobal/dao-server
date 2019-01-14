@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_01_13_234805) do
+ActiveRecord::Schema.define(version: 2019_01_14_045629) do
 
   create_table "challenges", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "challenge"
@@ -90,6 +90,16 @@ ActiveRecord::Schema.define(version: 2019_01_13_234805) do
     t.datetime "updated_at", null: false
     t.index ["txhash"], name: "index_transactions_on_txhash", unique: true
     t.index ["user_id"], name: "index_transactions_on_user_id"
+  end
+
+  create_table "user_audits", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "event", null: false
+    t.string "field", null: false
+    t.string "old_value", null: false
+    t.string "new_value", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|

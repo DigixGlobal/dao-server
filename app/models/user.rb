@@ -56,6 +56,16 @@ class User < ApplicationRecord
         return [:invalid_data, updated_user.errors]
       end
 
+      audit = UserAudit.new(
+        user_id: user.id,
+        event: 'EMAIL_CHANGE',
+        field: 'email',
+        old_value: user.email || '',
+        new_value: email
+      )
+
+      puts audit.errors.inspect unless audit.save
+
       [:ok, updated_user]
     end
   end
