@@ -2,6 +2,8 @@
 
 module Types
   class StageType < Types::BaseEnum
+    description 'Phases or stages for a proposal or comment'
+
     value 'IDEA', 'To be endorsed by a moderator',
           value: 'idea'
     value 'DRAFT', 'To be voted on',

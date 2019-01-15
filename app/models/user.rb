@@ -23,13 +23,13 @@ class User < ApplicationRecord
             allow_nil: true,
             uniqueness: true,
             format: { with: /\A[a-zA-Z0-9_]+\Z/,
-                      message: 'only allow letters, numbers and underscore' },
+                      message: 'only allows letters, numbers and underscore' },
             username: true
   validates :email,
             allow_nil: true,
             uniqueness: true,
             format: { with: /\A(\S+)@(.+)\.(\S+)\z/,
-                      message: 'only valid email' }
+                      message: 'should be valid' }
 
   def as_json(options = {})
     serializable_hash(options.merge(except: %i[provider uid]))
