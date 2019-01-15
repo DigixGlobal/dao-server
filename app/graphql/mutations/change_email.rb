@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
 module Mutations
-  class ChangeUserEmail < Types::BaseMutation
+  class ChangeEmail < Types::BaseMutation
     description "Change the current user's email"
 
     argument :email, String,
              required: true,
              description: 'New email for the user'
 
-    field :user, Types::UserType,
+    field :user, Types::AuthorizedUserType,
           null: true,
           description: 'User with the updated email'
     field :errors, [UserErrorType],
@@ -17,8 +17,9 @@ module Mutations
 
     def resolve(email:)
       user = context.fetch(:current_user)
+      this_user = User.find(user.id)
 
-      result, user_or_errors = User.change_email(user, email)
+      result, user_or_errors = User.change_email(this_user, email)
 
       key = :user
 

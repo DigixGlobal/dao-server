@@ -1,12 +1,21 @@
 # frozen_string_literal: true
 
 module Types
-  class UserType < Types::BaseObject
+  class AuthorizedUserType < Types::BaseObject
     description 'DAO users who publish proposals and vote for them'
 
     field :id, ID,
           null: false,
-          description: 'User ID'
+          description: "User's ID"
+    field :address, String,
+          null: false,
+          description: "User's ethereum address"
+    field :email, String,
+          null: true,
+          description: "User's email"
+    field :username, String,
+          null: true,
+          description: "User's username"
     field :display_name, String,
           null: false,
           description: <<~EOS

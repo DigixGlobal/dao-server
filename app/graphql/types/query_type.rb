@@ -18,6 +18,13 @@ module Types
   end
 
   class QueryType < Types::BaseObject
+    field :current_user, AuthorizedUserType,
+          null: false,
+          description: "Get the current user's information"
+    def current_user
+      context[:current_user]
+    end
+
     field :search_proposals, [ProposalType],
           null: false,
           description: 'Search for proposals/projects' do

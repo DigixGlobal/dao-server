@@ -2,7 +2,7 @@
 
 module Types
   class MutationType < Types::BaseObject
-    field :change_user_email, mutation: Mutations::ChangeUserEmail
-    field :change_user_username, mutation: Mutations::ChangeUserUsername
+    field :change_email, mutation: Mutations::ChangeEmail
+    field :change_username, mutation: Mutations::ChangeUsername
   end
 end

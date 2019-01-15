@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Mutations
-  class ChangeUserUsername < Types::BaseMutation
+  class ChangeUsername < Types::BaseMutation
     description <<~EOS
       Set the current user's username.
 
@@ -18,7 +18,7 @@ module Mutations
                - Must not start with "user"
              EOS
 
-    field :user, Types::UserType,
+    field :user, Types::AuthorizedUserType,
           null: true,
           description: 'User with the updated email'
     field :errors, [UserErrorType],
@@ -27,8 +27,9 @@ module Mutations
 
     def resolve(username:)
       user = context.fetch(:current_user)
+      this_user = User.find(user.id)
 
-      result, user_or_errors = User.change_username(user, username)
+      result, user_or_errors = User.change_username(this_user, username)
 
       key = :user
 
