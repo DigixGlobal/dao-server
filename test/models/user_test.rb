@@ -115,7 +115,8 @@ class UserTest < ActiveSupport::TestCase
     assert_equal 'EMAIL_CHANGE', audit.event,
                  'event should be tracked'
 
-    ok, updated_user = User.change_email(tracked_user, generate(:email))
+    sleep(1.second) # Delaly for sorting in creation time
+    _ok, updated_user = User.change_email(tracked_user, generate(:email))
 
     next_audit = UserAudit.where(user_id: user.id).order(created_at: :desc).first
 

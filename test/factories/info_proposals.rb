@@ -54,16 +54,17 @@ FactoryBot.define do
     proposal_id { generate(:ipfs_address) }
     proposer { generate(:address) }
     endorser { generate(:address) }
-    stage { generate(:stage) }
+    stage { generate(:proposal_stage) }
     time_created { generate(:unix_timestamp) }
     final_version_ipfs_doc { generate(:ipfs_address) }
     prl { generate(:boolean) }
     is_digix { generate(:boolean) }
     claimable_funding { generate(:amount) }
     current_milestone { generate(:amount) }
-    proposal_versions { build_list(:info_proposal_version, 3) }
-    current_voting_round { generate(:current_voting_round) }
-    draft_voting { generate(:info_draft_voting) }
+    # TODO: Resolve entities on dao and info server merge
+    # proposal_versions { build_list(:info_proposal_version, 3) }
+    # current_voting_round { generate(:current_voting_round) }
+    # draft_voting { generate(:info_draft_voting) }
     voting_stage { generate(:voting_stage) }
   end
 end

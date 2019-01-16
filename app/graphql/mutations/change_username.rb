@@ -46,9 +46,5 @@ module Mutations
     def self.authorized?(object, context)
       super && context.fetch(:current_user, nil)
     end
-
-    def self.visible?(context)
-      authorized?(nil, context)
-    end
   end
 end

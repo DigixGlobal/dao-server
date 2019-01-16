@@ -3,13 +3,6 @@
 require 'info_api'
 
 module Types
-  class SortByType < Types::BaseEnum
-    value 'DESC', 'Sort in descending creation time',
-          value: 'desc'
-    value 'ASC', 'Sort in ascending creation time',
-          value: 'asc'
-  end
-
   class ThreadSortByType < Types::BaseEnum
     value 'LATEST', 'Sort in descending creation time',
           value: 'latest'
@@ -18,10 +11,10 @@ module Types
   end
 
   class QueryType < Types::BaseObject
-    field :current_user, AuthorizedUserType,
+    field :viewer, AuthorizedUserType,
           null: false,
           description: "Get the current user's information"
-    def current_user
+    def viewer
       context[:current_user]
     end
 
