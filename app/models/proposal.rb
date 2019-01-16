@@ -20,7 +20,7 @@ class Proposal < ApplicationRecord
   def as_json(options = {})
     serializable_hash(
       except: %i[id],
-      include: { user: { only: :address } }
+      include: { user: { only: [:address], methods: [:display_name] } }
     )
       .deep_transform_keys! { |key| key.camelize(:lower) }
   end

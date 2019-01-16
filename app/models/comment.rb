@@ -69,7 +69,7 @@ class Comment < ApplicationRecord
   def as_json(options = {})
     base_hash = serializable_hash(
       except: %i[body replies parent_id discarded_at],
-      include: { user: { only: :address } }
+      include: { user: { only: [:address], methods: [:display_name] } }
     )
 
     user_comment_like_id = base_hash.delete 'comment_like_id'

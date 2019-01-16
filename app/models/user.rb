@@ -31,8 +31,12 @@ class User < ApplicationRecord
             format: { with: /\A(\S+)@(.+)\.(\S+)\z/,
                       message: 'should be valid' }
 
+  def display_name
+    username.nil? ? "user#{id}" : username
+  end
+
   def as_json(options = {})
-    serializable_hash(options.merge(except: %i[provider uid]))
+    serializable_hash(options.merge(except: %i[provider uid], methods: [:display_name]))
       .deep_transform_keys! { |key| key.camelize(:lower) }
   end
 
