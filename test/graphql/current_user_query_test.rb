@@ -2,10 +2,10 @@
 
 require 'test_helper'
 
-class CurrentUserQueryTest < ActiveSupport::TestCase
+class ViewerQueryTest < ActiveSupport::TestCase
   QUERY = <<~EOS
     query {
-      currentUser {
+      viewer {
         id
         email
         address
@@ -16,7 +16,7 @@ class CurrentUserQueryTest < ActiveSupport::TestCase
     }
   EOS
 
-  test 'current user query should work' do
+  test 'viewer query should work' do
     user = create(:user)
 
     result = DaoServerSchema.execute(
@@ -28,7 +28,7 @@ class CurrentUserQueryTest < ActiveSupport::TestCase
     assert_nil result['errors'],
                'should work and have no errors'
 
-    data = result['data']['currentUser']
+    data = result['data']['viewer']
 
     assert_equal "user#{user.id}", data['displayName'],
                  'display name should default'
@@ -45,7 +45,7 @@ class CurrentUserQueryTest < ActiveSupport::TestCase
       variables: {}
     )
 
-    assert_equal new_username, result['data']['currentUser']['displayName'],
+    assert_equal new_username, result['data']['viewer']['displayName'],
                  'display name should now be the username'
   end
 

@@ -18,7 +18,7 @@ module Types
       context[:current_user]
     end
 
-    field :search_proposals, [ProposalType],
+    field :proposals, [ProposalType],
           null: false,
           description: 'Search for proposals/projects' do
       argument :proposal_ids, [String],
@@ -34,6 +34,29 @@ module Types
                required: false,
                default_value: 'desc',
                description: 'Sorting options for the proposals'
+    end
+    def proposals(**attrs)
+      dao_proposals = Proposal.select_user_proposals(
+        context[:current_user],
+        attrs
+      )
+
+      result, info_proposals_or_error = InfoApi.list_proposals
+
+      raise GraphQL::ExecutionError, 'Network failure' unless result == :ok
+
+      zip_by_keys(dao_proposals, info_proposals_or_error, 'proposal_id')
+        .map do |merged|
+          dao_proposal, info_proposal = merged
+
+          dao_proposal
+            .attributes
+            .merge(info_proposal.except('stage'))
+            .deep_merge(
+              'proposer' => dao_proposal.user,
+              'current_voting_round' => info_proposal.fetch('draft_voting', nil)
+            )
+        end
     end
 
     field :search_comment_threads, CommentType.connection_type,
@@ -67,19 +90,6 @@ module Types
                description: 'Sorting options for the threads'
     end
 
-    def search_proposals(**attrs)
-      dao_proposals = Proposal.select_user_proposals(
-        context[:current_user],
-        attrs
-      )
-
-      result, info_proposals_or_error = InfoApi.list_proposals
-
-      raise GraphQL::ExecutionError, 'Network failure' unless result == :ok
-
-      merge_by_keys(dao_proposals, info_proposals_or_error, :proposal_id)
-    end
-
     def search_comment_threads(**attrs)
       comment = if (proposal_id = attrs.fetch(:proposal_id, nil))
                   unless (proposal = Proposal.find_by(proposal_id: proposal_id))
@@ -106,12 +116,12 @@ module Types
 
     private
 
-    def merge_by_keys(left, right, key)
+    def zip_by_keys(left, right, key)
       return [] if left.nil? || left.empty?
       return left if right.nil? || right.empty?
 
       right_hash = Hash[right.map { |item| [item[key], item.to_h] }]
-      left.map { |item| item.class.new(item.attributes.merge(right_hash.fetch(item[key], {}))) }
+      left.map { |item| [item, right_hash.fetch(item[key], nil)] }
     end
   end
 end

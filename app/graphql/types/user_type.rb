@@ -4,9 +4,6 @@ module Types
   class UserType < Types::BaseObject
     description 'DAO users who publish proposals and vote for them'
 
-    field :id, ID,
-          null: false,
-          description: 'User ID'
     field :display_name, String,
           null: false,
           description: <<~EOS
@@ -14,12 +11,9 @@ module Types
 
             This is just username if it is set; otherwise, this is just `user<id>`.
           EOS
-    field :created_at, GraphQL::Types::ISO8601DateTime,
-          null: false,
-          description: 'Date when the proposal was published'
 
     def display_name
-      object.username.nil? ? "user#{object.id}" : object.username
+      object['username'].nil? ? "user#{object['id']}" : object['username']
     end
 
     def self.authorized?(object, context)

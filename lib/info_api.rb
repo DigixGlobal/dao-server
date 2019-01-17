@@ -5,7 +5,18 @@ require 'info_server'
 class InfoApi
   class << self
     def list_proposals
-      unwrap_result(InfoServer.request_info_server('GET', '/proposals/all', {}))
+      ok, records_or_error = unwrap_result(InfoServer.request_info_server('GET', '/proposals/all', {}))
+
+      return [ok, records_or_error] unless ok == :ok
+
+      new_records = records_or_error.map do |record|
+        latest_version = record.fetch('proposal_versions').last
+        proposal = latest_version.fetch('dijix_object')
+
+        record.merge(proposal.slice('title', 'description', 'details', 'milestones'))
+      end
+
+      [ok, new_records]
     end
 
     private

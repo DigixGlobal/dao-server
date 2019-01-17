@@ -4,7 +4,7 @@ FactoryBot.define do
   sequence(:boolean) { |_| [true, false].sample }
   sequence(:amount) { |n| n }
   sequence(:vote_count, &:to_s)
-  sequence(:voting_stage)  { |_| ['draftVoting'].sample }
+  sequence(:voting_stage)  { |_| %w[draftVoting commit reveal].sample }
 
   sequence(:description) { |n| "description-#{n}" }
   sequence(:detail) { |n| "detail-#{n}" }
@@ -23,8 +23,8 @@ FactoryBot.define do
     title { generate(:title) }
     description { generate(:description) }
     details { generate(:detail) }
-    milestone { build_list(:info_milestone, Random.rand(1..3)) }
-    images { build_list(:ipfs_hash, Random.rand(1..3)) }
+    milestone { attributes_for_list(:info_milestone, Random.rand(1..3)) }
+    images { Array.new(Random.rand(1..3)).map { |_| generate(:ipfs_hash) } }
   end
 
   factory :info_proposal_version, class: 'Object' do
@@ -32,13 +32,16 @@ FactoryBot.define do
     created { generate(:unix_timestamp) }
     final_reward { generate(:amount) }
     total_funding { generate(:amount) }
-    more_docs { build_list(:ipfs_hash, 0) }
+    more_docs { [] }
     milestone_fundings { [generate(:amount), generate(:amount)] }
+    dijix_object { attributes_for(:info_dijix_object) }
   end
 
-  factory :info_draft_voting, class: 'Object' do
+  factory :info_voting_round, class: 'Object' do
     start_time { generate(:unix_timestamp) }
     voting_deadline { generate(:unix_timestamp) }
+    commit_deadline { generate(:unix_timestamp) }
+    reveal_deadline { generate(:unix_timestamp) }
     total_voter_stake { generate(:vote_count) }
     total_voter_count { generate(:vote_count) }
     yes { generate(:vote_count) }
@@ -61,10 +64,11 @@ FactoryBot.define do
     is_digix { generate(:boolean) }
     claimable_funding { generate(:amount) }
     current_milestone { generate(:amount) }
-    # TODO: Resolve entities on dao and info server merge
-    # proposal_versions { build_list(:info_proposal_version, 3) }
-    # current_voting_round { generate(:current_voting_round) }
-    # draft_voting { generate(:info_draft_voting) }
+    proposal_versions { attributes_for_list(:info_proposal_version, 3) }
+    current_voting_round { -1 }
+    milestones { attributes_for_list(:info_milestone, 3) }
+    draft_voting { attributes_for(:info_voting_round) }
+    voting_rounds { attributes_for_list(:info_voting_round, 3) }
     voting_stage { generate(:voting_stage) }
   end
 end

@@ -35,6 +35,9 @@ class User < ApplicationRecord
     username.nil? ? "user#{id}" : username
   end
 
+  def proposer
+  end
+
   def as_json(options = {})
     serializable_hash(options.merge(except: %i[provider uid], methods: [:display_name]))
       .deep_transform_keys! { |key| key.camelize(:lower) }

@@ -4,6 +4,7 @@ class Proposal < ApplicationRecord
   include StageField
   attribute :proposal_like_id
   attribute :liked
+  attr_accessor :propos
 
   belongs_to :user
   belongs_to :comment
