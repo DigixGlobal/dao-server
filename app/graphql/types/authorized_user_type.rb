@@ -7,7 +7,7 @@ module Types
     field :id, ID,
           null: false,
           description: "User's ID"
-    field :address, String,
+    field :address, Types::EthAddress,
           null: false,
           description: "User's ethereum address"
     field :email, String,
@@ -26,6 +26,9 @@ module Types
     field :created_at, GraphQL::Types::ISO8601DateTime,
           null: false,
           description: 'Date when the proposal was published'
+    field :kyc, Types::KycType,
+          null: true,
+          description: 'Current KYC submission of the user'
 
     def display_name
       object.username.nil? ? "user#{object.id}" : object.username

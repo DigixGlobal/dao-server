@@ -59,4 +59,8 @@ class CurrentUserQueryTest < ActiveSupport::TestCase
     assert_not_empty result['errors'],
                      'should fail without a current user'
   end
+
+  test 'kyc should be visible' do
+    kyc = create(:kyc)
+  end
 end
