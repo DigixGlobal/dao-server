@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Mutations
-  class ChangeEmail < Types::BaseMutation
+  class ChangeEmailMutation < Types::BaseMutation
     description "Change the current user's email"
 
     argument :email, String,

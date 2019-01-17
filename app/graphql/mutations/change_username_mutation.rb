@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Mutations
-  class ChangeUsername < Types::BaseMutation
+  class ChangeUsernameMutation < Types::BaseMutation
     description <<~EOS
       Set the current user's username.
 
