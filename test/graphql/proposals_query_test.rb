@@ -2,7 +2,7 @@
 
 require 'test_helper'
 
-class ViewerQueryTest < ActiveSupport::TestCase
+class ProposalsQueryTest < ActiveSupport::TestCase
   QUERY = <<~EOS
     query($stage: Stage) {
       proposals(stage: $stage) {

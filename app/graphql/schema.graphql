@@ -134,6 +134,15 @@ type CommentEdge {
 # An ISO 8601-encoded datetime
 scalar ISO8601DateTime
 
+# Voting rounds for proposal voting
+type Milestone {
+  # Description of the milestone
+  description: String!
+
+  # Title of the milestone
+  title: String!
+}
+
 type Mutation {
   # Change the current user's email
   changeEmail(input: ChangeEmailInput!): ChangeEmailPayload
@@ -167,6 +176,9 @@ type Proposal {
   # Date when the proposal was published
   createdAt: ISO8601DateTime!
 
+  # Current voting round for this proposal
+  currentVotingRound: VotingRound
+
   # Proposal's short description
   description: String!
 
@@ -179,6 +191,9 @@ type Proposal {
   # Number of user who liked this proposal
   likes: Int!
 
+  # Milestones for this proposal
+  milestones: [Milestone!]!
+
   # Eth contract address of the proposal
   proposalId: String!
 
@@ -190,9 +205,46 @@ type Proposal {
 
   # Proposal's title
   title: String!
+
+  # Total funding for the proposal
+  totalFunding: String!
+
+  # Current voting stage of this proposal
+  votingStage: VotingStage
 }
 
 type Query {
+  # Proposals
+  commentThreads(
+    # Returns the elements in the list that come after the specified cursor.
+    after: String
+
+    # Returns the elements in the list that come before the specified cursor.
+    before: String
+
+    # Search comment replies by its id.
+    #  This is required or proposal id.
+    commentId: String
+
+    # Returns the first _n_ elements from the list.
+    first: Int
+
+    # Returns the last _n_ elements from the list.
+    last: Int
+
+    # Search proposal threads by proposal id address.
+    #  This is required or the comment id.
+    # Also this takes precedence if both exists.
+    proposalId: String
+
+    # Sorting options for the threads
+    sortBy: ThreadSortBy = LATEST
+
+    # Filter comments by stage/phase.
+    #  If not specified, it defaults to the current stage.
+    stage: Stage
+  ): CommentConnection!
+
   # Search for proposals/projects
   proposals(
     # Filter proposals if it is liked or not by the current user
@@ -207,40 +259,6 @@ type Query {
     # Filter proposals by its stage/phase
     stage: Stage
   ): [Proposal!]!
-
-  # Proposals
-  searchCommentThreads(
-    # Returns the elements in the list that come after the specified cursor.
-    after: String
-
-    # Returns the elements in the list that come before the specified cursor.
-    before: String
-
-    # Search comment replies by its id.
-    #
-    # This is required or proposal id.
-    commentId: String
-
-    # Returns the first _n_ elements from the list.
-    first: Int
-
-    # Returns the last _n_ elements from the list.
-    last: Int
-
-    # Search proposal threads by proposal id address.
-    #
-    # This is required or the comment id.
-    # Also this takes precedence if both exists.
-    proposalId: String
-
-    # Sorting options for the threads
-    sortBy: ThreadSortBy = LATEST
-
-    # Filter comments by stage/phase.
-    #
-    # If not specified, it defaults to the current stage.
-    stage: Stage
-  ): CommentConnection!
 
   # Get the current user's information
   viewer: AuthorizedUser!
@@ -289,4 +307,40 @@ type UserError {
 
   # A description of the error
   message: String!
+}
+
+# Voting rounds for proposal voting
+type VotingRound {
+  # Commit stage deadline
+  commitDeadline: String
+
+  # Stacked DGXs that were voted voted no
+  no: String!
+
+  # Reveal stage deadline
+  revealDeadline: String
+
+  # The total number of voters for this round
+  totalVoterCount: String!
+
+  # The total number of stake for this round
+  totalVoterStake: String!
+
+  # Draft voting stage deadline
+  votingDeadline: String
+
+  # Stacked DGXs that were voted voted yes
+  yes: String!
+}
+
+# Phases for a voting round
+enum VotingStage {
+  # Voters commit to a vote
+  COMMIT
+
+  # The proposal is being drafted or finalized
+  DRAFT
+
+  # Voters reveal their vote
+  REVEAL
 }
