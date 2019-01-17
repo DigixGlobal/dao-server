@@ -4,10 +4,10 @@ require 'info_api'
 
 module Types
   class QueryType < Types::BaseObject
-    field :viewer, AuthorizedUserType,
+    field :current_user, AuthorizedUserType,
           null: false,
           description: "Get the current user's information"
-    def viewer
+    def current_user
       context[:current_user]
     end
 

@@ -245,6 +245,9 @@ type Query {
     stage: Stage
   ): CommentConnection!
 
+  # Get the current user's information
+  currentUser: AuthorizedUser!
+
   # Search for proposals/projects
   proposals(
     # Filter proposals if it is liked or not by the current user
@@ -259,9 +262,6 @@ type Query {
     # Filter proposals by its stage/phase
     stage: Stage
   ): [Proposal!]!
-
-  # Get the current user's information
-  viewer: AuthorizedUser!
 }
 
 enum SortBy {
