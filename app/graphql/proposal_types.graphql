@@ -1,8 +1,0 @@
-# frozen_string_literal: true
-
-class ProposalType < GraphQL::Schema::Object
-  description 'DAO proposals/projects to be voted and funded for'
-
-  field :proposal_id, ID, null: false
-  field :title, String, null: false
-end

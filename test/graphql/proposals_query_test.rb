@@ -56,4 +56,15 @@ class ViewerQueryTest < ActiveSupport::TestCase
     assert_not_empty result['data']['proposals'],
                      'proposals should work'
   end
+
+  test 'should fail without a current user' do
+    result = DaoServerSchema.execute(
+      QUERY,
+      context: {},
+      variables: {}
+    )
+
+    assert_not_empty result['errors'],
+                     'should fail without a current user'
+  end
 end

@@ -3,13 +3,6 @@
 require 'info_api'
 
 module Types
-  class ThreadSortByType < Types::BaseEnum
-    value 'LATEST', 'Sort in descending creation time',
-          value: 'latest'
-    value 'OLDEST', 'Sort in ascending creation time',
-          value: 'oldest'
-  end
-
   class QueryType < Types::BaseObject
     field :viewer, AuthorizedUserType,
           null: false,
