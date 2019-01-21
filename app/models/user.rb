@@ -32,7 +32,7 @@ class User < ApplicationRecord
                       message: 'should be valid' }
 
   def display_name
-    username.nil? ? "user#{id}" : username
+    username.nil? ? "user#{uid}" : username
   end
 
   def proposer

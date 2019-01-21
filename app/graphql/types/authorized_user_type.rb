@@ -28,7 +28,7 @@ module Types
           description: 'Date when the proposal was published'
 
     def display_name
-      object.username.nil? ? "user#{object.id}" : object.username
+      object.username.nil? ? "user#{object.uid}" : object.username
     end
 
     def self.authorized?(object, context)

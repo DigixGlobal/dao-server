@@ -30,7 +30,7 @@ class CurrentUserQueryTest < ActiveSupport::TestCase
 
     data = result['data']['currentUser']
 
-    assert_equal "user#{user.id}", data['displayName'],
+    assert_equal "user#{user.uid}", data['displayName'],
                  'display name should default'
 
     new_username = generate(:username)
