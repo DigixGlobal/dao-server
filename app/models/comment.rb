@@ -5,6 +5,7 @@ require 'cancancan'
 class Comment < ApplicationRecord
   attribute :comment_like_id
   attribute :replies
+  attribute :liked
 
   COMMENT_MAX_DEPTH = Rails
                       .configuration
@@ -68,7 +69,7 @@ class Comment < ApplicationRecord
   def as_json(options = {})
     base_hash = serializable_hash(
       except: %i[body replies parent_id discarded_at],
-      include: { user: { only: :address } }
+      include: { user: { only: [:address], methods: [:display_name] } }
     )
 
     user_comment_like_id = base_hash.delete 'comment_like_id'
@@ -167,6 +168,41 @@ class Comment < ApplicationRecord
   end
 
   class << self
+    def select_batch_user_comment_replies(comment_ids, user, criteria)
+      sorting = case criteria.fetch(:sort_by, nil)
+                when :latest, 'latest'
+                  'comments.created_at DESC'
+                else
+                  'comments.created_at ASC'
+                end
+
+      query =
+        Comment
+        .joins("LEFT OUTER JOIN comment_likes ON comment_likes.comment_id = comments.id AND comment_likes.user_id = #{user.id}")
+        .joins("INNER JOIN (SELECT @prev := '', @n := 0) AS init")
+        .select(
+          '@n := IF(parent_id != @prev, 1, @n + 1) AS n',
+          '@prev := parent_id',
+          :parent_id,
+          :id,
+          :user_id,
+          :body,
+          :stage,
+          :created_at
+        )
+        .order(:parent_id, sorting)
+        .where(['@n <= ?', 3])
+        .where(['parent_id IN (?)', comment_ids])
+        .preload(:user)
+        .limit(999_999)
+
+      if (stage = criteria.fetch(:stage, nil))
+        query = query.where(stage: stage)
+      end
+
+      query.all
+    end
+
     def comment(user, parent_comment, attrs)
       if parent_comment.depth >= COMMENT_MAX_DEPTH
         return [:maximum_comment_depth, nil]

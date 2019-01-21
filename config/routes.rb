@@ -1,7 +1,13 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
+  post '/api', to: 'graphql#execute'
   apipie
+
+  if Rails.env.development?
+    mount GraphiQL::Rails::Engine, at: '/graphiql', graphql_path: '/api'
+  end
+
   mount_devise_token_auth_for 'User', at: 'auth', controllers: {
     # confirmations:      'devise_token_auth/confirmations',
     # passwords:          'devise_token_auth/passwords',

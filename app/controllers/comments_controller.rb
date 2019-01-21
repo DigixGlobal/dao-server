@@ -20,7 +20,12 @@ class CommentsController < ApplicationController
     property :id, Integer, desc: 'Comment id'
     property :user_id, Integer, desc: 'Commenter user id'
     property :user, Hash, desc: 'Commenter itself' do
-      property :address, String, desc: "Commenter's address"
+      property :displayName, String,
+               desc: <<~EOS
+                 Display name of the user which should be used to identify the comment.
+
+                 This is just username if it is set; otherwise, this is just `user<id>`.
+               EOS
     end
     property :body, String, desc: <<~EOS
       Plain string body of text.
