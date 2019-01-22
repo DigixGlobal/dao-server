@@ -7,9 +7,8 @@ module Types
     EOS
 
     def self.coerce_input(input, _context)
-      income_ranges = JSON.parse(File.read(File.join(Rails.root, 'config', 'income_ranges.json')))
-
-      if income_ranges.find_index { |range| range['value'] == input }.nil?
+      if Rails.configuration.income_ranges
+              .find_index { |range| range['value'] == input }.nil?
         raise GraphQL::CoercionError, "#{input.inspect} is not a valid income range"
       else
         input

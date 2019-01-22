@@ -7,7 +7,7 @@ module Types
     value 'EMPLOYED', 'Works for a company',
           value: 'employed'
     value 'SELF_EMPLOYED', 'Works as a freelancer',
-          value: 'self-employed'
+          value: 'self_employed'
     value 'UNEMPLOYED', "Doesn't work for money",
           value: 'unemployed'
   end

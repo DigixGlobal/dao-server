@@ -5,7 +5,7 @@ module Resolvers
     type [Types::IncomeRangeType], null: false
 
     def resolve
-      JSON.parse(File.read(File.join(Rails.root, 'config', 'income_ranges.json')))
+      Rails.configuration.income_ranges
     end
   end
 end

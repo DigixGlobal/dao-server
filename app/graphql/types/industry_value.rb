@@ -7,9 +7,8 @@ module Types
     EOS
 
     def self.coerce_input(input, _context)
-      industries = JSON.parse(File.read(File.join(Rails.root, 'config', 'industries.json')))
-
-      if industries.find_index { |range| range['value'] == input }.nil?
+      if Rails.configuration.industries
+              .find_index { |range| range['value'] == input }.nil?
         raise GraphQL::CoercionError, "#{input.inspect} is not a valid industry"
       else
         input

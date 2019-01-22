@@ -14,9 +14,8 @@ module Resolvers
              EOS
 
     def resolve(blocked: true)
-      countries = JSON.parse(File.read(File.join(Rails.root, 'config', 'countries.json')))
-
-      countries.select { |country| country['blocked'] == blocked }
+      Rails.configuration.countries
+           .select { |country| country['blocked'] == blocked }
     end
   end
 end

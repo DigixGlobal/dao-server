@@ -1,2 +1,0 @@
-class KycDocument < ApplicationRecord
-end

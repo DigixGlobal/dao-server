@@ -7,7 +7,7 @@ module Types
     EOS
 
     def self.coerce_input(input, _context)
-      Date.iso8601(input)
+      ::Date.iso8601(input)
     rescue ArgumentError
       raise GraphQL::CoercionError,
             "#{input.inspect} is not a valid ISO8601 date"

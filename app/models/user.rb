@@ -6,6 +6,7 @@ class User < ApplicationRecord
 
   has_many :challenges
   has_many :transactions
+  has_one :kyc
 
   def username=(value)
     super(value.nil? ? nil : value.downcase)

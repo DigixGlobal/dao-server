@@ -7,9 +7,8 @@ module Types
     EOS
 
     def self.coerce_input(input, _context)
-      countries = JSON.parse(File.read(File.join(Rails.root, 'config', 'countries.json')))
-
-      if countries.find_index { |country| country['value'] == input }.nil?
+      if Rails.configuration.countries
+              .find_index { |country| country['value'] == input }.nil?
         raise GraphQL::CoercionError, "#{input.inspect} is not a valid country"
       else
         input

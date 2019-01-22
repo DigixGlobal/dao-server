@@ -12,6 +12,7 @@ SimpleCov.start 'rails' do
   add_filter 'Rakefile'
   add_filter '/app/channels/'
   add_filter '/app/controllers/overrides'
+  add_filter '/app/graphql/types'
   add_filter '/app/jobs/'
   add_filter '/app/mailers/'
   add_filter '/bin/'
@@ -65,18 +66,21 @@ module ActiveSupport
     end
 
     def database_fixture
-      Transaction.delete_all
-      CommentLike.delete_all
-      ProposalLike.delete_all
-      Proposal.delete_all
-      Comment.delete_all
-      CommentHierarchy.delete_all
-      Challenge.delete_all
-      User.delete_all
-      Nonce.delete_all
+      ActiveRecord::Base.transaction do
+        Transaction.delete_all
+        CommentLike.delete_all
+        ProposalLike.delete_all
+        Proposal.delete_all
+        Comment.delete_all
+        CommentHierarchy.delete_all
+        Challenge.delete_all
+        Kyc.delete_all
+        User.delete_all
+        Nonce.delete_all
 
-      create(:server_nonce, server: Rails.configuration.nonces['info_server_name'])
-      create(:server_nonce, server: Rails.configuration.nonces['self_server_name'])
+        create(:server_nonce, server: Rails.configuration.nonces['info_server_name'])
+        create(:server_nonce, server: Rails.configuration.nonces['self_server_name'])
+      end
     end
 
     def info_get(path, payload: {}, headers: {}, **kwargs)
