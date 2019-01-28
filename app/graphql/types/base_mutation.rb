@@ -1,6 +1,18 @@
 # frozen_string_literal: true
 
 class Types::BaseMutation < GraphQL::Schema::RelayClassicMutation
+  def self.visible?(context)
+    authorized?(nil, context)
+  end
+
+  def self.accessible?(context)
+    authorized?(nil, context)
+  end
+
+  def self.authorized?(_object, _context)
+    true
+  end
+
   protected
 
   class UserErrorType < Types::BaseObject

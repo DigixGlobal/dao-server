@@ -75,11 +75,14 @@ module ActiveSupport
         CommentHierarchy.delete_all
         Challenge.delete_all
         Kyc.delete_all
+        Group.delete_all
         User.delete_all
         Nonce.delete_all
 
         create(:server_nonce, server: Rails.configuration.nonces['info_server_name'])
         create(:server_nonce, server: Rails.configuration.nonces['self_server_name'])
+
+        create(:group, name: Group.groups[:kyc_officer])
       end
     end
 

@@ -34,12 +34,17 @@ def add_pending_txns(title, txhash)
   t.save
 end
 
-Nonce.delete_all
-Challenge.delete_all
+Transaction.delete_all
+CommentLike.delete_all
+ProposalLike.delete_all
+Proposal.delete_all
 Comment.delete_all
 CommentHierarchy.delete_all
-Proposal.delete_all
+Challenge.delete_all
+Kyc.delete_all
+Group.delete_all
 User.delete_all
+Nonce.delete_all
 
 # add_user('0x68911e512a4ecbd12d5dbae3250ff2c8e5850b60')
 # add_user('0x300ac2c15a6778cfdd7eaa6189a4401123ff9dda')
@@ -49,7 +54,9 @@ User.delete_all
 # add_user('0xcbe85e69eec80f29e9030233a757d49c68e75c8d')
 # add_user('0x355fbd38b3219fa3b7d0739eae142acd9ea832a1')
 
-Nonce.seed()
+Nonce.seed
+Group.seed
+User.seed
 
 # add_pending_txns('title aaa', '0xaaa')
 # add_pending_txns('title bbb', '0xbbb')
@@ -57,4 +64,23 @@ Nonce.seed()
 FactoryBot.find_definitions
 
 puts 'Seeding proposals with comments'
-FactoryBot.create_list(:proposal_with_comments, 3)
+3.times do
+  proposal = FactoryBot.create(:proposal_with_comments)
+  puts "Created a proposal #{proposal.id}"
+end
+
+puts 'Seeding kycs'
+15.times do
+  kyc = FactoryBot.create(:pending_kyc)
+  puts "Created a pending kyc #{kyc.id}"
+end
+
+15.times do
+  kyc = FactoryBot.create(:approved_kyc)
+  puts "Created a approved kyc #{kyc.id}"
+end
+
+15.times do
+  kyc = FactoryBot.create(:rejected_kyc)
+  puts "Created a rejected kyc #{kyc.id}"
+end

@@ -11,6 +11,23 @@ module Types
       context[:current_user]
     end
 
+    field :search_kycs,
+          resolver: Resolvers::SearchKycsResolver,
+          connection: false,
+          description: <<~EOS
+            Search for KYCs, pending or all
+
+            Role: KYC Officer
+          EOS
+
+    field :user,
+          resolver: Resolvers::UserResolver,
+          description: <<~EOS
+            Find a specific user.
+
+            Role: KYC Officer
+          EOS
+
     field :proposals,
           resolver: Resolvers::ProposalsResolver,
           description: 'Search for proposals/projects'
@@ -28,5 +45,8 @@ module Types
     field :industries,
           resolver: Resolvers::IndustriesResolver,
           description: 'List of industries for KYC'
+    field :rejection_reasons,
+          resolver: Resolvers::RejectionReasonsResolver,
+          description: 'List of rejection reasons for KYC rejection'
   end
 end

@@ -3,11 +3,14 @@
 file_path = Rails.root.join('test', 'test-image.jpeg')
 file_data = File.read(file_path)
 countries = Rails.configuration.countries
+                 .select { |country| country['blocked'] == false }
                  .map { |country| country['value'] }
 income_ranges = Rails.configuration.income_ranges
                      .map { |income_range| income_range['value'] }
 industries = Rails.configuration.industries
                   .map { |industry| industry['value'] }
+rejection_reasons = Rails.configuration.rejection_reasons
+                         .map { |rejection_reason| rejection_reason['value'] }
 
 FactoryBot.define do
   sequence(:kyc_status) { |_| Kyc.statuses.keys.sample }
@@ -50,6 +53,9 @@ FactoryBot.define do
       data: file_data
     }
   end
+  sequence(:rejection_reason) { |_| rejection_reasons.sample }
+
+  sequence(:positive_int) { |n| Random.rand(n..100) }
 
   factory :kyc, class: 'Kyc' do
     status { generate(:kyc_status) }
@@ -74,6 +80,8 @@ FactoryBot.define do
     postal_code { generate(:postal_code) }
     residence_proof_type { generate(:residence_proof_type) }
     verification_code { generate(:verification_code) }
+    expiration_date { generate(:future_date) }
+    rejection_reason { generate(:rejection_reason) }
 
     association :user, factory: :user_with_email
 
@@ -95,6 +103,22 @@ FactoryBot.define do
         filename: generate(:identification_pose_filename),
         content_type: 'image/jpeg'
       )
+    end
+
+    factory :pending_kyc do
+      status { :pending }
+      expiration_date { nil }
+      rejection_reason { nil }
+    end
+
+    factory :approved_kyc do
+      status { :approved }
+      association :officer, factory: :kyc_officer_user
+    end
+
+    factory :rejected_kyc do
+      status { :rejected }
+      association :officer, factory: :kyc_officer_user
     end
   end
 
@@ -133,5 +157,11 @@ FactoryBot.define do
       verification_code { generate(:verification_code) }
       identification_pose_image { generate(:image_data) }
     end
+  end
+
+  factory :search_kycs, class: 'Hash' do
+    page { generate(:positive_int) }
+    per_page { generate(:positive_int) }
+    status { generate(:kyc_status) }
   end
 end
