@@ -4,9 +4,42 @@ module Types
   class KycType < Types::BaseObject
     description "A customer's KYC submission"
 
+    field :id, ID,
+          null: false,
+          description: 'KYC ID'
+    field :expiration_date, Types::Date,
+          null: true,
+          description: <<~EOS
+            Expiration date of the KYC.
+
+            After this date, the KYC is marked `EXPIRED`
+            and the user should submit again.
+          EOS
     field :status, Types::KycStatusEnum,
           null: false,
-          description: 'Current status or state of the KYC'
+          description: <<~EOS
+            Current status or state of the KYC.
+
+            If the KYC is approved and it is after the expiration date,
+             the status is expired.
+          EOS
+    field :is_approved, Boolean,
+          null: false,
+          description: 'A flag if the kyc is `APPROVED`'
+    field :rejection_reason, Types::RejectionReasonValue,
+          null: true,
+          description: <<~EOS
+            If the status is `REJECTED`, this is reason it was rejected.
+          EOS
+    field :user_id, String,
+          null: false,
+          description: 'Customer user ID'
+    field :eth_address, Types::EthAddress,
+          null: false,
+          description: 'Customer ethereum address'
+    field :email, String,
+          null: false,
+          description: 'Customer email'
     field :first_name, String,
           null: false,
           description: 'First name of the customer'
@@ -49,6 +82,47 @@ module Types
           description: <<~EOS
             Pose image where the customer is holding an ID
           EOS
+    field :ip_addresses, [String],
+          null: false,
+          description: <<~EOS
+            A list of IP addresses used by the customer.
+
+            Currently, IP address is not tracked so this is an empty list.
+          EOS
+    field :created_at, GraphQL::Types::ISO8601DateTime,
+          null: false,
+          description: 'Date when the KYC was submitted'
+    field :updated_at, GraphQL::Types::ISO8601DateTime,
+          null: false,
+          description: 'Date when the KYC was last touched or modified'
+
+    def user_id
+      object.user.id
+    end
+
+    def email
+      object.user.email
+    end
+
+    def eth_address
+      object.user.address
+    end
+
+    def is_approved
+      object.status.to_sym == :pending
+    end
+
+    def status
+      if object.status.to_sym == :approved
+        object.expired? ? 'expired' : 'approved'
+      else
+        object.status
+      end
+    end
+
+    def ip_addresses
+      []
+    end
 
     def identification_proof
       {

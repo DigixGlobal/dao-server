@@ -48,4 +48,21 @@ class ScalarTest < ActiveSupport::TestCase
       end
     end
   end
+
+  test 'rejection reason scalar should work' do
+    reasons = JSON.parse(File.read(File.join(Rails.root, 'config', 'rejection_reasons.json')))
+
+    reasons
+      .each do |reason|
+      value = reason['value']
+      assert_equal value, Types::RejectionReasonValue.coerce_input(value, nil),
+                   'rejection reason should work'
+      begin
+        Types::RejectionReasonValue.coerce_input(value + '!', nil)
+        flunk 'rejection reason should fail on invalid value'
+      rescue GraphQL::CoercionError
+        # Exception should be raised
+      end
+    end
+  end
 end

@@ -30,6 +30,15 @@ class KycReferenceQueriesTest < ActiveSupport::TestCase
     }
   EOS
 
+  REJECTION_REASONS_QUERY = <<~EOS
+    query {
+      rejectionReasons {
+        value
+        name
+      }
+    }
+  EOS
+
   test 'countries query should work' do
     result = DaoServerSchema.execute(
       COUNTRIES_QUERY,
@@ -66,6 +75,19 @@ class KycReferenceQueriesTest < ActiveSupport::TestCase
     assert_nil result['errors'],
                'should have no errors'
     assert_not_empty result['data']['industries'],
+                     'should work'
+  end
+
+  test 'rejection reasons query should work' do
+    result = DaoServerSchema.execute(
+      REJECTION_REASONS_QUERY,
+      context: {},
+      variables: {}
+    )
+
+    assert_nil result['errors'],
+               'should have no errors'
+    assert_not_empty result['data']['rejectionReasons'],
                      'should work'
   end
 end

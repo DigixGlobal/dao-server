@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'ethereum_api'
+require 'info_api'
 
 class Kyc < ApplicationRecord
   MAX_BLOCK_DELAY = Rails.configuration.ethereum['max_block_delay'].to_i
@@ -9,17 +10,23 @@ class Kyc < ApplicationRecord
   IMAGE_SIZE_LIMIT = 10.megabytes
   IMAGE_FILE_TYPES = ['image/jpeg', 'image/jpeg', 'image/png'].freeze
 
-  enum status: { not_verified: 0, pending: 1, rejected: 2, approved: 3, expired: 4 }
+  enum status: { pending: 1, rejected: 2, approved: 3 }
   enum gender: { male: 1, female: 2 }
   enum employment_status: { employed: 0, self_employed: 1, unemployed: 2 }
   enum identification_proof_type: { passport: 0, national_id: 1, identity_card: 2 }, _prefix: :identification
   enum residence_proof_type: { utility_bill: 0, bank_statement: 1 }, _prefix: :residence
 
   belongs_to :user
+  belongs_to :officer,
+             class_name: 'User',
+             foreign_key: :officer_id,
+             optional: true
 
   has_one_attached :residence_proof_image
   has_one_attached :identification_proof_image
   has_one_attached :identification_pose_image
+
+  include Discard::Model
 
   validates :first_name,
             presence: true,
@@ -93,6 +100,18 @@ class Kyc < ApplicationRecord
             attached: true,
             size: { less_than: IMAGE_SIZE_LIMIT },
             content_type: IMAGE_FILE_TYPES
+  validates :expiration_date,
+            if: proc { |kyc| kyc.status.to_sym == :approved },
+            timeliness: { on_or_after: :today }
+  validates :rejection_reason,
+            if: proc { |kyc| kyc.status.to_sym == :rejected },
+            rejection_reason: true
+  validates :approval_txhash,
+            presence: false
+
+  def expired?
+    Time.now > expiration_date.to_time
+  end
 
   class << self
     def submit_kyc(user, attrs)
@@ -100,12 +119,12 @@ class Kyc < ApplicationRecord
 
       return [:email_not_set, nil] unless this_user.email
 
-      if this_user.kyc
-        kyc_status = this_user.kyc.status.to_sym
-        if %i[pending accepted].include?(kyc_status)
+      if (this_kyc = this_user.kyc)
+        kyc_status = this_kyc.status.to_sym
+        if kyc_status == :pending
           return [:active_kyc_submitted, nil]
-        elsif %i[rejected expired].include?(kyc_status)
-          # TODO: KYC handling for expired or otherwise
+        elsif kyc_status == :approved && !this_kyc.expired?
+          return [:active_kyc_submitted, nil]
         end
       end
 
@@ -145,6 +164,8 @@ class Kyc < ApplicationRecord
       return [:invalid_data, kyc.errors] unless kyc.valid?
       return [:database_error, kyc.errors] unless kyc.save
 
+      this_kyc&.discard
+
       [:ok, kyc]
     end
 
@@ -176,6 +197,71 @@ class Kyc < ApplicationRecord
       unless this_hash.slice(0, 2) == first_two &&
              this_hash.slice(-2, 2) == last_two
         return :invalid_hash
+      end
+
+      :ok
+    end
+
+    def approve_kyc(officer, kyc, attrs)
+      this_officer = User.find(officer.id)
+      this_kyc = Kyc.find(kyc.id)
+
+      return [:unauthorized_action, nil] if this_kyc.discarded?
+
+      unless Ability.new(this_officer).can?(:approve, Kyc, kyc)
+        return [:unauthorized_action, nil]
+      end
+
+      return [:kyc_not_pending, nil] unless this_kyc.status.to_sym == :pending
+
+      unless this_kyc.update_attributes(
+        status: :approved,
+        officer: this_officer,
+        **attrs
+      )
+        return [:invalid_data, this_kyc.errors] unless this_kyc.valid?
+      end
+
+      Rails.logger.info 'Updating info-server with this approved kyc'
+      info_result, info_data_or_error = InfoApi.approve_kyc(this_kyc)
+      unless info_result == :ok
+        Rails.logger.debug "Failed to updated info-server: #{info_data_or_error}"
+      end
+
+      [:ok, this_kyc]
+    end
+
+    def reject_kyc(officer, kyc, attrs)
+      this_officer = User.find(officer.id)
+      this_kyc = Kyc.find(kyc.id)
+
+      return [:unauthorized_action, nil] if this_kyc.discarded?
+
+      unless Ability.new(this_officer).can?(:reject, Kyc, kyc)
+        return [:unauthorized_action, nil]
+      end
+
+      return [:kyc_not_pending, nil] unless this_kyc.status.to_sym == :pending
+
+      unless this_kyc.update_attributes(
+        status: :rejected,
+        officer: this_officer,
+        **attrs
+      )
+        return [:invalid_data, this_kyc.errors] unless this_kyc.valid?
+      end
+
+      [:ok, this_kyc]
+    end
+
+    def update_kyc_hashes(hashes)
+      ActiveRecord::Base.transaction do
+        hashes.each do |hash|
+          if (user = User.find_by(address: hash.fetch(:address, ''))) &&
+             (kyc = user.kyc)
+            kyc.update_attribute(:approval_txhash, hash.fetch(:txhash, ''))
+          end
+        end
       end
 
       :ok

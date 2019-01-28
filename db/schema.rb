@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_01_25_043709) do
+ActiveRecord::Schema.define(version: 2019_01_29_063131) do
 
   create_table "active_storage_attachments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name", null: false
@@ -72,6 +72,18 @@ ActiveRecord::Schema.define(version: 2019_01_25_043709) do
     t.index ["user_id"], name: "index_comments_on_user_id"
   end
 
+  create_table "groups", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "groups_users", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "group_id", null: false
+    t.index ["user_id", "group_id"], name: "index_groups_users_on_user_id_and_group_id", unique: true
+  end
+
   create_table "kycs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "status"
     t.string "first_name"
@@ -95,10 +107,20 @@ ActiveRecord::Schema.define(version: 2019_01_25_043709) do
     t.string "state"
     t.string "postal_code"
     t.string "verification_code"
+    t.date "expiration_date"
+    t.string "rejection_reason"
+    t.string "approval_txhash"
+    t.datetime "discarded_at"
     t.bigint "user_id"
+    t.bigint "officer_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "users_id"
+    t.index ["discarded_at"], name: "index_kycs_on_discarded_at"
+    t.index ["officer_id"], name: "index_kycs_on_officer_id"
+    t.index ["status"], name: "index_kycs_on_status"
     t.index ["user_id"], name: "index_kycs_on_user_id"
+    t.index ["users_id"], name: "index_kycs_on_users_id"
   end
 
   create_table "nonces", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -128,9 +150,6 @@ ActiveRecord::Schema.define(version: 2019_01_25_043709) do
     t.index ["proposal_id"], name: "index_proposals_on_proposal_id", unique: true
     t.index ["stage"], name: "index_proposals_on_stage"
     t.index ["user_id"], name: "index_proposals_on_user_id"
-  end
-
-  create_table "test_images", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
   end
 
   create_table "transactions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -179,6 +198,7 @@ ActiveRecord::Schema.define(version: 2019_01_25_043709) do
   add_foreign_key "challenges", "users"
   add_foreign_key "comments", "users"
   add_foreign_key "kycs", "users"
+  add_foreign_key "kycs", "users", column: "users_id"
   add_foreign_key "proposals", "comments"
   add_foreign_key "proposals", "users"
   add_foreign_key "transactions", "users"

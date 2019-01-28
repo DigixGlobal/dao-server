@@ -7,8 +7,8 @@ module Types
     EOS
 
     def self.coerce_input(input, _context)
-      if value && Eth::Utils.valid_address?(value)
-        value
+      if input && Eth::Utils.valid_address?(input)
+        input
       else
         raise GraphQL::CoercionError, "#{input.inspect} is not a valid checksum address"
       end

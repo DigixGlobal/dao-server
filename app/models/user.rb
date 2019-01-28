@@ -6,7 +6,9 @@ class User < ApplicationRecord
 
   has_many :challenges
   has_many :transactions
-  has_one :kyc
+  has_one :kyc, -> { kept }
+
+  has_and_belongs_to_many :groups
 
   def username=(value)
     super(value.nil? ? nil : value.downcase)
@@ -41,6 +43,29 @@ class User < ApplicationRecord
       .deep_transform_keys! { |key| key.camelize(:lower) }
   end
 
+  def self.seed
+    officer_address = ENV.fetch('KYC_OFFICER_ADDRESS') { '0x97be8ff9065ce5f3d562cb6b458cde88c8307edf' }
+
+    add_officer(officer_address)
+  end
+
+  def self.add_officer(address)
+    unless (user = User.find_by(address: address))
+      user = User.new(
+        uid: Random.rand(1_000_000..1_999_999),
+        address: address
+      )
+
+      user.save
+    end
+
+    begin
+      user.groups << Group.find_by(name: Group.groups[:kyc_officer])
+    rescue ActiveRecord::RecordNotUnique
+      # Already added
+    end
+  end
+
   class << self
     def change_username(user, username)
       return [:username_already_set, nil] if user.username
@@ -69,7 +94,7 @@ class User < ApplicationRecord
         new_value: email
       )
 
-      puts audit.errors.inspect unless audit.save
+      return [:invalid_data, audit.errors] unless audit.save
 
       [:ok, updated_user]
     end
