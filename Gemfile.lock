@@ -52,7 +52,7 @@ GEM
     arel (9.0.0)
     batch-loader (1.2.2)
     bcrypt (3.1.12)
-    brakeman (4.3.1)
+    brakeman (4.4.0)
     builder (3.2.3)
     byebug (10.0.2)
     cancancan (2.3.0)
@@ -265,7 +265,7 @@ DEPENDENCIES
   api-pagination (>= 4.8.1)
   apipie-rails (>= 0.5.14)
   batch-loader (= 1.2.2)
-  brakeman (>= 4.3.1)
+  brakeman
   byebug
   cancancan (>= 2.3.0)
   capistrano (~> 3.10)

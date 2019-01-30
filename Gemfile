@@ -64,7 +64,7 @@ group :development do
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
 
-  gem 'brakeman', '>= 4.3.1', require: false
+  gem 'brakeman', require: false
 end
 
 group :test do
