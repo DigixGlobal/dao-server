@@ -86,7 +86,11 @@ input ChangeEmailMutationInput {
   # A unique identifier for the client performing the mutation.
   clientMutationId: String
 
-  # New email for the user
+  # New email for the user.
+  #
+  # Validations:
+  # - Maximum of 254 characters
+  # - Must be of this format: `<name_part>@<domain_part>`
   email: String!
 }
 
@@ -108,8 +112,10 @@ input ChangeUsernameMutationInput {
   clientMutationId: String
 
   # Username for the user.
-  #  Requirements:
-  # - 2 to 20 characters long
+  #
+  # Validations:
+  # - Minimum of 2 characters
+  # - Maximum of 150 characters
   # - Alphanumerical characters plus underscore
   # - Must not start with `user`
   username: String!

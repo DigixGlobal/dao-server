@@ -31,7 +31,8 @@ class User < ApplicationRecord
   validates :email,
             allow_nil: true,
             uniqueness: true,
-            format: { with: /\A(\S+)@(.+)\.(\S+)\z/,
+            length: { maximum: 254 },
+            format: { with: /\A\S+@.+\.\S+\z/,
                       message: 'should be valid' }
 
   def display_name

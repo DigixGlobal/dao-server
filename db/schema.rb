@@ -152,6 +152,9 @@ ActiveRecord::Schema.define(version: 2019_01_29_063131) do
     t.index ["user_id"], name: "index_proposals_on_user_id"
   end
 
+  create_table "test_images", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  end
+
   create_table "transactions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "title"
     t.string "txhash"
@@ -187,8 +190,8 @@ ActiveRecord::Schema.define(version: 2019_01_29_063131) do
     t.text "tokens"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "username"
-    t.string "email", limit: 20
+    t.string "username", limit: 20
+    t.string "email", limit: 254
     t.index ["address"], name: "index_users_on_address", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["uid", "provider"], name: "index_users_on_uid_and_provider", unique: true
