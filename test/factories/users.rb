@@ -3,8 +3,8 @@
 FactoryBot.define do
   sequence(:uid) { |_| Random.srand }
   sequence(:address) { |_| Eth::Key.new.address.downcase }
-  sequence(:username) { |n| "real_user_#{n}" }
-  sequence(:email) { |n| "user-#{Random.rand(10_000) + n}@test.com" }
+  sequence(:username) { |_| "real_user_#{Random.rand(1_000..9_999)}" }
+  sequence(:email) { |_| "user-#{Random.srand}@test.com" }
 
   factory :user, class: 'User' do
     uid { generate(:uid) }

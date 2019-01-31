@@ -12,8 +12,10 @@ module Mutations
              required: true,
              description: <<~EOS
                Username for the user.
-                Requirements:
-               - 2 to 20 characters long
+
+               Validations:
+               - Minimum of 2 characters
+               - Maximum of 150 characters
                - Alphanumerical characters plus underscore
                - Must not start with `user`
              EOS

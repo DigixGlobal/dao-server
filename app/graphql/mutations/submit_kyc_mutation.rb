@@ -158,7 +158,7 @@ module Mutations
                It is comprised of `<block number>-<first two digits of the block hash>`-<last two of the hash>`
 
                Validations:
-               - Block number be #{Kyc::MAX_BLOCK_DELAY} blocks old
+               - Block number be 20 blocks old
              EOS
     argument :identification_pose_data_url, Types::DataUrl,
              required: true,
