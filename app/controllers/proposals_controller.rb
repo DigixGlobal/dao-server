@@ -16,7 +16,12 @@ class ProposalsController < ApplicationController
     EOS
     property :user_id, Integer, desc: "Proposer's user id"
     property :user, Hash, desc: 'Proposer itself' do
-      property :address, String, desc: "Proposer's address"
+      property :displayName, String,
+               desc: <<~EOS
+                 Display name of the user which should be used to identify the proposer.
+
+                 This is just username if it is set; otherwise, this is just `user<id>`.
+               EOS
     end
     property :stage, Proposal.stages.keys,
              desc: 'Current stage/phase of the proposal'

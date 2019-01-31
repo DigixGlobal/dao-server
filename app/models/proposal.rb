@@ -3,6 +3,8 @@
 class Proposal < ApplicationRecord
   include StageField
   attribute :proposal_like_id
+  attribute :liked
+  attr_accessor :propos
 
   belongs_to :user
   belongs_to :comment
@@ -17,16 +19,11 @@ class Proposal < ApplicationRecord
             presence: true
 
   def as_json(options = {})
-    base_hash = serializable_hash(
+    serializable_hash(
       except: %i[id],
-      include: { user: { only: :address } }
+      include: { user: { only: [:address], methods: [:display_name] } }
     )
-
-    user_proposal_like_id = base_hash.delete 'proposal_like_id'
-
-    base_hash.merge(
-      'liked' => !user_proposal_like_id.nil?
-    ).deep_transform_keys! { |key| key.camelize(:lower) }
+      .deep_transform_keys! { |key| key.camelize(:lower) }
   end
 
   def user_like(user)
@@ -42,7 +39,7 @@ class Proposal < ApplicationRecord
       query = Proposal
               .preload(:user)
               .joins("LEFT OUTER JOIN proposal_likes ON proposal_likes.proposal_id = proposals.id AND proposal_likes.user_id = #{user.id}")
-              .select('proposal_likes.id AS proposal_like_id', :proposal_id, :user_id, :comment_id, :stage, :likes, :created_at, :updated_at)
+              .select('proposal_likes.id AS liked', :proposal_id, :user_id, :comment_id, :stage, :likes, :created_at, :updated_at)
 
       if (ids = attrs.fetch(:proposal_ids, nil))
         query = query.where(proposal_id: ids)
@@ -70,7 +67,12 @@ class Proposal < ApplicationRecord
         query = query.order('created_at ASC')
       end
 
-      query.all.to_a
+      query
+        .all
+        .map do |proposal|
+          proposal.liked = !proposal.liked.nil?
+          proposal
+        end
     end
 
     def create_proposal(attrs)

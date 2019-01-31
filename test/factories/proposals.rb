@@ -62,7 +62,7 @@ FactoryBot.define do
     end
   end
 
-  factory :info_proposal, class: 'Object' do
+  factory :create_proposal, class: 'Object' do
     proposal_id { generate(:address) }
     proposer { generate(:address) }
   end

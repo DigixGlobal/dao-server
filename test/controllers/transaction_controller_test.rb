@@ -4,7 +4,7 @@ require 'test_helper'
 
 class TransactionControllerTest < ActionDispatch::IntegrationTest
   test 'create new transaction should work' do
-    stub_request(:any, /transactions/)
+    stub_request(:any, %r{transactions/watch})
       .to_return(body: {
         result: {
           seen: [attributes_for(:transaction)],

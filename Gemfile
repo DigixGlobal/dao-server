@@ -10,11 +10,14 @@ gem 'rails', '~> 5.2.1'
 # Use sqlite3 as the database for Active Record
 gem 'api-pagination', '>= 4.8.1'
 gem 'apipie-rails', '>= 0.5.14'
+gem 'batch-loader', '1.2.2'
 gem 'cancancan', '>= 2.3.0'
 gem 'closure_tree', '>= 7.0.0 '
 gem 'devise'
 gem 'devise_token_auth'
 gem 'discard', '>= 1.0.0'
+gem 'graphiql-rails', '>= 1.5.0'
+gem 'graphql', '1.8.11'
 gem 'kaminari', '>= 1.1.1'
 gem 'mysql2', '>= 0.3.18', '< 0.5'
 gem 'rufus-scheduler', '>= 3.5.2'
@@ -61,7 +64,7 @@ group :development do
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
 
-  gem 'brakeman', '>= 4.3.1', require: false
+  gem 'brakeman', require: false
 end
 
 group :test do

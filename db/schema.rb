@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_12_07_001352) do
+ActiveRecord::Schema.define(version: 2019_01_14_045629) do
 
   create_table "challenges", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "challenge"
@@ -92,6 +92,16 @@ ActiveRecord::Schema.define(version: 2018_12_07_001352) do
     t.index ["user_id"], name: "index_transactions_on_user_id"
   end
 
+  create_table "user_audits", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "event", null: false
+    t.string "field", null: false
+    t.string "old_value", null: false
+    t.string "new_value", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "provider", default: "address", null: false
     t.string "uid", default: "", null: false
@@ -105,8 +115,12 @@ ActiveRecord::Schema.define(version: 2018_12_07_001352) do
     t.text "tokens"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "username"
+    t.string "email", limit: 20
     t.index ["address"], name: "index_users_on_address", unique: true
+    t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["uid", "provider"], name: "index_users_on_uid_and_provider", unique: true
+    t.index ["username"], name: "index_users_on_username", unique: true
   end
 
   add_foreign_key "challenges", "users"
