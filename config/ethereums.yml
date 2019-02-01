@@ -3,7 +3,6 @@ development: &defaults
 
 test:
   max_block_delay: 5
-  project_id: SHOULD_BE_STUBBED
 
 staging:
   max_block_delay: 20

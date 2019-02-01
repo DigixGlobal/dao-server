@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class EthereumApi
-  SERVER_URL = ENV.fetch('ETHEREUM_SERVER_URL') { 'https://mainnet.infura.io/v3/8e6a7d2df1de4503a044969b87ff557d' }
+  SERVER_URL = ENV.fetch('INFURA_SERVER_URL') { 'https://kovan.infura.io/v3/8e6a7d2df1de4503a044969b87ff557d' }
 
   class << self
     def get_latest_block
