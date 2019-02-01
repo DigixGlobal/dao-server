@@ -23,7 +23,7 @@ module Mutations
     argument :last_name, String,
              required: true,
              description: <<~EOS
-               First name of the customer.
+               Last name of the customer.
 
                Validations:
                - Maximum of 150 characters
