@@ -161,7 +161,7 @@ class Kyc < ApplicationRecord
 
       ok_latest, latest_block = EthereumApi.get_latest_block
 
-      return :latest_block_not_found unless ok_latest == :ok
+      return :latest_block_not_found unless ok_latest == :ok && latest_block
 
       unless (latest_block.fetch('number', '').to_i - block_number) <= MAX_BLOCK_DELAY
         return :verification_expired
@@ -169,7 +169,7 @@ class Kyc < ApplicationRecord
 
       ok_this, this_block = EthereumApi.get_block_by_block_number(block_hash)
 
-      return :block_not_found unless ok_this == :ok
+      return :block_not_found unless ok_this == :ok && this_block
 
       this_hash = this_block.fetch('hash', '').slice(2..-1)
 
