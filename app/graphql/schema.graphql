@@ -617,7 +617,7 @@ type Query {
   ): [Country!]!
 
   # Get the current user's information
-  currentUser: AuthorizedUser!
+  currentUser: AuthorizedUser
 
   # List of income ranges for KYC
   incomeRanges: [IncomeRange!]!

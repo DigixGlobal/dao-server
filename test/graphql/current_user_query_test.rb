@@ -87,8 +87,8 @@ class CurrentUserQueryTest < ActiveSupport::TestCase
       variables: {}
     )
 
-    assert_not_empty result['errors'],
-                     'should fail without a current user'
+    assert_nil result['data']['currentUser'],
+               'should be empty without a current user'
   end
 
   KYC_QUERY = <<~EOS

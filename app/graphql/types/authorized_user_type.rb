@@ -45,9 +45,5 @@ module Types
     def is_kyc_officer
       object.groups.pluck(:name).member?(Group.groups[:kyc_officer])
     end
-
-    def self.authorized?(object, context)
-      super && context.fetch(:current_user, nil)
-    end
   end
 end

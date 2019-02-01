@@ -5,8 +5,10 @@ require 'info_api'
 module Types
   class QueryType < Types::BaseObject
     field :current_user, AuthorizedUserType,
-          null: false,
-          description: "Get the current user's information"
+          null: true,
+          description: <<~EOS
+            Get the current user's information
+          EOS
     def current_user
       context[:current_user]
     end
