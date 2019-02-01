@@ -18,5 +18,15 @@ module Types
     field :comment_threads,
           resolver: Resolvers::CommentThreadsResolver,
           description: 'Proposals'
+
+    field :countries,
+          resolver: Resolvers::CountriesResolver,
+          description: 'List of countries to determine nationality for KYC'
+    field :income_ranges,
+          resolver: Resolvers::IncomeRangesResolver,
+          description: 'List of income ranges for KYC'
+    field :industries,
+          resolver: Resolvers::IndustriesResolver,
+          description: 'List of industries for KYC'
   end
 end

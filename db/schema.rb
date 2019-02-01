@@ -10,7 +10,28 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_01_14_045629) do
+ActiveRecord::Schema.define(version: 2019_01_25_043709) do
+
+  create_table "active_storage_attachments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "filename", null: false
+    t.string "content_type"
+    t.text "metadata"
+    t.bigint "byte_size", null: false
+    t.string "checksum", null: false
+    t.datetime "created_at", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
 
   create_table "challenges", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "challenge"
@@ -51,6 +72,35 @@ ActiveRecord::Schema.define(version: 2019_01_14_045629) do
     t.index ["user_id"], name: "index_comments_on_user_id"
   end
 
+  create_table "kycs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.integer "status"
+    t.string "first_name"
+    t.string "last_name"
+    t.integer "gender"
+    t.date "birthdate"
+    t.string "nationality"
+    t.string "birth_country"
+    t.string "phone_number"
+    t.integer "employment_status"
+    t.string "employment_industry"
+    t.string "income_range"
+    t.integer "identification_proof_type"
+    t.date "identification_proof_expiration_date"
+    t.string "identification_proof_number"
+    t.integer "residence_proof_type"
+    t.string "country"
+    t.string "address"
+    t.string "address_details"
+    t.string "city"
+    t.string "state"
+    t.string "postal_code"
+    t.string "verification_code"
+    t.bigint "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_kycs_on_user_id"
+  end
+
   create_table "nonces", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "server"
     t.integer "nonce"
@@ -78,6 +128,9 @@ ActiveRecord::Schema.define(version: 2019_01_14_045629) do
     t.index ["proposal_id"], name: "index_proposals_on_proposal_id", unique: true
     t.index ["stage"], name: "index_proposals_on_stage"
     t.index ["user_id"], name: "index_proposals_on_user_id"
+  end
+
+  create_table "test_images", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
   end
 
   create_table "transactions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -125,6 +178,7 @@ ActiveRecord::Schema.define(version: 2019_01_14_045629) do
 
   add_foreign_key "challenges", "users"
   add_foreign_key "comments", "users"
+  add_foreign_key "kycs", "users"
   add_foreign_key "proposals", "comments"
   add_foreign_key "proposals", "users"
   add_foreign_key "transactions", "users"

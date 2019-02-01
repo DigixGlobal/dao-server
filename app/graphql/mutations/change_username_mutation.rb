@@ -5,7 +5,7 @@ module Mutations
     description <<~EOS
       Set the current user's username.
 
-      You can only change your username ONCE so make sure to commit to this.
+      Username can only be changed ONCE so caution with this operation.
     EOS
 
     argument :username, String,
@@ -15,7 +15,7 @@ module Mutations
                 Requirements:
                - 2 to 20 characters long
                - Alphanumerical characters plus underscore
-               - Must not start with "user"
+               - Must not start with `user`
              EOS
 
     field :user, Types::AuthorizedUserType,
@@ -23,7 +23,12 @@ module Mutations
           description: 'User with the updated email'
     field :errors, [UserErrorType],
           null: false,
-          description: 'Mutation errors'
+          description: <<~EOS
+            Mutation errors
+
+            Operation Errors:
+            - Username is already set
+          EOS
 
     def resolve(username:)
       user = context.fetch(:current_user)

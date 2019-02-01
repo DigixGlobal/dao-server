@@ -6,6 +6,7 @@ class User < ApplicationRecord
 
   has_many :challenges
   has_many :transactions
+  has_one :kyc
 
   def username=(value)
     super(value.nil? ? nil : value.downcase)
@@ -33,9 +34,6 @@ class User < ApplicationRecord
 
   def display_name
     username.nil? ? "user#{uid}" : username
-  end
-
-  def proposer
   end
 
   def as_json(options = {})

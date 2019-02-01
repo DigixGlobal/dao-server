@@ -3,7 +3,7 @@
 require 'test_helper'
 
 class CurrentUserQueryTest < ActiveSupport::TestCase
-  QUERY = <<~EOS
+  USER_QUERY = <<~EOS
     query {
       currentUser {
         id
@@ -20,7 +20,7 @@ class CurrentUserQueryTest < ActiveSupport::TestCase
     user = create(:user)
 
     result = DaoServerSchema.execute(
-      QUERY,
+      USER_QUERY,
       context: { current_user: user },
       variables: {}
     )
@@ -30,6 +30,8 @@ class CurrentUserQueryTest < ActiveSupport::TestCase
 
     data = result['data']['currentUser']
 
+    assert_not_empty data,
+                     'user type should work'
     assert_equal "user#{user.uid}", data['displayName'],
                  'display name should default'
 
@@ -40,7 +42,7 @@ class CurrentUserQueryTest < ActiveSupport::TestCase
                  'change username should work'
 
     result = DaoServerSchema.execute(
-      QUERY,
+      USER_QUERY,
       context: { current_user: updated_user },
       variables: {}
     )
@@ -51,12 +53,88 @@ class CurrentUserQueryTest < ActiveSupport::TestCase
 
   test 'should fail without a current user' do
     result = DaoServerSchema.execute(
-      QUERY,
+      USER_QUERY,
       context: {},
       variables: {}
     )
 
     assert_not_empty result['errors'],
                      'should fail without a current user'
+  end
+
+  KYC_QUERY = <<~EOS
+    query {
+      currentUser {
+        kyc {
+          status
+          firstName
+          lastName
+          gender
+          birthdate
+          nationality
+          phoneNumber
+          employmentStatus
+          employmentIndustry
+          incomeRange
+          identificationProof {
+            number
+            expirationDate
+            type
+            image {
+              contentType
+              filename
+              fileSize
+              dataUrl
+            }
+          }
+          residenceProof {
+            residence {
+              address
+              addressDetails
+              city
+              country
+              postalCode
+              state
+            }
+            type
+            image {
+              contentType
+              filename
+              fileSize
+              dataUrl
+            }
+          }
+          identificationPose {
+            verificationCode
+            image {
+              contentType
+              filename
+              fileSize
+              dataUrl
+            }
+          }
+        }
+      }
+    }
+  EOS
+
+  test 'kyc should be visible' do
+    kyc = create(:kyc)
+
+    result = DaoServerSchema.execute(
+      KYC_QUERY,
+      context: { current_user: kyc.user },
+      variables: {}
+    )
+
+    assert_nil result['errors'],
+               'should work and have no errors'
+
+    data = result['data']['currentUser']['kyc']
+
+    assert_not_empty data,
+                     'kyc type should work'
+    assert_not_empty data['residenceProof']['residence'],
+                     'nullable residence proof should be present'
   end
 end
