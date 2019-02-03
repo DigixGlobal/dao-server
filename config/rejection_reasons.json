@@ -1,0 +1,14 @@
+[
+  {"value": "ID_PROOF_NOT_ACCEPTED", "name": "Identification proof not accepted"},
+  {"value": "RESIDENCE_PROOF_NOT_ACCEPTED", "name": "Residence proof not accepted"},
+  {"value": "ID_PROOF_UNREADABLE", "name": "Identification proof image unreadable"},
+  {"value": "RESIDENCE_PROOF_UNREADABLE", "name": "Residence proof image unreadable"},
+  {"value": "IDENTIFICATION_MISMATCH", "name": "Identification mismatch"},
+  {"value": "RESIDENCE_MISMATCH", "name": "Residence mismatch"},
+  {"value": "POSE_UNREADABLE", "name": "Identification pose id unreadable"},
+  {"value": "POSE_OBSTRUCTED", "name": "Identification pose face concealed"},
+  {"value": "UNSPECIFIED", "name": "Unspecified"},
+  {"value": "DUPLICATE", "name": "Duplicate identity"},
+  {"value": "UNSUPPORTED_COUNTRY", "name": "Unsupported country"},
+  {"value": "DOCUMENTS_EXPIRED", "name": "Documents expired"}
+]

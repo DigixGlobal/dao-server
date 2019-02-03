@@ -60,4 +60,27 @@ class AbilityTest < ActiveSupport::TestCase
 
     assert user_ability.can?(:unlike, this_proposal)
   end
+
+  test 'KYC admin/officer abilities should work' do
+    pending_kyc = create(:kyc, status: :pending)
+    user_ability = Ability.new(create(:user))
+
+    assert user_ability.cannot?(:read, pending_kyc)
+    assert user_ability.cannot?(:approve, pending_kyc)
+    assert user_ability.cannot?(:reject, pending_kyc)
+
+    officer_ability = Ability.new(create(:kyc_officer_user))
+
+    assert officer_ability.can?(:read, pending_kyc)
+    assert officer_ability.can?(:approve, pending_kyc)
+    assert officer_ability.can?(:reject, pending_kyc)
+
+    progressive_kyc = create(:kyc, status: :approved)
+
+    assert officer_ability.cannot?(:approve, progressive_kyc)
+    assert officer_ability.cannot?(:disapprove, progressive_kyc)
+
+    assert user_ability.cannot?(:approve, progressive_kyc)
+    assert user_ability.cannot?(:disapprove, progressive_kyc)
+  end
 end

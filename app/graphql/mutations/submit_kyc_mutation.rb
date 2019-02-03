@@ -205,10 +205,6 @@ module Mutations
       end
     end
 
-    def self.accessible?(context)
-      super && context.fetch(:current_user, nil)
-    end
-
     def self.authorized?(object, context)
       super && context.fetch(:current_user, nil)
     end

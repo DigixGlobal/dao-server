@@ -16,6 +16,15 @@ class CurrentUserQueryTest < ActiveSupport::TestCase
     }
   EOS
 
+  ROLE_QUERY = <<~EOS
+    query {
+      currentUser {
+        id
+        isKycOfficer
+      }
+    }
+  EOS
+
   test 'current user query should work' do
     user = create(:user)
 
@@ -51,6 +60,26 @@ class CurrentUserQueryTest < ActiveSupport::TestCase
                  'display name should now be the username'
   end
 
+  test 'current user roles should work' do
+    officer_result = DaoServerSchema.execute(
+      ROLE_QUERY,
+      context: { current_user: create(:kyc_officer_user) },
+      variables: {}
+    )
+
+    assert officer_result['data']['currentUser']['isKycOfficer'],
+           'isKycOfficer field should be true'
+
+    normal_result = DaoServerSchema.execute(
+      ROLE_QUERY,
+      context: { current_user: create(:user) },
+      variables: {}
+    )
+
+    refute normal_result['data']['currentUser']['isKycOfficer'],
+           'isKycOfficer field should be false for normal users'
+  end
+
   test 'should fail without a current user' do
     result = DaoServerSchema.execute(
       USER_QUERY,
@@ -58,15 +87,21 @@ class CurrentUserQueryTest < ActiveSupport::TestCase
       variables: {}
     )
 
-    assert_not_empty result['errors'],
-                     'should fail without a current user'
+    assert_nil result['data']['currentUser'],
+               'should be empty without a current user'
   end
 
   KYC_QUERY = <<~EOS
     query {
       currentUser {
         kyc {
+          id
           status
+          expirationDate
+          userId
+          email
+          ethAddress
+          isApproved
           firstName
           lastName
           gender
@@ -113,6 +148,9 @@ class CurrentUserQueryTest < ActiveSupport::TestCase
               dataUrl
             }
           }
+          ipAddresses
+          createdAt
+          updatedAt
         }
       }
     }
@@ -136,5 +174,29 @@ class CurrentUserQueryTest < ActiveSupport::TestCase
                      'kyc type should work'
     assert_not_empty data['residenceProof']['residence'],
                      'nullable residence proof should be present'
+  end
+
+  test 'kyc expired status should work' do
+    approved_kyc = create(:approved_kyc, expiration_date: Time.now + 1.day)
+
+    result = DaoServerSchema.execute(
+      KYC_QUERY,
+      context: { current_user: approved_kyc.user },
+      variables: {}
+    )
+
+    assert_equal 'APPROVED', result['data']['currentUser']['kyc']['status'],
+                 'kyc should be approved'
+
+    expired_kyc = create(:approved_kyc, expiration_date: Time.now)
+
+    expired_result = DaoServerSchema.execute(
+      KYC_QUERY,
+      context: { current_user: expired_kyc.user },
+      variables: {}
+    )
+
+    assert_equal 'EXPIRED', expired_result['data']['currentUser']['kyc']['status'],
+                 'kyc should be expired'
   end
 end

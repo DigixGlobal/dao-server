@@ -23,6 +23,14 @@ module Types
 
             This is just username if it is set; otherwise, this is just `user<id>`.
           EOS
+    field :is_kyc_officer, Boolean,
+          null: false,
+          description: <<~EOS
+            A flag indicating the user is an KYC officer
+
+            Privileges:
+            - Can approve or reject KYCs
+          EOS
     field :created_at, GraphQL::Types::ISO8601DateTime,
           null: false,
           description: 'Date when the proposal was published'
@@ -34,8 +42,8 @@ module Types
       object.username.nil? ? "user#{object.uid}" : object.username
     end
 
-    def self.authorized?(object, context)
-      super && context.fetch(:current_user, nil)
+    def is_kyc_officer
+      object.groups.pluck(:name).member?(Group.groups[:kyc_officer])
     end
   end
 end
