@@ -116,6 +116,16 @@ class KycTest < ActiveSupport::TestCase
 
     stub_request(:post, EthereumApi::SERVER_URL)
       .with(body: /eth_getBlockByNumber/)
+      .to_return([
+                   { body: { result: { 'number' => forward_block_number } }.to_json },
+                   { body: { result: nil }.to_json }
+                 ])
+
+    assert_equal :block_not_found, Kyc.verify_code(code),
+                 'should handle block not found number'
+
+    stub_request(:post, EthereumApi::SERVER_URL)
+      .with(body: /eth_getBlockByNumber/)
       .to_return(
         body: {
           result: {
