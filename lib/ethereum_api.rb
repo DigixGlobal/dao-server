@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class EthereumApi
-  SERVER_URL = ENV.fetch('INFURA_SERVER_URL') { 'http://localhost:8545' }
+  SERVER_URL = ENV.fetch('INFURA_SERVER_URL') { 'http://localhost:8545/' }
 
   class << self
     def get_latest_block
@@ -21,7 +21,7 @@ class EthereumApi
     def request_ethereum_server(method_name, method_args)
       uri = URI.parse(SERVER_URL)
       https = Net::HTTP.new(uri.host, uri.port)
-      https.use_ssl = true
+      https.use_ssl = Rails.env.production?
 
       req = Net::HTTP::Post.new(uri.path, 'Content-Type' => 'application/json')
       req.body = {
