@@ -70,17 +70,7 @@ puts 'Seeding proposals with comments'
 end
 
 puts 'Seeding kycs'
-15.times do
+1.times do
   kyc = FactoryBot.create(:pending_kyc)
   puts "Created a pending kyc #{kyc.id}"
-end
-
-15.times do
-  kyc = FactoryBot.create(:approved_kyc)
-  puts "Created a approved kyc #{kyc.id}"
-end
-
-15.times do
-  kyc = FactoryBot.create(:rejected_kyc)
-  puts "Created a rejected kyc #{kyc.id}"
 end
