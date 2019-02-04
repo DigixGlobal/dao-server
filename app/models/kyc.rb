@@ -6,7 +6,7 @@ require 'info_api'
 class Kyc < ApplicationRecord
   MAX_BLOCK_DELAY = Rails.configuration.ethereum['max_block_delay'].to_i
   MINIMUM_AGE = 18
-  VERIFICATION_PATTERN = /\A(\d+)-(\d{2})-(\d{2})\Z/.freeze
+  VERIFICATION_PATTERN = /\A(\d+)-(\h{2})-(\h{2})\Z/.freeze
   IMAGE_SIZE_LIMIT = 10.megabytes
   IMAGE_FILE_TYPES = ['image/jpeg', 'image/jpeg', 'image/png'].freeze
 

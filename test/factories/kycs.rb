@@ -40,7 +40,7 @@ FactoryBot.define do
   end
   sequence(:identification_pose_filename) { |n| "identification-pose#{n}.jpg" }
   sequence(:verification_code) do |n|
-    "#{Random.rand(9_999_000..9_999_900)}-#{100 - n}-#{100 - n}"
+    "#{Random.rand(9_999_000..9_999_900)}-aB-9F"
   end
 
   sequence(:image_url) do |_|
