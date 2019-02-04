@@ -849,7 +849,7 @@ input SubmitKycMutationInput {
   # Income range per annum of the customer
   incomeRange: IncomeRangeValue!
 
-  # First name of the customer.
+  # Last name of the customer.
   #
   # Validations:
   # - Maximum of 150 characters

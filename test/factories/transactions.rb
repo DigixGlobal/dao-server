@@ -1,9 +1,11 @@
 # frozen_string_literal: true
 
+require 'faker'
+
 FactoryBot.define do
-  sequence(:title) { |n| "title-#{n}" }
-  sequence(:txhash) { |n| "tx-#{n}" }
-  sequence(:block_number) { |n| n }
+  sequence(:title) { |_| Faker::StarWars.quote }
+  sequence(:txhash) { |_| "0x#{Faker::Ethereum.address}" }
+  sequence(:block_number) { |_| SecureRandom.random_number(10_000) }
 
   factory :transaction, class: 'Transaction' do
     title { generate(:title) }
