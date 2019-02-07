@@ -23,7 +23,7 @@ class EthereumApi
       uri = URI.parse(SERVER_URL)
       print 'uri to request infura = ', uri, ' uri.port = ', uri.port, '\n'
       https = Net::HTTP.new(uri.host, uri.port)
-      https.use_ssl = Rails.env.production?
+      https.use_ssl = uri.host.starts_with?('https')
 
       puts 'uri.path = ', uri.path
 
