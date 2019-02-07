@@ -21,9 +21,11 @@ class EthereumApi
 
     def request_ethereum_server(method_name, method_args)
       uri = URI.parse(SERVER_URL)
-      puts 'uri to request infura = ', uri
+      print 'uri to request infura = ', uri, ' uri.port = ', uri.port, '\n'
       https = Net::HTTP.new(uri.host, uri.port)
-      https.use_ssl = Rails.env.production? or Rails.env.staging?
+      https.use_ssl = Rails.env.production?
+
+      puts 'uri.path = ', uri.path
 
       req = Net::HTTP::Post.new(uri.path, 'Content-Type' => 'application/json')
       req.body = {
@@ -33,11 +35,13 @@ class EthereumApi
         id: 1
       }.to_json
 
+      puts 'req.body = ', req.body
+
       begin
         res = https.request(req)
         puts 'res from request_ethereum_server = ', res.inspect
         result = JSON.parse(res.body).dig('result')
-        puts 'result = from infura = ', result
+        puts 'result from infura = ', result
         [:ok, result]
       rescue StandardError
         [:error, nil]

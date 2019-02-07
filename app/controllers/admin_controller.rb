@@ -1,8 +1,9 @@
 # frozen_string_literal: true
-
+require 'ethereum_api'
 class AdminController < ApplicationController
   around_action :check_and_update_info_server_request,
                 only: %i[update_hashes]
+
 
   api :POST, 'admin/kyc_approval_update', <<~EOS
     Update KYC approval transactions for tracking purposes
@@ -27,6 +28,10 @@ class AdminController < ApplicationController
     _ok = Kyc.update_kyc_hashes(hashes)
 
     render json: result_response
+  end
+
+  def test
+    render json: EthereumApi.get_latest_block
   end
 
   private

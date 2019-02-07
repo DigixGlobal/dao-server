@@ -16,6 +16,8 @@ Rails.application.routes.draw do
     # sessions:           'devise_token_auth/sessions',
     # token_validations:  'overrides/token_validations',
   }
+  get '/test',
+      to: 'admin#test'
 
   get '/user',
       to: 'user#details'
