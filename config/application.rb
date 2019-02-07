@@ -42,9 +42,16 @@ module DaoServer
       end
     end
 
+    config.ethereum = config_for(:ethereums)
     config.challenges = config_for(:challenges)
     config.comments = config_for(:comments)
     config.nonces = config_for(:nonces)
     config.proposals = config_for(:proposals)
+
+    config.countries = JSON.parse(File.read('config/countries.json'))
+    config.income_ranges = JSON.parse(File.read('config/income_ranges.json'))
+    config.industries = JSON.parse(File.read('config/industries.json'))
+    config.rejection_reasons =
+      JSON.parse(File.read('config/rejection_reasons.json'))
   end
 end

@@ -1,0 +1,22 @@
+[
+    {
+        "value": "LOW",
+        "country": "SINGAPORE",
+        "range": "0.00 - 99,999.99"
+    },
+    {
+        "value": "MIDDLE",
+        "country": "SINGAPORE",
+        "range": "100,000.00 - 499,999.99"
+    },
+    {
+        "value": "UPPER_MIDDLE",
+        "country": "SINGAPORE",
+        "range": "500,000.00 - 999,999.99"
+    },
+    {
+        "value": "HIGH",
+        "country": "SINGAPORE",
+        "range": "> 1,000,000.00"
+    }
+]

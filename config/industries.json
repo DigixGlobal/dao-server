@@ -1,0 +1,126 @@
+[
+    {
+        "value": "ACCOUNTANCY_AUDIT",
+        "name": "Accountancy/Audit"
+    },
+    {
+        "value": "ARCHITECTURE",
+        "name": "Architecture"
+    },
+    {
+        "value": "ARMS_DEFENCE_MILITARY",
+        "name": "Arms/Defence/Military"
+    },
+    {
+        "value": "ARTS_ANTIQUE_DEALER_AUCTIONEER",
+        "name": "Arts/Antique Dealer/Auctioneer"
+    },
+    {
+        "value": "CASINO_GAMING_OPERATOR",
+        "name": "Casino/Gaming Operator"
+    },
+    {
+        "value": "CONSULTANCY",
+        "name": "Consultancy"
+    },
+    {
+        "value": "MEDICAL_PROFESSIONAL",
+        "name": "Medical Professional"
+    },
+    {
+        "value": "ENERGY_AND_CHEMICALS",
+        "name": "Energy and Chemicals"
+    },
+    {
+        "value": "EDUCATION",
+        "name": "Education"
+    },
+    {
+        "value": "ENGINEER",
+        "name": "Engineer"
+    },
+    {
+        "value": "FINANCIAL_SERVICES_BANKING",
+        "name": "Financial Services/Banking"
+    },
+    {
+        "value": "FINTECH",
+        "name": "Fintech"
+    },
+    {
+        "value": "FOOD_AND_BEVERAGE",
+        "name": "Food and Beverage"
+    },
+    {
+        "value": "HEALTHCARE_PROFESSIONALS",
+        "name": "Healthcare Professionals"
+    },
+    {
+        "value": "INFORMATION_AND_COMMUNICATIONS_TECHNOLOGY",
+        "name": "Information and Communications Technology"
+    },
+    {
+        "value": "LEGAL_PROFESSIONALS",
+        "name": "Legal Professionals"
+    },
+    {
+        "value": "LOGISTICS_AND_SUPPLY_CHAIN_MANAGEMENT",
+        "name": "Logistics and Supply Chain Management"
+    },
+    {
+        "value": "MARKETING_SALES_ADVERTISING",
+        "name": "Marketing/Sales/Advertising"
+    },
+    {
+        "value": "MEDICAL_TECHNOLOGY",
+        "name": "Medical Technology"
+    },
+    {
+        "value": "MONEY_SERVICES_BUSINESSES",
+        "name": "Money Services Businesses"
+    },
+    {
+        "value": "NATURAL_RESOURCES",
+        "name": "Natural Resources"
+    },
+    {
+        "value": "NIGHT_CLUB_BAR",
+        "name": "Night Club / Bar"
+    },
+    {
+        "value": "OIL_AND_GAS_EQUIPMENT_AND_SERVICES",
+        "name": "Oil and Gas Equipment and Services"
+    },
+    {
+        "value": "PHARMACEUTICALS_AND_BIOTECHNOLOGY",
+        "name": "Pharmaceuticals and Biotechnology"
+    },
+    {
+        "value": "PRECIOUS_METALS_DEALER_JEWELLER",
+        "name": "Precious Metals Dealer / Jeweller"
+    },
+    {
+        "value": "PUBLIC_SERVANT",
+        "name": "Public Servant"
+    },
+    {
+        "value": "RETIRED",
+        "name": "Retired"
+    },
+    {
+        "value": "SELF_EMPLOYED",
+        "name": "Self Employed"
+    },
+    {
+        "value": "STUDENT",
+        "name": "Student"
+    },
+    {
+        "value": "UNEMPLOYED",
+        "name": "Unemployed"
+    },
+    {
+        "value": "OTHERS",
+        "name": "Others"
+    }
+]

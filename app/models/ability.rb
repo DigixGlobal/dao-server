@@ -33,6 +33,17 @@ class Ability
       can :unlike, Comment do |comment|
         !comment.user_like(user).nil?
       end
+
+      user.groups.pluck(:name).each do |group_name|
+        case Group.groups.invert[group_name]
+        when 'kyc_officer'
+          can :read, User
+
+          can :read, Kyc
+          can :approve, Kyc, status: 'pending'
+          can :reject, Kyc, status: 'pending'
+        end
+      end
     end
   end
 end

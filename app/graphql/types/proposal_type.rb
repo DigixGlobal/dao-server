@@ -49,10 +49,6 @@ module Types
           null: false,
           description: 'Milestones for this proposal'
 
-    def self.accessible?(context)
-      super && context.fetch(:current_user, nil)
-    end
-
     def self.authorized?(object, context)
       super && context.fetch(:current_user, nil)
     end

@@ -1,6 +1,18 @@
 # frozen_string_literal: true
 
 class Types::BaseMutation < GraphQL::Schema::RelayClassicMutation
+  def self.visible?(context)
+    authorized?(nil, context)
+  end
+
+  def self.accessible?(context)
+    authorized?(nil, context)
+  end
+
+  def self.authorized?(_object, _context)
+    true
+  end
+
   protected
 
   class UserErrorType < Types::BaseObject
@@ -27,7 +39,7 @@ class Types::BaseMutation < GraphQL::Schema::RelayClassicMutation
     result[key] = nil
     result[:errors] = model_errors.map do |inner_key, _value|
       {
-        field: key.to_s,
+        field: inner_key.to_s,
         message: model_errors.full_messages_for(inner_key).first
       }
     end

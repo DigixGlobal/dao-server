@@ -1,0 +1,11 @@
+development: &defaults
+  max_block_delay: 20
+
+test:
+  max_block_delay: 5
+
+staging:
+  max_block_delay: 20
+
+production:
+  max_block_delay: 20
