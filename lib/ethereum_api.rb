@@ -35,7 +35,7 @@ class EthereumApi
 
       begin
         res = https.request(req)
-
+        puts 'res from request_ethereum_server = ', res.inspect
         result = JSON.parse(res.body).dig('result')
         puts 'result = from infura = ', result
         [:ok, result]

@@ -181,6 +181,7 @@ class Kyc < ApplicationRecord
       block_hash = "0x#{block_number.to_s(16)}"
 
       ok_latest, latest_block = EthereumApi.get_latest_block
+      puts 'latest_block = ', latest_block
 
       return :latest_block_not_found unless ok_latest == :ok && latest_block
 
