@@ -23,7 +23,7 @@ set :puma_preload_app, true
 set :puma_worker_timeout, nil
 set :puma_init_active_record, true  # Change to false when not using ActiveRecord
 set :rvm_type, :user                     # Defaults to: :auto
-set :rvm_ruby_version, '2.5.3@daoserver'
+set :rvm_ruby_version, '2.6.0@daoserver'
 
 
 # set :puma_conf, "#{shared_path}/config/puma.rb"
