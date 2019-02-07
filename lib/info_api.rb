@@ -3,6 +3,8 @@
 require 'info_server'
 
 class InfoApi
+  SERVER_URL = InfoServer::SERVER_URL
+
   class << self
     def list_proposals
       ok, records_or_error = unwrap_result(InfoServer.request_info_server('GET', '/proposals/all', {}))
@@ -17,6 +19,17 @@ class InfoApi
       end
 
       [ok, new_records]
+    end
+
+    def approve_kyc(kyc)
+      return [:kyc_not_approved, nil] unless kyc.status.to_sym == :approved
+
+      payload = {
+        address: kyc.user.address,
+        id_expiration: kyc.expiration_date.to_time.to_i
+      }
+
+      unwrap_result(InfoServer.request_info_server('POST', '/kyc/approve', payload))
     end
 
     private

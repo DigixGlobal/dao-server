@@ -40,6 +40,10 @@ Rails.application.routes.draw do
   get '/transaction',
       to: 'transactions#find'
 
+  post '/admin/kyc_approval_update',
+       to: 'admin#update_hashes',
+       as: 'admin_kyc'
+
   get '/proposals',
       to: 'proposals#select',
       as: 'proposals'

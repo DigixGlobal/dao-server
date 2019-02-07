@@ -10,11 +10,17 @@ require 'info_server'
 require 'simplecov'
 SimpleCov.start 'rails' do
   add_filter 'Rakefile'
+  add_filter '.rake'
   add_filter '/app/channels/'
+  add_filter '/app/controllers/graphql_controller.rb'
   add_filter '/app/controllers/overrides'
+  add_filter '/app/graphql/types'
   add_filter '/app/jobs/'
   add_filter '/app/mailers/'
+  add_filter '/app/middleware/response_logger_middleware.rb'
+  add_filter '/app/models/application_record.rb'
   add_filter '/bin/'
+  add_filter '/lib/scheduler.rb'
 end
 puts 'Starting SimpleCov'
 
@@ -65,18 +71,24 @@ module ActiveSupport
     end
 
     def database_fixture
-      Transaction.delete_all
-      CommentLike.delete_all
-      ProposalLike.delete_all
-      Proposal.delete_all
-      Comment.delete_all
-      CommentHierarchy.delete_all
-      Challenge.delete_all
-      User.delete_all
-      Nonce.delete_all
+      ActiveRecord::Base.transaction do
+        Transaction.delete_all
+        CommentLike.delete_all
+        ProposalLike.delete_all
+        Proposal.delete_all
+        Comment.delete_all
+        CommentHierarchy.delete_all
+        Challenge.delete_all
+        Kyc.delete_all
+        Group.delete_all
+        User.delete_all
+        Nonce.delete_all
 
-      create(:server_nonce, server: Rails.configuration.nonces['info_server_name'])
-      create(:server_nonce, server: Rails.configuration.nonces['self_server_name'])
+        create(:server_nonce, server: Rails.configuration.nonces['info_server_name'])
+        create(:server_nonce, server: Rails.configuration.nonces['self_server_name'])
+
+        create(:group, name: Group.groups[:kyc_officer])
+      end
     end
 
     def info_get(path, payload: {}, headers: {}, **kwargs)

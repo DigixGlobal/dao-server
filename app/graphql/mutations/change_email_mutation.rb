@@ -6,7 +6,13 @@ module Mutations
 
     argument :email, String,
              required: true,
-             description: 'New email for the user'
+             description: <<~EOS
+               New email for the user.
+
+               Validations:
+               - Maximum of 254 characters
+               - Must be of this format: `<name_part>@<domain_part>`
+             EOS
 
     field :user, Types::AuthorizedUserType,
           null: true,

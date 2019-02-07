@@ -14,12 +14,12 @@ FactoryBot.define do
   sequence(:ipfs_hash) { |_| Eth::Key.new.address.downcase }
   sequence(:unix_timestamp) { |_| DateTime.now.to_time.to_i }
 
-  factory :info_milestone, class: 'Object' do
+  factory :info_milestone, class: 'Hash' do
     title { generate(:title) }
     description { generate(:description) }
   end
 
-  factory :info_dijix_object, class: 'Object' do
+  factory :info_dijix_object, class: 'Hash' do
     title { generate(:title) }
     description { generate(:description) }
     details { generate(:detail) }
@@ -27,7 +27,7 @@ FactoryBot.define do
     images { Array.new(Random.rand(1..3)).map { |_| generate(:ipfs_hash) } }
   end
 
-  factory :info_proposal_version, class: 'Object' do
+  factory :info_proposal_version, class: 'Hash' do
     doc_ipfs_hash { generate(:ipfs_address) }
     created { generate(:unix_timestamp) }
     final_reward { generate(:amount) }
@@ -37,7 +37,7 @@ FactoryBot.define do
     dijix_object { attributes_for(:info_dijix_object) }
   end
 
-  factory :info_voting_round, class: 'Object' do
+  factory :info_voting_round, class: 'Hash' do
     start_time { generate(:unix_timestamp) }
     voting_deadline { generate(:unix_timestamp) }
     commit_deadline { generate(:unix_timestamp) }
@@ -53,7 +53,7 @@ FactoryBot.define do
     funded { generate(:boolean) }
   end
 
-  factory :info_proposal, class: 'Object' do
+  factory :info_proposal, class: 'Hash' do
     proposal_id { generate(:ipfs_address) }
     proposer { generate(:address) }
     endorser { generate(:address) }
