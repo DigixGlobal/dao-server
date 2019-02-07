@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
+require 'cancancan'
+
 module Mutations
-  class RejectKycMutation < Types::BaseMutation
+  class RejectKycMutation < Types::Base::BaseMutation
     description <<~EOS
       As a KYC officer, reject a pending KYC with a reason.
 
@@ -11,11 +13,11 @@ module Mutations
     argument :kyc_id, String,
              required: true,
              description: 'The ID of the KYC'
-    argument :rejection_reason, Types::RejectionReasonValue,
+    argument :rejection_reason, Types::Scalar::RejectionReasonValue,
              required: true,
              description: 'Reason for rejecting the KYC'
 
-    field :kyc, Types::KycType,
+    field :kyc, Types::Kyc::KycType,
           null: true,
           description: 'Rejected KYC'
     field :errors, [UserErrorType],

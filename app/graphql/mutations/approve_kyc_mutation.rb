@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
+require 'cancancan'
+
 module Mutations
-  class ApproveKycMutation < Types::BaseMutation
+  class ApproveKycMutation < Types::Base::BaseMutation
     description <<~EOS
       As a KYC officer, approve a pending KYC.
 
@@ -11,7 +13,7 @@ module Mutations
     argument :kyc_id, String,
              required: true,
              description: 'The ID of the KYC'
-    argument :expiration_date, Types::Date,
+    argument :expiration_date, Types::Scalar::Date,
              required: true,
              description: <<~EOS
                Expiration date for this KYC.
@@ -20,7 +22,7 @@ module Mutations
                - Must be a future date.
              EOS
 
-    field :kyc, Types::KycType,
+    field :kyc, Types::Kyc::KycType,
           null: true,
           description: 'Approved KYC'
     field :errors, [UserErrorType],

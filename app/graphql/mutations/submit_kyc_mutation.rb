@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Mutations
-  class SubmitKycMutation < Types::BaseMutation
+  class SubmitKycMutation < Types::Base::BaseMutation
     description <<~EOS
       As the current user, submit a KYC to access more features of the app.
 
@@ -28,10 +28,10 @@ module Mutations
                Validations:
                - Maximum of 150 characters
              EOS
-    argument :gender, Types::GenderEnum,
+    argument :gender, Types::Enum::GenderEnum,
              required: true,
              description: 'Gender of the customer'
-    argument :birthdate, Types::Date,
+    argument :birthdate, Types::Scalar::Date,
              required: true,
              description: <<~EOS
                Birth date of the customer.
@@ -39,10 +39,10 @@ module Mutations
                Validations:
                - Must be 18 years or older
              EOS
-    argument :birth_country, Types::LegalCountryValue,
+    argument :birth_country, Types::Scalar::LegalCountryValue,
              required: true,
              description: "Legal/non-blocked country of the customer's birth"
-    argument :nationality, Types::LegalCountryValue,
+    argument :nationality, Types::Scalar::LegalCountryValue,
              required: true,
              description: "Country of the customer's nationality"
     argument :phone_number, String,
@@ -56,13 +56,13 @@ module Mutations
                - Must be comprised of digits (`0-9`) or dashes (`-`)
                - Must not start or end with a dash
              EOS
-    argument :employment_status, Types::EmploymentStatusEnum,
+    argument :employment_status, Types::Enum::EmploymentStatusEnum,
              required: true,
              description: 'Current employment status of the customer'
-    argument :employment_industry, Types::IndustryValue,
+    argument :employment_industry, Types::Scalar::IndustryValue,
              required: true,
              description: 'Current employment industry of the customer'
-    argument :income_range, Types::IncomeRangeValue,
+    argument :income_range, Types::Scalar::IncomeRangeValue,
              required: true,
              description: 'Income range per annum of the customer'
     argument :identification_proof_number, String,
@@ -73,10 +73,10 @@ module Mutations
                Validations:
                - Maximum of 50 characters
              EOS
-    argument :identification_proof_type, Types::IdentificationProofTypeEnum,
+    argument :identification_proof_type, Types::Enum::IdentificationProofTypeEnum,
              required: true,
              description: 'Type of ID used'
-    argument :identification_proof_expiration_date, Types::Date,
+    argument :identification_proof_expiration_date, Types::Scalar::Date,
              required: true,
              description: <<~EOS
                Expiration date of the ID.
@@ -84,7 +84,7 @@ module Mutations
                Validations:
                - Must not be expired or a future date
              EOS
-    argument :identification_proof_data_url, Types::DataUrl,
+    argument :identification_proof_data_url, Types::Scalar::DataUrl,
              required: true,
              description: <<~EOS
                Image data URL to prove personal identification.
@@ -93,7 +93,7 @@ module Mutations
                - Maximum of 10 MB size
                - JPEG or PNG files only
              EOS
-    argument :country, Types::LegalCountryValue,
+    argument :country, Types::Scalar::LegalCountryValue,
              required: true,
              description: 'Country address of the customer'
     argument :address, String,
@@ -138,10 +138,10 @@ module Mutations
                - Must be comprised of alphanumeric characters (`A-Z0-9`), spaces and dashes (`-`)
                - Must not end or begin with a dash
              EOS
-    argument :residence_proof_type, Types::ResidenceProofTypeEnum,
+    argument :residence_proof_type, Types::Enum::ResidenceProofTypeEnum,
              required: true,
              description: 'Kind/type of proof presented for residence'
-    argument :residence_proof_data_url, Types::DataUrl,
+    argument :residence_proof_data_url, Types::Scalar::DataUrl,
              required: true,
              description: <<~EOS
                Image data URL to prove personal residence
@@ -160,7 +160,7 @@ module Mutations
                Validations:
                - Block number be 20 blocks old
              EOS
-    argument :identification_pose_data_url, Types::DataUrl,
+    argument :identification_pose_data_url, Types::Scalar::DataUrl,
              required: true,
              description: <<~EOS
                Image data URL to prove identification is valid
@@ -170,7 +170,7 @@ module Mutations
                - JPEG or PNG files only
              EOS
 
-    field :kyc, Types::KycType,
+    field :kyc, Types::Kyc::KycType,
           null: true,
           description: 'New kyc submission'
     field :errors, [UserErrorType],

@@ -4,7 +4,7 @@ require 'test_helper'
 
 class ProposalsQueryTest < ActiveSupport::TestCase
   QUERY = <<~EOS
-    query($stage: Stage) {
+    query($stage: ProposalStageEnum) {
       proposals(stage: $stage) {
         proposalId
         stage

@@ -58,8 +58,7 @@ type AuthorizedUser {
   createdAt: ISO8601DateTime!
 
   # Display name of the user which should be used to identify the user.
-  #
-  # This is just username if it is set; otherwise, this is just `user<id>`.
+  #  This is just username if it is set; otherwise, this is just `user<id>`.
   displayName: String!
 
   # User's email
@@ -69,8 +68,7 @@ type AuthorizedUser {
   id: ID!
 
   # A flag indicating the user is an KYC officer
-  #
-  # Privileges:
+  #  Privileges:
   # - Can approve or reject KYCs
   isKycOfficer: Boolean!
 
@@ -173,7 +171,7 @@ type Comment {
   ): CommentConnection!
 
   # Stage/phase the comment was published
-  stage: Stage!
+  stage: ProposalStageEnum!
 
   # Poster of this comment
   user: User!
@@ -251,10 +249,8 @@ scalar ISO8601DateTime
 
 # Customer ID pose for KYC submission
 type IdentificationPose {
-  # Image of the pose with the ID
-  #
-  #
-  # It is possible for this to be `null` after submitting
+  # Image of the pose with the ID.
+  #  It is possible for this to be `null` after submitting
   # since file storage is asynchronous, so be careful with the mutation.
   # Howver, it should be a valid object in practice.
   image: Image
@@ -269,8 +265,7 @@ type IdentificationProof {
   expirationDate: Date!
 
   # Image of the ID.
-  #
-  # It is possible for this to be `null` after submitting
+  #  It is possible for this to be `null` after submitting
   # since file storage is asynchronous, so be careful with the mutation.
   # Howver, it should be a valid object in practice.
   image: Image
@@ -354,8 +349,7 @@ type Kyc {
   ethAddress: EthAddress!
 
   # Expiration date of the KYC.
-  #
-  # After this date, the KYC is marked `EXPIRED`
+  #  After this date, the KYC is marked `EXPIRED`
   # and the user should submit again.
   expirationDate: Date
 
@@ -378,8 +372,7 @@ type Kyc {
   incomeRange: IncomeRangeValue!
 
   # A list of IP addresses used by the customer.
-  #
-  # Currently, IP address is not tracked so this is an empty list.
+  #  Currently, IP address is not tracked so this is an empty list.
   ipAddresses: [String!]!
 
   # A flag if the kyc is `APPROVED`
@@ -401,8 +394,7 @@ type Kyc {
   residenceProof: ResidenceProof!
 
   # Current status or state of the KYC.
-  #
-  # If the KYC is approved and it is after the expiration date,
+  #  If the KYC is approved and it is after the expiration date,
   #  the status is expired.
   status: KycStatusEnum!
 
@@ -423,8 +415,7 @@ type KycEdge {
 }
 
 # Page-based pagination container for KYCs.
-#
-# Note: AVOID USING `pageInfo` since it does nothing and not easily customized at the moment.
+#  Note: AVOID USING `pageInfo` since it does nothing and not easily customized at the moment.
 # Instead, use `hasNextPage` and `hasPreviousPage` from this object instead.
 type KycPaginatedConnection {
   # A list of edges.
@@ -465,8 +456,7 @@ enum KycStatusEnum {
 }
 
 # This is just `CountryValue` but must be from a legal country
-#
-# Blocked countries:
+#  Blocked countries:
 # - Belarus
 # - Cuba
 # - Democratic Republic of the Congo
@@ -570,7 +560,7 @@ type Proposal {
   proposer: User!
 
   # Stage/phase the proposal is in
-  stage: Stage!
+  stage: ProposalStageEnum!
 
   # Proposal's title
   title: String!
@@ -579,7 +569,19 @@ type Proposal {
   totalFunding: String!
 
   # Current voting stage of this proposal
-  votingStage: VotingStage
+  votingStage: VotingStageEnum
+}
+
+# Phases or stages for a proposal or comment
+enum ProposalStageEnum {
+  # Closed, finished or rejected
+  ARCHIVED
+
+  # To be voted on
+  DRAFT
+
+  # To be endorsed by a moderator
+  IDEA
 }
 
 type Query {
@@ -607,11 +609,11 @@ type Query {
     proposalId: String
 
     # Sorting options for the threads
-    sortBy: ThreadSortBy = LATEST
+    sortBy: ThreadSortByEnum = LATEST
 
     # Filter comments by stage/phase.
     #  If not specified, it defaults to the current stage.
-    stage: Stage
+    stage: ProposalStageEnum
   ): CommentConnection!
 
   # List of countries to determine nationality for KYC
@@ -640,10 +642,10 @@ type Query {
     proposalIds: [String!]
 
     # Sorting options for the proposals
-    sortBy: SortBy = DESC
+    sortBy: SortByEnum = DESC
 
     # Filter proposals by its stage/phase
-    stage: Stage
+    stage: ProposalStageEnum
   ): [Proposal!]!
 
   # List of rejection reasons for KYC rejection
@@ -717,8 +719,7 @@ scalar RejectionReasonValue
 # Customer residence proof for KYC submission
 type ResidenceProof {
   # Image of the residence proof.
-  #
-  # It is possible for this to be `null` after submitting
+  #  It is possible for this to be `null` after submitting
   # since file storage is asynchronous, so be careful with the mutation.
   # Howver, it should be a valid object in practice.
   image: Image
@@ -739,24 +740,12 @@ enum ResidenceProofTypeEnum {
   UTILITY_BILL
 }
 
-enum SortBy {
+enum SortByEnum {
   # Sort in ascending creation time
   ASC
 
   # Sort in descending creation time
   DESC
-}
-
-# Phases or stages for a proposal or comment
-enum Stage {
-  # Closed, finished or rejected
-  ARCHIVED
-
-  # To be voted on
-  DRAFT
-
-  # To be endorsed by a moderator
-  IDEA
 }
 
 # Autogenerated input type of SubmitKycMutation
@@ -849,7 +838,7 @@ input SubmitKycMutationInput {
   # Income range per annum of the customer
   incomeRange: IncomeRangeValue!
 
-  # First name of the customer.
+  # Last name of the customer.
   #
   # Validations:
   # - Maximum of 150 characters
@@ -908,7 +897,7 @@ type SubmitKycMutationPayload {
   kyc: Kyc
 }
 
-enum ThreadSortBy {
+enum ThreadSortByEnum {
   # Sort in descending creation time
   LATEST
 
@@ -919,8 +908,7 @@ enum ThreadSortBy {
 # DAO users who publish proposals and vote for them
 type User {
   # Display name of the user which should be used to identify the user.
-  #
-  # This is just username if it is set; otherwise, this is just `user<id>`.
+  #  This is just username if it is set; otherwise, this is just `user<id>`.
   displayName: String!
 }
 
@@ -958,7 +946,7 @@ type VotingRound {
 }
 
 # Phases for a voting round
-enum VotingStage {
+enum VotingStageEnum {
   # Voters commit to a vote
   COMMIT
 

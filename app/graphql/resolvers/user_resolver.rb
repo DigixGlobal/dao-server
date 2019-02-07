@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
+require 'cancancan'
+
 module Resolvers
   class UserResolver < Resolvers::Base
-    type Types::AuthorizedUserType, null: true
+    type Types::User::AuthorizedUserType, null: true
 
     argument :id, String,
              required: true,

@@ -2,7 +2,7 @@
 
 module Resolvers
   class CommentThreadsResolver < Resolvers::Base
-    type Types::CommentType.connection_type,
+    type Types::Proposal::CommentType.connection_type,
          null: false
 
     argument :proposal_id, String,
@@ -18,13 +18,13 @@ module Resolvers
                Search comment replies by its id.
                 This is required or proposal id.
              EOS
-    argument :stage, Types::StageType,
+    argument :stage, Types::Enum::ProposalStageEnum,
              required: false,
              description: <<~EOS
                Filter comments by stage/phase.
                 If not specified, it defaults to the current stage.
              EOS
-    argument :sort_by, Types::ThreadSortByType,
+    argument :sort_by, Types::Enum::ThreadSortByEnum,
              required: false,
              default_value: 'latest',
              description: 'Sorting options for the threads'

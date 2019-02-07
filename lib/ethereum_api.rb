@@ -21,7 +21,7 @@ class EthereumApi
     def request_ethereum_server(method_name, method_args)
       uri = URI.parse(SERVER_URL)
       https = Net::HTTP.new(uri.host, uri.port)
-      https.use_ssl = Rails.env.production?
+      https.use_ssl = uri.scheme == 'https'
 
       req = Net::HTTP::Post.new(uri.path, 'Content-Type' => 'application/json')
       req.body = {
