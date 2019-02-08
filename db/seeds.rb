@@ -61,7 +61,7 @@ User.seed
 # add_pending_txns('title aaa', '0xaaa')
 # add_pending_txns('title bbb', '0xbbb')
 
-FactoryBot.find_definitions
+# FactoryBot.find_definitions
 
 puts 'Seeding proposals with comments'
 3.times do
