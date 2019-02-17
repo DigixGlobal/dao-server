@@ -19,6 +19,7 @@ gem 'data_uri', '0.1.0'
 gem 'devise'
 gem 'devise_token_auth'
 gem 'discard', '>= 1.0.0'
+gem 'faker', '>= 1.9.1', require: false
 gem 'graphiql-rails', '>= 1.5.0'
 gem 'graphql', '1.8.11'
 gem 'kaminari', '>= 1.1.1'

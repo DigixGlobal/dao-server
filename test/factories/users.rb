@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
+require 'faker'
+
 FactoryBot.define do
-  sequence(:uid) { |_| Random.srand }
+  sequence(:uid) { |_| SecureRandom.uuid }
   sequence(:address) { |_| Eth::Key.new.address.downcase }
-  sequence(:username) { |_| "real_user_#{Random.rand(1_000..9_999)}" }
-  sequence(:email) { |_| "user-#{Random.srand}@test.com" }
+  sequence(:username) { |_| Faker::Internet.username }
+  sequence(:email) { |_| Faker::Internet.safe_email }
 
   factory :user, class: 'User' do
     uid { generate(:uid) }
