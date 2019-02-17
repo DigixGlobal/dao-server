@@ -76,7 +76,8 @@ class InfoServer
 
       uri = URI.parse("#{SERVER_URL}#{endpoint}")
       https = Net::HTTP.new(uri.host, uri.port)
-      # https.use_ssl = true
+      https.use_ssl = uri.scheme == 'https'
+
       request_class = case method.upcase
                       when 'POST'
                         Net::HTTP::Post

@@ -2,7 +2,7 @@
 
 module Resolvers
   class CountriesResolver < Resolvers::Base
-    type [Types::CountryType], null: false
+    type [Types::Value::CountryType], null: false
 
     argument :blocked, Boolean,
              required: false,

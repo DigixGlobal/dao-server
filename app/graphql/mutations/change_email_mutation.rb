@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Mutations
-  class ChangeEmailMutation < Types::BaseMutation
+  class ChangeEmailMutation < Types::Base::BaseMutation
     description "Change the current user's email"
 
     argument :email, String,
@@ -14,7 +14,7 @@ module Mutations
                - Must be of this format: `<name_part>@<domain_part>`
              EOS
 
-    field :user, Types::AuthorizedUserType,
+    field :user, Types::User::AuthorizedUserType,
           null: true,
           description: 'User with the updated email'
     field :errors, [UserErrorType],

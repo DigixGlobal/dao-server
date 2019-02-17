@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'cancancan'
+
 require 'ethereum_api'
 require 'info_api'
 

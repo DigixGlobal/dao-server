@@ -24,6 +24,8 @@ SimpleCov.start 'rails' do
 end
 puts 'Starting SimpleCov'
 
+require 'cancancan'
+
 module ActiveSupport
   class TestCase
     include FactoryBot::Syntax::Methods

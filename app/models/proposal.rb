@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'cancancan'
+
 class Proposal < ApplicationRecord
   include StageField
   attribute :proposal_like_id

@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
+require 'cancancan'
+
 module Resolvers
   class SearchKycsResolver < Resolvers::Base
-    type Types::KycPaginatedConnectionType,
+    type Types::Kyc::KycPaginatedConnectionType,
          null: false
 
-    argument :page, Types::PositiveInteger,
+    argument :page, Types::Scalar::PositiveInteger,
              required: false,
              default_value: 1,
              description: <<~EOS
@@ -14,11 +16,11 @@ module Resolvers
                If the page number exceeds the total count
                then it returns an empty data
              EOS
-    argument :page_size, Types::PositiveInteger,
+    argument :page_size, Types::Scalar::PositiveInteger,
              required: false,
              default_value: 30,
              description: 'Number of records to fetch per page'
-    argument :status, Types::KycStatusEnum,
+    argument :status, Types::Enum::KycStatusEnum,
              required: false,
              description: 'Filter KYCs by their status'
 

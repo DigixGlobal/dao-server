@@ -3,8 +3,8 @@
 require 'info_api'
 
 module Types
-  class QueryType < Types::BaseObject
-    field :current_user, AuthorizedUserType,
+  class QueryType < Types::Base::BaseObject
+    field :current_user, Types::User::AuthorizedUserType,
           null: true,
           description: <<~EOS
             Get the current user's information

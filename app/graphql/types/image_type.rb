@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Types
-  class ImageType < Types::BaseObject
+  class ImageType < Types::Base::BaseObject
     description 'Image used for KYC such as jpegs or pngs'
 
     field :filename, String,
