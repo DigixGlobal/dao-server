@@ -5,7 +5,7 @@ require 'faker'
 FactoryBot.define do
   sequence(:uid) { |_| SecureRandom.uuid }
   sequence(:address) { |_| Eth::Key.new.address.downcase }
-  sequence(:username) { |_| Faker::Internet.username }
+  sequence(:username) { |_| Faker::Internet.username.tr('.', '_') }
   sequence(:email) { |_| Faker::Internet.safe_email }
 
   factory :user, class: 'User' do
