@@ -5,6 +5,9 @@ class GraphqlController < ApplicationController
     variables = ensure_hash(params[:variables])
     query = params[:query]
     operation_name = params[:operation_name]
+
+    current_user.groups.reload
+
     context = {
       current_user: current_user
     }

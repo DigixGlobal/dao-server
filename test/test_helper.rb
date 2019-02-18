@@ -90,6 +90,7 @@ module ActiveSupport
         create(:server_nonce, server: Rails.configuration.nonces['self_server_name'])
 
         create(:group, name: Group.groups[:kyc_officer])
+        create(:group, name: Group.groups[:forum_admin])
       end
     end
 

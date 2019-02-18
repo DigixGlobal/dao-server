@@ -209,7 +209,7 @@ class Comment < ApplicationRecord
       end
 
       unless Ability.new(user).can?(:comment, parent_comment)
-        return [:action_invalid, nil]
+        return [:unauthorized_action, nil]
       end
 
       unless (proposal = Proposal.find_by(comment_id: parent_comment.root.id))
@@ -230,11 +230,11 @@ class Comment < ApplicationRecord
     end
 
     def delete(user, comment)
-      return [:already_deleted, nil] if comment.discarded?
-
       unless Ability.new(user).can?(:delete, comment)
         return [:unauthorized_action, nil]
       end
+
+      return [:already_deleted, nil] if comment.discarded?
 
       comment.discard
 
@@ -261,6 +261,40 @@ class Comment < ApplicationRecord
       end
 
       [:ok, comment]
+    end
+
+    def ban(admin, comment)
+      updated_comment = Comment.find(comment.id)
+
+      return [:comment_already_banned, nil] if updated_comment.is_banned
+
+      unless Ability.new(admin).can?(:ban, updated_comment)
+        return [:unauthorized_action, nil]
+      end
+
+      ActiveRecord::Base.transaction do
+        updated_comment.update_attribute(:is_banned, true)
+        updated_comment.discard
+      end
+
+      [:ok, updated_comment]
+    end
+
+    def unban(admin, comment)
+      updated_comment = Comment.find(comment.id)
+
+      return [:comment_already_unbanned, nil] unless updated_comment.is_banned
+
+      unless Ability.new(admin).can?(:unban, updated_comment)
+        return [:unauthorized_action, nil]
+      end
+
+      ActiveRecord::Base.transaction do
+        updated_comment.update_attribute(:is_banned, false)
+        updated_comment.undiscard
+      end
+
+      [:ok, updated_comment]
     end
   end
 end

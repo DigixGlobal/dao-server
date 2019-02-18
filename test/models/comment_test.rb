@@ -27,13 +27,13 @@ class CommentTest < ActiveSupport::TestCase
     assert_not_equal comment.id, other_comment.id,
                      'other comments should be different'
 
-    action_invalid, = Comment.comment(
+    unauthorized_action, = Comment.comment(
       user,
       create(:comment, stage: :archived),
       attrs
     )
 
-    assert_equal :action_invalid, action_invalid,
+    assert_equal :unauthorized_action, unauthorized_action,
                  'should not allow previously staged comment'
 
     invalid_data, = Comment.comment(user, root_comment, {})
@@ -171,7 +171,7 @@ class CommentTest < ActiveSupport::TestCase
     assert_equal 0, comment.likes,
                  'should have no likes'
 
-    100.times do
+    10.times do
       if comment.likes.zero?
         user = create(:user)
 
@@ -225,5 +225,91 @@ class CommentTest < ActiveSupport::TestCase
 
     assert_equal current_likes - disliking_users.size, comment.reload.likes,
                  'unlikes should handle concurrency properly'
+  end
+
+  test 'banned users cannot comment' do
+    proposal = create(:proposal_with_comments)
+    comment = proposal.comment.descendants.all.sample
+    user = create(:user, is_banned: true)
+    attrs = attributes_for(:comment)
+
+    unauthorized_action, = Comment.comment(user, comment, attrs)
+
+    assert_equal :unauthorized_action, unauthorized_action,
+                 'should not allow banned user to comment'
+  end
+
+  test 'ban comment should work' do
+    forum_admin = create(:forum_admin_user)
+    comment = create(:comment, is_banned: false)
+
+    ok, banned_comment = Comment.ban(forum_admin, comment)
+
+    assert_equal :ok, ok,
+                 'should work'
+    assert_kind_of Comment, banned_comment,
+                   'result should be a comment'
+    assert banned_comment.discarded?
+    assert banned_comment.is_banned,
+           'comment should be banned'
+
+    comment_already_banned, = Comment.ban(forum_admin, banned_comment)
+
+    assert_equal :comment_already_banned, comment_already_banned,
+                 'should not allow comments to be banned again'
+  end
+
+  test 'ban comment should fail safely' do
+    unauthorized_action, = Comment.ban(create(:user), create(:comment))
+
+    assert_equal :unauthorized_action, unauthorized_action,
+                 'should not allow normal users to ban comments'
+  end
+
+  test 'unban comment should work' do
+    forum_admin = create(:forum_admin_user)
+    comment = create(:comment, is_banned: true)
+
+    ok, unbanned_comment = Comment.unban(forum_admin, comment)
+
+    assert_equal :ok, ok,
+                 'should work'
+    assert_kind_of Comment, unbanned_comment,
+                   'result should be a comment'
+    refute unbanned_comment.discarded?
+    refute unbanned_comment.is_banned,
+           'comment should be unbanned'
+
+    comment_already_unbanned, = Comment.unban(forum_admin, unbanned_comment)
+
+    assert_equal :comment_already_unbanned, comment_already_unbanned,
+                 'should not allow comments to be unbanned again'
+  end
+
+  test 'unban comment should fail safely' do
+    unauthorized_action, = Comment.unban(create(:user), create(:comment, is_banned: true))
+
+    assert_equal :unauthorized_action, unauthorized_action,
+                 'should not allow normal users to unban comments'
+  end
+
+  test 'banning and deleting a comment should not be allowed' do
+    forum_admin = create(:forum_admin_user)
+    comment = create(:comment, is_banned: false)
+
+    _ok, deleted_comment = Comment.delete(comment.user, comment)
+
+    unauthorized_action, = Comment.ban(forum_admin, deleted_comment)
+
+    assert_equal :unauthorized_action, unauthorized_action,
+                 'should not allow deleted comment to be banned'
+
+    comment = create(:comment, is_banned: false)
+    _ok, banned_comment = Comment.ban(forum_admin, comment)
+
+    unauthorized_action, = Comment.delete(banned_comment.user, banned_comment)
+
+    assert_equal :unauthorized_action, unauthorized_action,
+                 'should not allow banned comment to be deleted'
   end
 end

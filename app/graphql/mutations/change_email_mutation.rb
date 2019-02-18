@@ -31,9 +31,9 @@ module Mutations
 
       case result
       when :invalid_data
-        model_errors(user_or_errors, key)
+        model_errors(key, user_or_errors)
       when :ok
-        model_result(user_or_errors, key)
+        model_result(key, user_or_errors)
       end
     end
 

@@ -30,6 +30,11 @@ module Types
                Privileges:
               - Can approve or reject KYCs
             EOS
+      field :can_comment, Boolean,
+            null: false,
+            description: <<~EOS
+              A flag indicating the if the user can comment in projects
+            EOS
       field :created_at, GraphQL::Types::ISO8601DateTime,
             null: false,
             description: 'Date when the proposal was published'
@@ -43,6 +48,10 @@ module Types
 
       def is_kyc_officer
         object.groups.pluck(:name).member?(Group.groups[:kyc_officer])
+      end
+
+      def can_comment
+        !object.is_banned
       end
     end
   end

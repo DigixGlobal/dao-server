@@ -16,6 +16,15 @@ class CurrentUserQueryTest < ActiveSupport::TestCase
     }
   EOS
 
+  VISIBILITY_QUERY = <<~EOS
+    query {
+      currentUser {
+        id
+        isBanned
+      }
+    }
+  EOS
+
   ROLE_QUERY = <<~EOS
     query {
       currentUser {
@@ -80,15 +89,24 @@ class CurrentUserQueryTest < ActiveSupport::TestCase
            'isKycOfficer field should be false for normal users'
   end
 
-  test 'should fail without a current user' do
-    result = DaoServerSchema.execute(
+  test 'should fail safely' do
+    unauthorized_result = DaoServerSchema.execute(
       USER_QUERY,
       context: {},
       variables: {}
     )
 
-    assert_nil result['data']['currentUser'],
+    assert_nil unauthorized_result['data']['currentUser'],
                'should be empty without a current user'
+
+    visible_result = DaoServerSchema.execute(
+      VISIBILITY_QUERY,
+      context: { current_user: create(:user) },
+      variables: {}
+    )
+
+    assert_not_empty visible_result['errors'],
+                     'isBanned should not be visible'
   end
 
   KYC_QUERY = <<~EOS

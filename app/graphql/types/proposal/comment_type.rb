@@ -15,7 +15,7 @@ module Types
             null: true,
             description: <<~EOS
               Message/body of the comment.
-               This is `null` if this message is deleted.
+               This is `null` if this message is deleted or banned.
             EOS
 
       field :likes, Integer,
@@ -39,6 +39,10 @@ module Types
             null: false,
             description: 'Replies/comments about this comment'
 
+      def body
+        object.discarded? ? nil : object.body
+      end
+
       def liked
         !object.liked.nil?
       end
@@ -60,6 +64,6 @@ module Types
       def self.authorized?(object, context)
         super && context.fetch(:current_user, nil)
       end
-      end
+    end
   end
 end
