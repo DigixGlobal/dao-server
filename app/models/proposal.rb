@@ -40,7 +40,7 @@ class Proposal < ApplicationRecord
     def select_user_proposals(user, attrs)
       query = Proposal
               .preload(:user)
-              .joins("LEFT OUTER JOIN proposal_likes ON proposal_likes.proposal_id = proposals.id AND proposal_likes.user_id = #{user.id}")
+              .joins("LEFT OUTER JOIN proposal_likes ON proposal_likes.proposal_id = proposals.id AND proposal_likes.user_id = #{user ? user.id : -1}")
               .select('proposal_likes.id AS liked', :proposal_id, :user_id, :comment_id, :stage, :likes, :created_at, :updated_at)
 
       if (ids = attrs.fetch(:proposal_ids, nil))

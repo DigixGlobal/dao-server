@@ -4,7 +4,7 @@ class ProposalsController < ApplicationController
   around_action :check_and_update_info_server_request,
                 only: %i[create]
   before_action :authenticate_user!,
-                only: %i[find show select]
+                only: %i[find show]
   before_action :throttle_commenting!,
                 only: %i[comment reply]
 
@@ -60,7 +60,7 @@ class ProposalsController < ApplicationController
   error code: :ok,
         meta: { error: :database_error },
         desc: "Database error. Only if the proposal's id already exists."
-  meta authorization: :nonce
+  meta authorization: nil
   example <<~EOS
     {
       "result": {
@@ -125,10 +125,12 @@ class ProposalsController < ApplicationController
         Get proposal details based on the criteria.
 
         You can use pass a list of proposal id address or stage
-        and it will filter based on those.
+         and it will filter based on those.
         You can pass both but not advisable or meaningful.
 
         Also, you can sort it by ascending or descending order of time.
+
+        Does not need authorization since this is public data
       EOS
   param :proposal_ids, Array,
         desc: <<~EOS
