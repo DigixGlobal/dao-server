@@ -168,6 +168,8 @@ class Kyc < ApplicationRecord
 
       this_kyc&.discard
 
+      NotificationMailer.with(kyc: kyc).kyc_submitted.deliver_now
+
       [:ok, kyc]
     end
 
@@ -230,6 +232,8 @@ class Kyc < ApplicationRecord
         Rails.logger.debug "Failed to updated info-server: #{info_data_or_error}"
       end
 
+      NotificationMailer.with(kyc: this_kyc).kyc_approved.deliver_now
+
       [:ok, this_kyc]
     end
 
@@ -252,6 +256,8 @@ class Kyc < ApplicationRecord
       )
         return [:invalid_data, this_kyc.errors] unless this_kyc.valid?
       end
+
+      NotificationMailer.with(kyc: this_kyc).kyc_rejected.deliver_now
 
       [:ok, this_kyc]
     end

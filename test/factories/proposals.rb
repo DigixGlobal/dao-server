@@ -6,7 +6,7 @@ FactoryBot.define do
   factory :proposal, class: 'Proposal' do
     proposal_id { generate(:address) }
     stage { generate(:proposal_stage) }
-    association :user, factory: :user
+    association :user, factory: :user_with_kyc
 
     before(:create) do |proposal, _evaluator|
       unless proposal.comment

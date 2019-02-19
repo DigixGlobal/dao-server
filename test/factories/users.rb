@@ -17,6 +17,10 @@ FactoryBot.define do
 
     factory :user_with_email do
       email { generate(:email) }
+
+      factory :user_with_kyc do
+        association :kyc, factory: :kyc
+      end
     end
 
     factory :user_with_username do

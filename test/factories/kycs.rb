@@ -41,7 +41,7 @@ FactoryBot.define do
     Kyc.identification_pose_types.keys.sample
   end
   sequence(:identification_pose_filename) { |n| "identification-pose#{n}.jpg" }
-  sequence(:verification_code) do |n|
+  sequence(:verification_code) do |_|
     "#{Random.rand(9_999_000..9_999_900)}-aB-9F"
   end
 
@@ -57,7 +57,7 @@ FactoryBot.define do
   end
   sequence(:rejection_reason) { |_| rejection_reasons.sample }
 
-  sequence(:positive_int) { |n| SecureRandom.random_number(100_000) }
+  sequence(:positive_int) { |_| SecureRandom.random_number(100_000) }
 
   factory :kyc, class: 'Kyc' do
     status { generate(:kyc_status) }
