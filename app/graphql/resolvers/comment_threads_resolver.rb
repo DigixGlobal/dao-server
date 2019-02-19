@@ -29,7 +29,7 @@ module Resolvers
              default_value: 'latest',
              description: 'Sorting options for the threads'
 
-    def comment_threads(**attrs)
+    def resolve(**attrs)
       comment = if (proposal_id = attrs.fetch(:proposal_id, nil))
                   unless (proposal = Proposal.find_by(proposal_id: proposal_id))
                     raise GraphQL::ExecutionError, "Proposal #{proposal_id} does not exist"

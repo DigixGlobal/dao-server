@@ -187,6 +187,7 @@ class Comment < ApplicationRecord
           :id,
           :user_id,
           :body,
+          :discarded_at,
           :stage,
           :created_at
         )

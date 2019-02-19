@@ -36,7 +36,7 @@ module Types
 
     field :comment_threads,
           resolver: Resolvers::CommentThreadsResolver,
-          description: 'Proposals'
+          description: 'Comment threads'
 
     field :search_dao_users,
           resolver: Resolvers::SearchDaoUsersResolver,

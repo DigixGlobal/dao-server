@@ -40,7 +40,11 @@ module Types
             description: 'Replies/comments about this comment'
 
       def body
-        object.discarded? ? nil : object.body
+        if object.is_a?(Comment)
+          object.discarded? ? nil : object.body
+        else
+          object.fetch('discarded_at', nil).nil? ? object.fetch('body') : nil
+        end
       end
 
       def liked
