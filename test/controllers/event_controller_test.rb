@@ -2,6 +2,8 @@
 
 require 'test_helper'
 
+require 'event_handler'
+
 class EventControllerTest < ActionDispatch::IntegrationTest
   setup :email_fixture
 
@@ -10,7 +12,7 @@ class EventControllerTest < ActionDispatch::IntegrationTest
 
     proposal = create(:proposal)
     payload = {
-      event_type: 1,
+      event_type: EventHandler::EVENT_TYPES[:project_created],
       proposer: proposal.user.address,
       proposal_id: proposal.proposal_id
     }
@@ -33,7 +35,7 @@ class EventControllerTest < ActionDispatch::IntegrationTest
 
     proposal = create(:proposal)
     payload = {
-      event_type: 2,
+      event_type: EventHandler::EVENT_TYPES[:project_endorsed],
       proposer: proposal.user.address,
       proposal_id: proposal.proposal_id
     }
@@ -85,7 +87,7 @@ class EventControllerTest < ActionDispatch::IntegrationTest
 
     info_post path,
               payload: {
-                event_type: 1,
+                event_type: EventHandler::EVENT_TYPES.values.sample,
                 proposer: '0xMEOW',
                 proposal_id: 'NON_EXISTENT_ID'
               }

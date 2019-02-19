@@ -2,8 +2,8 @@
 
 class EventHandler
   EVENT_TYPES = {
-    project_created: 1,
-    project_endorsed: 2
+    project_created: 'EVENT_PROJECT_CREATED',
+    project_endorsed: 'EVENT_PROJECT_ENDORSED'
   }.freeze
 
   class << self

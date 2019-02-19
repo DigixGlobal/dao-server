@@ -17,8 +17,8 @@ class EventController < ApplicationController
             The event type to handle.
 
             Values
-            - 1 [PROJECT_CREATED]
-            - 2 [PROJECT_ENDORSED]
+            - PROJECT_CREATED
+            - PROJECT_ENDORSED
           EOS
     param :proposal_id, String,
           desc: 'Proposal ID'

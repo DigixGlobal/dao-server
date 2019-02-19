@@ -10,7 +10,7 @@ class EventHandlerTest < ActiveSupport::TestCase
   test 'project created event should be handled' do
     proposal = create(:proposal)
     ok, = EventHandler.handle_event(
-      event_type: 1,
+      event_type: EventHandler::EVENT_TYPES[:project_created],
       proposer: proposal.user.address,
       proposal_id: proposal.proposal_id
     )
@@ -31,7 +31,7 @@ class EventHandlerTest < ActiveSupport::TestCase
   test 'project endorsed event should be handled' do
     proposal = create(:proposal)
     ok, = EventHandler.handle_event(
-      event_type: 2,
+      event_type: EventHandler::EVENT_TYPES[:project_endorsed],
       proposer: proposal.user.address,
       proposal_id: proposal.proposal_id
     )
@@ -57,7 +57,7 @@ class EventHandlerTest < ActiveSupport::TestCase
 
     proposal = create(:proposal)
     proposal_not_found, = EventHandler.handle_event(
-      event_type: 1,
+      event_type: EventHandler::EVENT_TYPES.values.sample,
       proposer: proposal.user.address,
       proposal_id: 'NON_EXISTENT_ID'
     )
