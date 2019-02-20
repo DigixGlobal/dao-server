@@ -43,7 +43,7 @@ module DaoServer
     end
 
     config.action_mailer.delivery_method = :postmark
-    config.action_mailer.postmark_settings = { api_token: '476d9c4-311d-4bc1-8d04-8864e57956a8' || ENV['POSTMARK_API_TOKEN'] }
+    config.action_mailer.postmark_settings = { api_token: ENV['POSTMARK_API_TOKEN'] }
 
     config.ethereum = config_for(:ethereums)
     config.challenges = config_for(:challenges)
