@@ -41,6 +41,14 @@ class User < ApplicationRecord
     username.nil? ? "user#{uid}" : username
   end
 
+  def is_forum_admin?
+    groups.pluck(:name).member?(Group.groups[:forum_admin])
+  end
+
+  def is_kyc_officer?
+    groups.pluck(:name).member?(Group.groups[:kyc_officer])
+  end
+
   def as_json(options = {})
     serializable_hash(options.merge(except: %i[provider uid], methods: [:display_name]))
       .deep_transform_keys! { |key| key.camelize(:lower) }

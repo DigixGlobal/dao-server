@@ -46,7 +46,7 @@ class KycTest < ActiveSupport::TestCase
     assert_not image.valid?,
                'should fail with an image above the limit'
 
-    data_url = "data:image/jpg;base64,#{Base64.encode64(File.read('./test/small.jpg')).rstrip}"
+    data_url = "data:image/jpg;base64,#{Base64.strict_encode64(File.read('./test/small.jpg'))}"
     data = URI::Data.new(data_url)
 
     image.data.attach(

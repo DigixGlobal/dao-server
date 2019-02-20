@@ -12,6 +12,9 @@ module Types
     field :ban_user, mutation: Mutations::BanUserMutation
     field :unban_user, mutation: Mutations::UnbanUserMutation
 
+    field :post_comment, mutation: Mutations::PostCommentMutation
+    field :like_comment, mutation: Mutations::LikeCommentMutation
+    field :unlike_comment, mutation: Mutations::UnlikeCommentMutation
     field :ban_comment, mutation: Mutations::BanCommentMutation
     field :unban_comment, mutation: Mutations::UnbanCommentMutation
   end

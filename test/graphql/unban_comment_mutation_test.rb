@@ -9,6 +9,22 @@ class UnbanCommentMutationTest < ActiveSupport::TestCase
         comment {
           id
           body
+          isBanned
+        }
+        errors {
+          field
+          message
+        }
+      }
+    }
+  EOS
+
+  UNAUTHORIZED_QUERY = <<~EOS
+    mutation($commentId: String!) {
+      unbanComment(input: { commentId: $commentId}) {
+        comment {
+          id
+          body
         }
         errors {
           field
@@ -38,6 +54,8 @@ class UnbanCommentMutationTest < ActiveSupport::TestCase
 
     assert data['body'],
            'body should be revealed'
+    refute data['isBanned'],
+           'isBanned should be unset'
 
     repeat_result = DaoServerSchema.execute(
       QUERY,
@@ -74,7 +92,7 @@ class UnbanCommentMutationTest < ActiveSupport::TestCase
                      'should fail if comment is not found'
 
     auth_result = DaoServerSchema.execute(
-      QUERY,
+      UNAUTHORIZED_QUERY,
       context: {},
       variables: attrs
     )
@@ -83,7 +101,7 @@ class UnbanCommentMutationTest < ActiveSupport::TestCase
                      'should fail without a current comment'
 
     unauthorized_result = DaoServerSchema.execute(
-      QUERY,
+      UNAUTHORIZED_QUERY,
       context: { current_user: create(:user) },
       variables: attrs
     )

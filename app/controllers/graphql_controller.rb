@@ -6,7 +6,7 @@ class GraphqlController < ApplicationController
     query = params[:query]
     operation_name = params[:operation_name]
 
-    current_user.groups.reload
+    current_user&.groups&.reload
 
     context = {
       current_user: current_user

@@ -153,6 +153,9 @@ ActiveRecord::Schema.define(version: 2019_02_18_231106) do
     t.index ["user_id"], name: "index_proposals_on_user_id"
   end
 
+  create_table "test_images", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  end
+
   create_table "transactions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "title"
     t.string "txhash"

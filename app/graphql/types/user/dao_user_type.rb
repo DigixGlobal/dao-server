@@ -7,6 +7,9 @@ module Types
     class DaoUserType < Types::User::AuthorizedUserType
       description 'Users managed by the forum admin'
 
+      field :id, ID,
+            null: false,
+            description: "User's ID"
       field :is_banned, Boolean,
             null: false,
             description: <<~EOS
