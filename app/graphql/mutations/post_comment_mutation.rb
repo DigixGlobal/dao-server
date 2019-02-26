@@ -65,6 +65,13 @@ module Mutations
       when :database_error, :unauthorized_action
         form_error(key, '_', 'Comment cannot be posted')
       when :ok
+        DaoServerSchema.subscriptions.trigger(
+          'commentUpdated',
+          {},
+          { comment: comment_or_errors },
+          {}
+        )
+
         model_result(key, comment_or_errors)
       end
     end
