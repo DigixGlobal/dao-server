@@ -68,6 +68,9 @@ type AuthorizedUser {
   # User's email
   email: String
 
+  # User's ID
+  id: ID!
+
   # A flag indicating the user is a forum admin
   #
   # Privileges:

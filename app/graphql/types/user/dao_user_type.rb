@@ -7,14 +7,15 @@ module Types
     class DaoUserType < Types::User::AuthorizedUserType
       description 'Users managed by the forum admin'
 
-      field :id, ID,
-            null: false,
-            description: "User's ID"
       field :is_banned, Boolean,
             null: false,
             description: <<~EOS
               A flag indicating if the user is banned from the project forum
             EOS
+
+      def id
+        object.id
+      end
 
       def self.authorized?(_object, context)
         super && context.fetch(:current_user, nil)

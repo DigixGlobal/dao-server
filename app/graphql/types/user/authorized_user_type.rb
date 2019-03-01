@@ -5,6 +5,9 @@ module Types
     class AuthorizedUserType < Types::Base::BaseObject
       description 'DAO users who publish proposals and vote for them'
 
+      field :id, ID,
+            null: false,
+            description: "User's ID"
       field :address, Types::Scalar::EthAddress,
             null: false,
             description: "User's ethereum address"
@@ -59,6 +62,10 @@ module Types
 
       def is_forum_admin
         object.groups&.pluck(:name)&.member?(Group.groups[:forum_admin])
+      end
+
+      def id
+        object.uid
       end
 
       def can_comment
