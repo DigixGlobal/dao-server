@@ -13,7 +13,7 @@ class User < ApplicationRecord
   has_and_belongs_to_many :groups
 
   def username=(value)
-    super(value.nil? ? nil : value.downcase)
+    super(value&.downcase)
   end
 
   def remove_tokens_after_password_reset
