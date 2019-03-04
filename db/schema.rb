@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_01_29_063131) do
+ActiveRecord::Schema.define(version: 2019_02_18_231106) do
 
   create_table "active_storage_attachments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name", null: false
@@ -67,6 +67,7 @@ ActiveRecord::Schema.define(version: 2019_01_29_063131) do
     t.datetime "discarded_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "is_banned", default: false, null: false
     t.index ["discarded_at"], name: "index_comments_on_discarded_at"
     t.index ["stage"], name: "index_comments_on_stage"
     t.index ["user_id"], name: "index_comments_on_user_id"
@@ -192,6 +193,7 @@ ActiveRecord::Schema.define(version: 2019_01_29_063131) do
     t.datetime "updated_at", null: false
     t.string "username", limit: 20
     t.string "email", limit: 254
+    t.boolean "is_banned", default: false, null: false
     t.index ["address"], name: "index_users_on_address", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["uid", "provider"], name: "index_users_on_uid_and_provider", unique: true

@@ -44,9 +44,9 @@ module Mutations
       when :kyc_not_pending, :unauthorized_action
         form_error(key, '_', 'KYC is not pending')
       when :invalid_data
-        model_errors(kyc_or_errors, key)
+        model_errors(key, kyc_or_errors)
       when :ok
-        model_result(kyc_or_errors, key)
+        model_result(key, kyc_or_errors)
       end
     end
 

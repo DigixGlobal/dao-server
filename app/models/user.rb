@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'cancancan'
+
 class User < ApplicationRecord
   devise :rememberable, :trackable
   include DeviseTokenAuth::Concerns::User
@@ -39,18 +41,28 @@ class User < ApplicationRecord
     username.nil? ? "user#{uid}" : username
   end
 
+  def is_forum_admin?
+    groups.pluck(:name).member?(Group.groups[:forum_admin])
+  end
+
+  def is_kyc_officer?
+    groups.pluck(:name).member?(Group.groups[:kyc_officer])
+  end
+
   def as_json(options = {})
     serializable_hash(options.merge(except: %i[provider uid], methods: [:display_name]))
       .deep_transform_keys! { |key| key.camelize(:lower) }
   end
 
   def self.seed
-    officer_address = ENV.fetch('KYC_OFFICER_ADDRESS') { '0x97be8ff9065ce5f3d562cb6b458cde88c8307edf' }
+    kyc_officer_address = ENV.fetch('KYC_OFFICER_ADDRESS') { '0x97be8ff9065ce5f3d562cb6b458cde88c8307edf' }
+    forum_admin_address = ENV.fetch('FORUM_ADMIN_ADDRESS') { '0x52a9d38687a0c2d5e1645f91733ffab3bbd29b06' }
 
-    add_officer(officer_address)
+    add_kyc_officer(kyc_officer_address)
+    add_forum_admin(forum_admin_address)
   end
 
-  def self.add_officer(address)
+  def self.add_kyc_officer(address)
     unless (user = User.find_by(address: address))
       user = User.new(
         uid: Random.rand(1_000_000..1_999_999),
@@ -62,6 +74,23 @@ class User < ApplicationRecord
 
     begin
       user.groups << Group.find_by(name: Group.groups[:kyc_officer])
+    rescue ActiveRecord::RecordNotUnique
+      # Already added
+    end
+  end
+
+  def self.add_forum_admin(address)
+    unless (user = User.find_by(address: address))
+      user = User.new(
+        uid: Random.rand(1_000_000..1_999_999),
+        address: address
+      )
+
+      user.save
+    end
+
+    begin
+      user.groups << Group.find_by(name: Group.groups[:forum_admin])
     rescue ActiveRecord::RecordNotUnique
       # Already added
     end
@@ -96,6 +125,36 @@ class User < ApplicationRecord
       )
 
       return [:invalid_data, audit.errors] unless audit.save
+
+      [:ok, updated_user]
+    end
+
+    def ban_user(admin, user)
+      updated_user = User.find(user.id)
+
+      return [:unauthorized_action, nil] unless user.groups.empty?
+
+      return [:user_already_banned, nil] if updated_user.is_banned
+
+      unless Ability.new(admin).can?(:ban, user)
+        return [:unauthorized_action, nil]
+      end
+
+      updated_user.update_attribute(:is_banned, true)
+
+      [:ok, updated_user]
+    end
+
+    def unban_user(admin, user)
+      updated_user = User.find(user.id)
+
+      return [:user_already_unbanned, nil] unless updated_user.is_banned
+
+      unless Ability.new(admin).can?(:unban, user)
+        return [:unauthorized_action, nil]
+      end
+
+      updated_user.update_attribute(:is_banned, false)
 
       [:ok, updated_user]
     end
