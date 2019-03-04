@@ -4,8 +4,8 @@ require 'test_helper'
 
 class BanUserMutationTest < ActiveSupport::TestCase
   QUERY = <<~EOS
-    mutation($uid: String!) {
-      banUser(input: { uid: $uid}) {
+    mutation($id: String!) {
+      banUser(input: { id: $id}) {
         user {
           id
           canComment
@@ -26,7 +26,7 @@ class BanUserMutationTest < ActiveSupport::TestCase
     result = DaoServerSchema.execute(
       QUERY,
       context: { current_user: forum_admin },
-      variables: { uid: user.uid }
+      variables: { id: user.id.to_s }
     )
 
     assert_nil result['errors'],
@@ -44,7 +44,7 @@ class BanUserMutationTest < ActiveSupport::TestCase
     repeat_result = DaoServerSchema.execute(
       QUERY,
       context: { current_user: forum_admin },
-      variables: { uid: user.uid }
+      variables: { id: user.id.to_s }
     )
 
     assert_not_empty repeat_result['data']['banUser']['errors'],
@@ -66,7 +66,7 @@ class BanUserMutationTest < ActiveSupport::TestCase
     not_found_result = DaoServerSchema.execute(
       QUERY,
       context: { current_user: forum_admin },
-      variables: { uid: 'NON_EXISTENT_ID' }
+      variables: { id: 'NON_EXISTENT_ID' }
     )
 
     assert_not_empty not_found_result['data']['banUser']['errors'],
@@ -75,7 +75,7 @@ class BanUserMutationTest < ActiveSupport::TestCase
     auth_result = DaoServerSchema.execute(
       QUERY,
       context: {},
-      variables: { uid: forum_admin.uid }
+      variables: { id: forum_admin.id.to_s }
     )
 
     assert_not_empty auth_result['errors'],
@@ -84,7 +84,7 @@ class BanUserMutationTest < ActiveSupport::TestCase
     unauthorized_result = DaoServerSchema.execute(
       QUERY,
       context: { current_user: create(:user) },
-      variables: { uid: forum_admin.uid }
+      variables: { id: forum_admin.id.to_s }
     )
 
     assert_not_empty unauthorized_result['errors'],
@@ -93,7 +93,7 @@ class BanUserMutationTest < ActiveSupport::TestCase
     invalid_result = DaoServerSchema.execute(
       QUERY,
       context: { current_user: forum_admin },
-      variables: { uid: forum_admin.uid }
+      variables: { id: forum_admin.id.to_s }
     )
 
     assert_not_empty invalid_result['data']['banUser']['errors'],

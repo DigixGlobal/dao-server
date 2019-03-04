@@ -6,7 +6,6 @@ class CurrentUserQueryTest < ActiveSupport::TestCase
   USER_QUERY = <<~EOS
     query {
       currentUser {
-        id
         email
         address
         username
@@ -19,7 +18,6 @@ class CurrentUserQueryTest < ActiveSupport::TestCase
   VISIBILITY_QUERY = <<~EOS
     query {
       currentUser {
-        id
         isBanned
       }
     }
@@ -28,8 +26,8 @@ class CurrentUserQueryTest < ActiveSupport::TestCase
   ROLE_QUERY = <<~EOS
     query {
       currentUser {
-        id
         isKycOfficer
+        isForumAdmin
       }
     }
   EOS
@@ -78,6 +76,19 @@ class CurrentUserQueryTest < ActiveSupport::TestCase
 
     assert officer_result['data']['currentUser']['isKycOfficer'],
            'isKycOfficer field should be true'
+    refute officer_result['data']['currentUser']['isForumAdmin'],
+           'isForumAdmi nfield should be true'
+
+    admin_result = DaoServerSchema.execute(
+      ROLE_QUERY,
+      context: { current_user: create(:forum_admin_user) },
+      variables: {}
+    )
+
+    refute admin_result['data']['currentUser']['isKycOfficer'],
+           'isKycOfficer field should be true'
+    assert admin_result['data']['currentUser']['isForumAdmin'],
+           'isForumAdmi nfield should be true'
 
     normal_result = DaoServerSchema.execute(
       ROLE_QUERY,
@@ -86,6 +97,8 @@ class CurrentUserQueryTest < ActiveSupport::TestCase
     )
 
     refute normal_result['data']['currentUser']['isKycOfficer'],
+           'isKycOfficer field should be false for normal users'
+    refute normal_result['data']['currentUser']['isForumAdmin'],
            'isKycOfficer field should be false for normal users'
   end
 

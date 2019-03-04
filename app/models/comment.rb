@@ -35,6 +35,7 @@ class Comment < ApplicationRecord
 
   def user_stage_comments(user, stage, criteria)
     last_seen_child_id = criteria.fetch(:last_seen_id, '').to_i
+
     sort_by = criteria.fetch(:sort_by, nil)
 
     comment_stage = stage || self.stage
@@ -168,7 +169,7 @@ class Comment < ApplicationRecord
   end
 
   class << self
-    def select_batch_user_comment_replies(comment_ids, user, criteria)
+    def select_batch_user_comment_replies(comment_ids, user, batch_size, criteria)
       sorting = case criteria.fetch(:sort_by, nil)
                 when :latest, 'latest'
                   'comments.created_at DESC'
@@ -189,16 +190,28 @@ class Comment < ApplicationRecord
           :body,
           :discarded_at,
           :stage,
-          :created_at
+          :created_at,
+          :is_banned,
+          :likes,
+          'comment_likes.id AS comment_like_id'
         )
         .order(:parent_id, sorting)
-        .where(['@n <= ?', 3])
+        .where(['@n <= ?', batch_size])
         .where(['parent_id IN (?)', comment_ids])
         .preload(:user)
         .limit(999_999)
 
       if (stage = criteria.fetch(:stage, nil))
         query = query.where(stage: stage)
+      end
+
+      if (date_after = criteria.fetch(:date_after, nil))
+        query = case criteria.fetch(:sort_by, nil)
+                when :latest, 'latest'
+                  query.where('created_at < ?', date_after)
+                else
+                  query.where('created_at > ?', date_after)
+                end
       end
 
       query.all
@@ -246,8 +259,12 @@ class Comment < ApplicationRecord
       return [:already_liked, nil] unless Ability.new(user).can?(:like, comment)
 
       ActiveRecord::Base.transaction do
-        CommentLike.new(user_id: user.id, comment_id: comment.id).save!
+        like = CommentLike.new(user_id: user.id, comment_id: comment.id)
+
+        like.save!
         comment.update!(likes: comment.comment_likes.count)
+
+        comment.comment_like_id = like.id
       end
 
       [:ok, comment]

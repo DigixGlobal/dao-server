@@ -13,6 +13,10 @@ module Types
               A flag indicating if the user is banned from the project forum
             EOS
 
+      def id
+        object.id
+      end
+
       def self.authorized?(_object, context)
         super && context.fetch(:current_user, nil)
       end

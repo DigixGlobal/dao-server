@@ -32,8 +32,6 @@ class CommentThreadTest < ActiveSupport::TestCase
     assert_equal 16, Comment.count,
                  'comments should be created'
 
-    hack_comment_time
-
     assert_equal [0, stage,
                   [1, stage,
                    [5, stage,
@@ -77,8 +75,6 @@ class CommentThreadTest < ActiveSupport::TestCase
       attributes_for(:comment)
     )
 
-    hack_comment_time
-
     assert_equal [0, stage,
                   [1, stage,
                    [3, stage]],
@@ -99,8 +95,6 @@ class CommentThreadTest < ActiveSupport::TestCase
       root_comment,
       attributes_for(:comment)
     )
-
-    hack_comment_time
 
     assert_equal [0, stage,
                   [1, stage,
@@ -151,8 +145,6 @@ class CommentThreadTest < ActiveSupport::TestCase
         [23, :archived],
         [24, :archived]]]
     )
-
-    hack_comment_time
 
     assert_equal [0, stage,
                   [1, :idea],
@@ -226,8 +218,6 @@ class CommentThreadTest < ActiveSupport::TestCase
        [6, :parent],
        [7, :parent]]
     )
-
-    hack_comment_time
 
     assert_equal [0, stage,
                   [1, stage,
@@ -317,8 +307,6 @@ class CommentThreadTest < ActiveSupport::TestCase
        [3, :parent],
        [4, :parent]]
     )
-
-    hack_comment_time
 
     assert_equal [0, stage,
                   [1, stage,
@@ -440,14 +428,6 @@ class CommentThreadTest < ActiveSupport::TestCase
 
   private
 
-  def hack_comment_time
-    # Hack to force deterministic ordering with the created_at field
-    sleep(2.second)
-    Comment.in_batches.each do |relation|
-      relation.update_all('created_at = FROM_UNIXTIME(id)')
-    end
-  end
-
   def create_root_comment(**kwargs)
     stage = generate(:proposal_stage).to_sym
     proposal = create(
@@ -475,7 +455,11 @@ class CommentThreadTest < ActiveSupport::TestCase
       if stage.nil?
         parent_comment
       else
-        create(:comment, id: id, stage: stage, parent: parent_comment)
+        create(:comment,
+               id: id,
+               stage: stage,
+               parent: parent_comment,
+               created_at: Time.now - 1.days + id.minutes)
       end
 
     children = (child_dsls || [])

@@ -8,10 +8,10 @@ module Mutations
       Role: Forum Admin
     EOS
 
-    argument :uid, String,
+    argument :id, String,
              required: true,
              description: <<~EOS
-               UID of the user to ban
+               ID of the user to unban
              EOS
 
     field :user, Types::User::DaoUserType,
@@ -27,13 +27,13 @@ module Mutations
             - User already unbanned
           EOS
 
-    def resolve(uid:)
+    def resolve(id:)
       forum_admin = context.fetch(:current_user)
 
       key = :user
 
-      unless (this_user = User.find_by(uid: uid))
-        return form_error(key, 'uid', 'User not found')
+      unless (this_user = User.find_by(id: id))
+        return form_error(key, 'id', 'User not found')
       end
 
       result, user_or_errors = User.unban_user(forum_admin, this_user)

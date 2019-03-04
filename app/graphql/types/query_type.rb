@@ -36,7 +36,11 @@ module Types
 
     field :comment_threads,
           resolver: Resolvers::CommentThreadsResolver,
-          description: 'Comment threads'
+          connection: false,
+          description: <<~EOS
+            Search comment threads by either proposal or comment.
+             See `comment.replies` for what threads are.
+          EOS
 
     field :search_dao_users,
           resolver: Resolvers::SearchDaoUsersResolver,
@@ -44,7 +48,7 @@ module Types
           description: <<~EOS
             Search for DAO users.
 
-            For now, this uses the standard Relay connection spec for pagination.
+            For now, this uses the standard Relay connection pagination.
              This might change to default page pagination.
 
             Role: Forum Admin

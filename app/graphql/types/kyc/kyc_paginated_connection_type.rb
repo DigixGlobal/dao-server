@@ -3,12 +3,12 @@
 module Types
   module Kyc
     class KycPaginatedConnectionType < GraphQL::Types::Relay::BaseConnection
-      edge_type(KycEdgeType)
+      edge_type(Types::Kyc::KycEdgeType)
 
       description <<~EOS
         Page-based pagination container for KYCs.
          Note: AVOID USING `pageInfo` since it does nothing and not easily customized at the moment.
-        Instead, use `hasNextPage` and `hasPreviousPage` from this object instead.
+         Instead, use `hasNextPage` and `hasPreviousPage` from this object.
       EOS
 
       field :total_count, Integer,
