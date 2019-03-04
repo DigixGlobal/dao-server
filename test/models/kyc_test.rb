@@ -5,6 +5,8 @@ require 'test_helper'
 require 'ethereum_api'
 
 class KycTest < ActiveSupport::TestCase
+  setup :email_fixture
+
   class TestImage < ApplicationRecord
     has_one_attached :data
 
@@ -152,6 +154,15 @@ class KycTest < ActiveSupport::TestCase
     assert_kind_of Kyc, kyc,
                    'result should be a kyc'
 
+    assert_emails 1
+
+    mail = ActionMailer::Base.deliveries.last
+
+    assert_equal kyc.user.email, mail.to.first,
+                 'email should be sent to the submitter'
+    assert_equal 'Your KYC submission has been received', mail.subject,
+                 'subject should be correct'
+
     assert_equal :pending, user.kyc.status.to_sym,
                  'user should have a pending KYC'
 
@@ -159,6 +170,7 @@ class KycTest < ActiveSupport::TestCase
 
     assert_equal :active_kyc_submitted, active_kyc_submitted,
                  'should not allow resubmission'
+    assert_emails 1
   end
 
   test 'submit kyc should fail safely' do
@@ -253,10 +265,20 @@ class KycTest < ActiveSupport::TestCase
     assert_equal officer.id, approved_kyc.officer.id,
                  'approving officer should be marked '
 
+    assert_emails 1
+
+    mail = ActionMailer::Base.deliveries.last
+
+    assert_equal approved_kyc.user.email, mail.to.first,
+                 'email should be sent to the submitter'
+    assert_equal 'Your KYC submission has been approved', mail.subject,
+                 'subject should be correct'
+
     kyc_not_pending, = Kyc.approve_kyc(officer, kyc, attrs)
 
     assert_equal :kyc_not_pending, kyc_not_pending,
                  'should not allow to approve repeatedly'
+    assert_emails 1
   end
 
   test 'approve kyc should fail safely' do
@@ -306,10 +328,20 @@ class KycTest < ActiveSupport::TestCase
     assert_equal officer.id, rejected_kyc.officer.id,
                  'rejecting officer should be marked '
 
+    assert_emails 1
+
+    mail = ActionMailer::Base.deliveries.last
+
+    assert_equal rejected_kyc.user.email, mail.to.first,
+                 'email should be sent to the submitter'
+    assert_equal 'Your KYC submission has been rejected', mail.subject,
+                 'subject should be correct'
+
     kyc_not_pending, = Kyc.reject_kyc(officer, kyc, attrs)
 
     assert_equal :kyc_not_pending, kyc_not_pending,
                  'should not allow to disprove repeatedly'
+    assert_emails 1
 
     kyc.discard
 

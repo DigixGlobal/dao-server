@@ -29,6 +29,7 @@ require 'cancancan'
 module ActiveSupport
   class TestCase
     include FactoryBot::Syntax::Methods
+    include ActionMailer::TestHelper
 
     setup :database_fixture
 
@@ -70,6 +71,10 @@ module ActiveSupport
       user = create(:user, address: key.address, **kwargs)
 
       [user, auth_headers(key), key]
+    end
+
+    def email_fixture
+      ActionMailer::Base.deliveries.clear
     end
 
     def database_fixture

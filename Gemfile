@@ -6,9 +6,9 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 ruby '2.6.0'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
+gem 'dotenv-rails', '~> 2.6.0', groups: %i[development test]
 gem 'rails', '~> 5.2.1'
 gem 'rake', '= 12.3.2'
-# Use sqlite3 as the database for Active Record
 
 gem 'active_storage_validations', '~> 0.5'
 gem 'api-pagination', '>= 4.8.1'
@@ -26,6 +26,7 @@ gem 'graphql', '1.8.11'
 gem 'graphql-guard', '~> 1.2.1'
 gem 'kaminari', '>= 1.1.1'
 gem 'mysql2', '>= 0.3.18', '< 0.5'
+gem 'postmark-rails', '~> 0.19.0'
 gem 'rufus-scheduler', '>= 3.5.2'
 gem 'typhoeus', '>= 1.3.1'
 gem 'validates_timeliness', '~> 5.0.0.alpha3'
