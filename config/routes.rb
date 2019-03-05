@@ -72,4 +72,8 @@ Rails.application.routes.draw do
        as: 'comment_likes'
   delete '/comments/(:id)/likes',
          to: 'comments#unlike'
+
+  post '/dao_event',
+       to: 'event#handle_event',
+       as: 'event'
 end

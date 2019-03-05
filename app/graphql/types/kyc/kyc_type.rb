@@ -162,7 +162,7 @@ module Types
           filename: blob.filename,
           file_size: blob.byte_size,
           content_type: blob.content_type,
-          data_url: "data:#{blob.content_type};base64,#{Base64.encode64(blob.download).rstrip}"
+          data_url: "data:#{blob.content_type};base64,#{Base64.strict_encode64(blob.download)}"
         }
       end
     end

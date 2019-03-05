@@ -6,8 +6,13 @@ FactoryBot.define do
   factory :proposal, class: 'Proposal' do
     proposal_id { generate(:address) }
     stage { generate(:proposal_stage) }
-    association :user, factory: :user
-    association :comment, factory: :comment
+    association :user, factory: :user_with_kyc
+
+    before(:create) do |proposal, _evaluator|
+      unless proposal.comment
+        proposal.comment = create(:comment, stage: proposal.stage)
+      end
+    end
 
     factory :proposal_with_comments do
       transient do
@@ -31,7 +36,7 @@ FactoryBot.define do
             create_list(
               :comment,
               comment_count,
-              stage: comment.stage,
+              stage: proposal.stage,
               parent: comment
             ).each do |reply|
               new_comments.push(reply) if Random.rand(100) >= comment_ratio

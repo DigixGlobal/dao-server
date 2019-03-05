@@ -199,9 +199,9 @@ module Mutations
       when :active_kyc_submitted
         form_error(key, '_', 'Already have a pending or active KYC')
       when :invalid_data
-        model_errors(user_or_errors, key)
+        model_errors(key, user_or_errors)
       when :ok
-        model_result(user_or_errors, key)
+        model_result(key, user_or_errors)
       end
     end
 

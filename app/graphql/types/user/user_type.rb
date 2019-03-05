@@ -5,6 +5,13 @@ module Types
     class UserType < Types::Base::BaseObject
       description 'DAO users who publish proposals and vote for them'
 
+      field :address, Types::Scalar::EthAddress,
+            null: false,
+            description: <<~EOS
+              User's ethereum address.
+
+              This may be deprecated or a privacy leak so it should not be depended on.
+            EOS
       field :display_name, String,
             null: false,
             description: <<~EOS
@@ -13,7 +20,7 @@ module Types
             EOS
 
       def display_name
-        object['username'].nil? ? "user#{object['id']}" : object['username']
+        object['username'].nil? ? "user#{object['uid']}" : object['username']
       end
 
       def self.authorized?(object, context)

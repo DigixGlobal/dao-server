@@ -29,6 +29,7 @@ require 'cancancan'
 module ActiveSupport
   class TestCase
     include FactoryBot::Syntax::Methods
+    include ActionMailer::TestHelper
 
     setup :database_fixture
 
@@ -72,6 +73,10 @@ module ActiveSupport
       [user, auth_headers(key), key]
     end
 
+    def email_fixture
+      ActionMailer::Base.deliveries.clear
+    end
+
     def database_fixture
       ActiveRecord::Base.transaction do
         Transaction.delete_all
@@ -90,6 +95,7 @@ module ActiveSupport
         create(:server_nonce, server: Rails.configuration.nonces['self_server_name'])
 
         create(:group, name: Group.groups[:kyc_officer])
+        create(:group, name: Group.groups[:forum_admin])
       end
     end
 

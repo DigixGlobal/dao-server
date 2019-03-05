@@ -28,7 +28,7 @@ module Types
               description: 'Which input final value this error came from'
       end
 
-      def model_result(model, key)
+      def model_result(key, model)
         result = {}
         result[key] = model
         result[:errors] = []
@@ -36,7 +36,7 @@ module Types
         result
       end
 
-      def model_errors(model_errors, key)
+      def model_errors(key, model_errors)
         result = {}
         result[key] = nil
         result[:errors] = model_errors.map do |inner_key, _value|

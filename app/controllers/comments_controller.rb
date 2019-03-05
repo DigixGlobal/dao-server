@@ -30,7 +30,7 @@ class CommentsController < ApplicationController
     property :body, String, desc: <<~EOS
       Plain string body of text.
 
-      When a comment is deleted, this is null or empty.
+      When a comment is deleted or banned, this is null or empty.
     EOS
     property :replies, Hash, desc: 'Replies wrapped in a paginated wrapper' do
       property :has_more, [true, false],
@@ -236,7 +236,7 @@ class CommentsController < ApplicationController
     )
 
     case result
-    when :invalid_data, :database_error, :action_invalid
+    when :invalid_data, :database_error, :unauthorized_action
       render json: error_response(comment_or_error || result)
     when :ok
       render json: result_response(comment_or_error)

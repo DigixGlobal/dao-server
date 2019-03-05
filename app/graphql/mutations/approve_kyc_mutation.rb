@@ -32,6 +32,7 @@ module Mutations
 
             Operation Errors:
             - KYC is not pending
+            - KYC not found
           EOS
 
     def resolve(kyc_id:, expiration_date:)
@@ -49,9 +50,9 @@ module Mutations
       when :kyc_not_pending, :unauthorized_action
         form_error(key, '_', 'KYC is not pending')
       when :invalid_data
-        model_errors(kyc_or_errors, key)
+        model_errors(key, kyc_or_errors)
       when :ok
-        model_result(kyc_or_errors, key)
+        model_result(key, kyc_or_errors)
       end
     end
 

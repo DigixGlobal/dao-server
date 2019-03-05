@@ -5,6 +5,9 @@ class DaoServerSchema < GraphQL::Schema
   query(Types::QueryType)
 
   use BatchLoader::GraphQL
+  use GraphQL::Guard.new
+
+  lazy_resolve(Types::Proposal::LazyCommentThread, :replies)
 
   def self.unauthorized_object(error)
     raise GraphQL::ExecutionError,

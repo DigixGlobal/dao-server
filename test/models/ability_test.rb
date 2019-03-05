@@ -61,7 +61,7 @@ class AbilityTest < ActiveSupport::TestCase
     assert user_ability.can?(:unlike, this_proposal)
   end
 
-  test 'KYC admin/officer abilities should work' do
+  test 'KYC officer abilities should work' do
     pending_kyc = create(:kyc, status: :pending)
     user_ability = Ability.new(create(:user))
 
@@ -82,5 +82,35 @@ class AbilityTest < ActiveSupport::TestCase
 
     assert user_ability.cannot?(:approve, progressive_kyc)
     assert user_ability.cannot?(:disapprove, progressive_kyc)
+  end
+
+  test 'forum admin abilities should work' do
+    admin = create(:forum_admin_user)
+    user_ability = Ability.new(admin)
+    unbanned_user = create(:user, is_banned: false)
+    banned_user = create(:user, is_banned: true)
+
+    unbanned_comment = create(:comment, is_banned: false)
+    banned_comment = create(:comment, is_banned: true)
+    banned_comment.discard
+
+    assert user_ability.can?(:manage, User)
+
+    assert user_ability.can?(:ban, unbanned_user)
+    assert user_ability.can?(:unban, banned_user)
+
+    assert user_ability.can?(:ban, unbanned_comment)
+    assert user_ability.can?(:unban, banned_comment)
+
+    user = create(:user)
+    normal_ability = Ability.new(user)
+
+    assert normal_ability.cannot?(:manage, User)
+
+    assert normal_ability.cannot?(:ban, User)
+    assert normal_ability.cannot?(:unban, User)
+
+    assert normal_ability.cannot?(:ban, Comment)
+    assert normal_ability.cannot?(:unban, Comment)
   end
 end

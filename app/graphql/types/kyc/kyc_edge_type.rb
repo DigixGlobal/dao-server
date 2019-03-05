@@ -3,7 +3,7 @@
 module Types
   module Kyc
     class KycEdgeType < GraphQL::Types::Relay::BaseEdge
-      node_type(KycType)
+      node_type(Types::Kyc::KycType)
     end
   end
 end

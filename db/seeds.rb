@@ -63,12 +63,6 @@ User.seed
 
 FactoryBot.find_definitions
 
-puts 'Seeding proposals with comments'
-3.times do
-  proposal = FactoryBot.create(:proposal_with_comments)
-  puts "Created a proposal #{proposal.id}"
-end
-
 puts 'Seeding kycs'
 1.times do
   kyc = FactoryBot.create(:pending_kyc)

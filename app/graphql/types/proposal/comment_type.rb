@@ -15,7 +15,15 @@ module Types
             null: true,
             description: <<~EOS
               Message/body of the comment.
-               This is `null` if this message is deleted.
+               This is `null` if this message is deleted or banned.
+            EOS
+      field :is_banned, Boolean,
+            null: true,
+            mask: ->(context) { context.fetch(:current_user)&.is_forum_admin? },
+            description: <<~EOS
+              A flag indicating if the comment is banned.
+
+              Role: Forum Admin
             EOS
 
       field :likes, Integer,
@@ -35,31 +43,45 @@ module Types
       field :user, Types::User::UserType,
             null: false,
             description: 'Poster of this comment'
-      field :replies, CommentType.connection_type,
-            null: false,
-            description: 'Replies/comments about this comment'
 
-      def liked
-        !object.liked.nil?
+      REPLY_DESCRIPTION = <<~EOS
+        Replies/comments about this comment.
+
+         Given a parent comment, comment threads are list of parent comment replies
+         and the reply of those replies and so on.
+
+         Since this is designed with a load more functionality,
+         this uses Relay connection pagination.
+      EOS
+      field :replies, CommentThreadConnectionType,
+            connection: false,
+            null: false,
+            description: REPLY_DESCRIPTION do
+        argument :first, Int,
+                 required: false,
+                 default_value: 10,
+                 description: 'Returns the first _n_ elements from the list.'
       end
 
-      def replies
-        BatchLoader.for(object.id).batch(default_value: []) do |comment_ids, loader|
-          replies = Comment.select_batch_user_comment_replies(
-            comment_ids,
-            context[:current_user],
-            {}
-          ).all
-
-          replies.each do |reply|
-            loader.call(reply.parent_id) { |thread| thread << reply }
-          end
+      def body
+        if object.is_a?(Comment)
+          object.discarded? ? nil : object.body
+        else
+          object['discarded_at'].nil? ? object['body'] : nil
         end
+      end
+
+      def liked
+        object.liked || !object.comment_like_id.nil?
+      end
+
+      def replies(first:)
+        Types::Proposal::LazyCommentThread.new(context, object, first)
       end
 
       def self.authorized?(object, context)
         super && context.fetch(:current_user, nil)
       end
-      end
+    end
   end
 end

@@ -27,8 +27,23 @@ module Types
             null: false,
             description: <<~EOS
               A flag indicating the user is an KYC officer
-               Privileges:
+
+              Privileges:
               - Can approve or reject KYCs
+            EOS
+      field :is_forum_admin, Boolean,
+            null: false,
+            description: <<~EOS
+              A flag indicating the user is a forum admin
+
+              Privileges:
+              - Can ban and unban users
+              - Can ban and unban comments
+            EOS
+      field :can_comment, Boolean,
+            null: false,
+            description: <<~EOS
+              A flag indicating the if the user can comment in projects
             EOS
       field :created_at, GraphQL::Types::ISO8601DateTime,
             null: false,
@@ -42,7 +57,19 @@ module Types
       end
 
       def is_kyc_officer
-        object.groups.pluck(:name).member?(Group.groups[:kyc_officer])
+        object.groups&.pluck(:name)&.member?(Group.groups[:kyc_officer])
+      end
+
+      def is_forum_admin
+        object.groups&.pluck(:name)&.member?(Group.groups[:forum_admin])
+      end
+
+      def id
+        object.uid
+      end
+
+      def can_comment
+        !object.is_banned
       end
     end
   end

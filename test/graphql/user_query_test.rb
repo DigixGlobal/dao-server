@@ -6,7 +6,6 @@ class UserQueryTest < ActiveSupport::TestCase
   QUERY = <<~EOS
     query($id: String!) {
       user(id: $id) {
-        id
         address
         displayName
         email

@@ -24,6 +24,22 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
     assert_match 'title', @response.body,
                  'response should contain ok status'
 
+    claim_attrs = attributes_for(:claim_result_transaction)
+
+    post transactions_path,
+         params: claim_attrs,
+         headers: auth_headers
+
+    assert_response :success,
+                    'should work with claim type transaction'
+
+    claim_data = JSON.parse(@response.body)['result']
+
+    assert_equal claim_attrs[:type], claim_data['type'],
+                 'type should be the same'
+    assert_equal claim_attrs[:project], claim_data['project'],
+                 'project should be the same'
+
     post transactions_path,
          params: params,
          headers: auth_headers
@@ -64,8 +80,12 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
   test 'list transaction should work' do
     user, auth_headers, _key = create_auth_user
 
-    10.times do
+    15.times do
       create(:transaction, user: user)
+    end
+
+    3.times do
+      create(:transaction_claim_result, user: user)
     end
 
     get transactions_path,
@@ -75,6 +95,17 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
                     'should work'
     assert_match 'title', @response.body,
                  'response should contain ok status'
+    assert_equal 10, JSON.parse(@response.body)['result'].size,
+                 'should have 10 transactions'
+
+    get transactions_path,
+        params: { status: 'pending' },
+        headers: auth_headers
+
+    assert_response :success,
+                    'pending status should work'
+    assert_equal 3, JSON.parse(@response.body)['result'].size,
+                 'should have 3 pending transactions'
 
     get transactions_path,
         params: { all: '' },
@@ -84,6 +115,8 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
                     'should work with pagination disabled'
     assert_match 'title', @response.body,
                  'response should contain results'
+    assert_equal 18, JSON.parse(@response.body)['result'].size,
+                 'should have 18 overall transactions'
 
     get transactions_path
 

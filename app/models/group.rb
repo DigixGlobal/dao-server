@@ -3,7 +3,7 @@
 class Group < ApplicationRecord
   has_and_belongs_to_many :users
 
-  enum group: { kyc_officer: 'KYC_OFFICER' }
+  enum group: { kyc_officer: 'KYC_OFFICER', forum_admin: 'FORUM_ADMIN' }
 
   def self.seed
     groups.each do |_key, value|
