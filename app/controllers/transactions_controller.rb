@@ -114,6 +114,19 @@ class TransactionsController < ApplicationController
                         required: true
   param :txhash, String, desc: "The transaction's hash",
                          required: true
+  param :type, [1],
+        required: false,
+        desc: <<~EOS
+          The transaction type.
+
+          - 1 :: CLAIM_RESULT
+        EOS
+  param :project, String,
+        required: false,
+        desc: <<~EOS
+          If the transaction is about a proposal,
+           this is the proposal Eth address ID.
+        EOS
   formats [:json]
   returns :transaction, desc: 'Created transaction'
   error code: :ok, desc: 'Validation errors',
@@ -139,7 +152,7 @@ class TransactionsController < ApplicationController
   def new
     result, transaction_or_error = add_new_transaction(
       current_user,
-      transactions_params
+      add_transactions_params
     )
 
     case result
@@ -157,6 +170,13 @@ class TransactionsController < ApplicationController
         Fetch a batch of transactions via standard table pagination.
       EOS
   param :all, String, desc: 'A flag to disable pagination and return all transactions if present'
+  param :status, %i[pending],
+        desc: <<~EOS
+          Filter transactions by their status.
+
+          - pending ::
+            Filter claim type transactions
+        EOS
   param :page, Integer, desc: 'Batch page'
   param :per_page, Integer, desc: 'Batch page size'
   formats [:json]
@@ -179,13 +199,17 @@ class TransactionsController < ApplicationController
     }
   EOS
   def list
-    transactions = current_user.transactions.order('created_at DESC')
+    query = current_user.transactions.order('created_at DESC')
+
+    if params.fetch(:status, nil) == 'pending'
+      query = query.where(transaction_type: 1)
+    end
 
     paginated_transactions = if params.fetch(:all, nil)
-                               transactions
+                               query
                              else
                                paginate(
-                                 transactions,
+                                 query,
                                  per_page: params.fetch(:per_page, 10),
                                  page: params.fetch(:page, 1)
                                )
@@ -244,13 +268,12 @@ class TransactionsController < ApplicationController
   private
 
   def add_new_transaction(user, attrs)
+    attrs[:transaction_type] = attrs.delete(:type)
+
     transaction = Transaction.new(attrs)
     transaction.user = user
 
     return [:invalid_data, transaction.errors] unless transaction.valid?
-
-    transaction.txhash = transaction.txhash.downcase
-
     return [:database_error, transaction.errors] unless transaction.save
 
     [:ok, transaction]
@@ -274,8 +297,8 @@ class TransactionsController < ApplicationController
       .update_all(block_number: block_number, status: 'seen')
   end
 
-  def transactions_params
-    params.permit(:title, :txhash)
+  def add_transactions_params
+    params.permit(:title, :txhash, :type, :project)
   end
 
   def seen_transactions_params

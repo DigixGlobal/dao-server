@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'faker'
+
 file_path = Rails.root.join('test', 'test-image.jpeg')
 file_data = File.read(file_path)
 countries = Rails.configuration.countries
@@ -14,32 +16,32 @@ rejection_reasons = Rails.configuration.rejection_reasons
 
 FactoryBot.define do
   sequence(:kyc_status) { |_| Kyc.statuses.keys.sample }
-  sequence(:person_name) { |n| "persona#{n}" }
+  sequence(:person_name) { |_| Faker::Name.first_name }
   sequence(:past_date) { |_| Time.at(rand * Time.now.to_i).to_date }
-  sequence(:birthdate) { |_| Kyc::MINIMUM_AGE.years.ago - (1000 * rand).days }
-  sequence(:future_date) { |_| Date.today + 1000 * rand }
+  sequence(:birthdate) { |_| Faker::Date.birthday(Kyc::MINIMUM_AGE) }
+  sequence(:future_date) { |_| Faker::Date.forward(1000) }
   sequence(:gender) { |_| Kyc.genders.keys.sample }
   sequence(:country) { |_| countries.sample }
   sequence(:phone_number) { |n| "#{['', '+'].sample}631-234567#{n}" }
   sequence(:employment_status) { |_| Kyc.employment_statuses.keys.sample }
   sequence(:employment_industry) { |_| industries.sample }
   sequence(:income_range) { |_| income_ranges.sample }
-  sequence(:identification_proof_number) { |n| "IDPR00F#{n}" }
+  sequence(:identification_proof_number) { |_| SecureRandom.hex }
   sequence(:identification_proof_type) do |_|
     Kyc.identification_proof_types.keys.sample
   end
   sequence(:identification_proof_filename) do |n|
     "identification-proof#{n}.jpg"
   end
-  sequence(:place) { |n| "SOME WEIRD PLACE #{n}" }
-  sequence(:postal_code) { |_| srand.to_s.slice(0, 10) }
+  sequence(:place) { |_| Faker::Address.street_address }
+  sequence(:postal_code) { |_| Faker::Address.postcode }
   sequence(:residence_proof_type) { |_| Kyc.residence_proof_types.keys.sample }
   sequence(:residence_proof_filename) { |n| "residence-proof#{n}.jpg" }
   sequence(:identification_pose_type) do |_|
     Kyc.identification_pose_types.keys.sample
   end
   sequence(:identification_pose_filename) { |n| "identification-pose#{n}.jpg" }
-  sequence(:verification_code) do |n|
+  sequence(:verification_code) do |_|
     "#{Random.rand(9_999_000..9_999_900)}-aB-9F"
   end
 
@@ -55,7 +57,7 @@ FactoryBot.define do
   end
   sequence(:rejection_reason) { |_| rejection_reasons.sample }
 
-  sequence(:positive_int) { |n| Random.rand(n..100) }
+  sequence(:positive_int) { |_| SecureRandom.random_number(100_000) }
 
   factory :kyc, class: 'Kyc' do
     status { generate(:kyc_status) }

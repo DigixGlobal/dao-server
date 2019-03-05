@@ -2,18 +2,18 @@
 
 module Resolvers
   class ProposalsResolver < Resolvers::Base
-    type [Types::ProposalType], null: false
+    type [Types::Proposal::ProposalType], null: false
 
     argument :proposal_ids, [String],
              required: false,
              description: 'Filter proposals by a list of proposal id addresses'
-    argument :stage, Types::StageType,
+    argument :stage, Types::Enum::ProposalStageEnum,
              required: false,
              description: 'Filter proposals by its stage/phase'
     argument :liked, Boolean,
              required: false,
              description: 'Filter proposals if it is liked or not by the current user'
-    argument :sort_by, Types::SortByType,
+    argument :sort_by, Types::Enum::SortByEnum,
              required: false,
              default_value: 'desc',
              description: 'Sorting options for the proposals'

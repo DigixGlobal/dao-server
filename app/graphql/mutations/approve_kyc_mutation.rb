@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
+require 'cancancan'
+
 module Mutations
-  class ApproveKycMutation < Types::BaseMutation
+  class ApproveKycMutation < Types::Base::BaseMutation
     description <<~EOS
       As a KYC officer, approve a pending KYC.
 
@@ -11,7 +13,7 @@ module Mutations
     argument :kyc_id, String,
              required: true,
              description: 'The ID of the KYC'
-    argument :expiration_date, Types::Date,
+    argument :expiration_date, Types::Scalar::Date,
              required: true,
              description: <<~EOS
                Expiration date for this KYC.
@@ -20,7 +22,7 @@ module Mutations
                - Must be a future date.
              EOS
 
-    field :kyc, Types::KycType,
+    field :kyc, Types::Kyc::KycType,
           null: true,
           description: 'Approved KYC'
     field :errors, [UserErrorType],
@@ -30,6 +32,7 @@ module Mutations
 
             Operation Errors:
             - KYC is not pending
+            - KYC not found
           EOS
 
     def resolve(kyc_id:, expiration_date:)
@@ -47,9 +50,9 @@ module Mutations
       when :kyc_not_pending, :unauthorized_action
         form_error(key, '_', 'KYC is not pending')
       when :invalid_data
-        model_errors(kyc_or_errors, key)
+        model_errors(key, kyc_or_errors)
       when :ok
-        model_result(kyc_or_errors, key)
+        model_result(key, kyc_or_errors)
       end
     end
 

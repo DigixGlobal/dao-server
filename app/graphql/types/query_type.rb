@@ -3,8 +3,8 @@
 require 'info_api'
 
 module Types
-  class QueryType < Types::BaseObject
-    field :current_user, AuthorizedUserType,
+  class QueryType < Types::Base::BaseObject
+    field :current_user, Types::User::AuthorizedUserType,
           null: true,
           description: <<~EOS
             Get the current user's information
@@ -17,7 +17,7 @@ module Types
           resolver: Resolvers::SearchKycsResolver,
           connection: false,
           description: <<~EOS
-            Search for KYCs, pending or all
+            Search for KYCs, pending or all.
 
             Role: KYC Officer
           EOS
@@ -36,7 +36,23 @@ module Types
 
     field :comment_threads,
           resolver: Resolvers::CommentThreadsResolver,
-          description: 'Proposals'
+          connection: false,
+          description: <<~EOS
+            Search comment threads by either proposal or comment.
+             See `comment.replies` for what threads are.
+          EOS
+
+    field :search_dao_users,
+          resolver: Resolvers::SearchDaoUsersResolver,
+          connection: true,
+          description: <<~EOS
+            Search for DAO users.
+
+            For now, this uses the standard Relay connection pagination.
+             This might change to default page pagination.
+
+            Role: Forum Admin
+          EOS
 
     field :countries,
           resolver: Resolvers::CountriesResolver,

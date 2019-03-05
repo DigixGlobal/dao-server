@@ -24,7 +24,7 @@ class EthereumApi
       print 'uri to request infura = ', uri, ' uri.port = ', uri.port, '\n'
       https = Net::HTTP.new(uri.host, uri.port)
       puts 'uri.host = ', uri.host
-      https.use_ssl = !Rails.env.development?
+      # https.use_ssl = !Rails.env.development?
       # https.use_ssl = uri.host.starts_with?('https')
       puts 'use_ssl ?', https.use_ssl?
       puts 'development ? ', Rails.env.development?
@@ -33,6 +33,8 @@ class EthereumApi
       puts('Rails.env.production? or Rails.env.staging?', Rails.env.production?) || Rails.env.staging?
 
       puts 'uri.path = ', uri.path
+      https.use_ssl = uri.scheme == 'https'
+
 
       req = Net::HTTP::Post.new(uri.path, 'Content-Type' => 'application/json')
       req.body = {

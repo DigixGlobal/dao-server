@@ -125,4 +125,63 @@ class UserTest < ActiveSupport::TestCase
     assert_equal email, next_audit.old_value,
                  'old email should be tracked'
   end
+
+  test 'ban user should work' do
+    forum_admin = create(:forum_admin_user)
+    user = create(:user, is_banned: false)
+
+    ok, banned_user = User.ban_user(forum_admin, user)
+
+    assert_equal :ok, ok,
+                 'should work'
+    assert_kind_of User, banned_user,
+                   'result should be a user'
+    assert banned_user.is_banned,
+           'user should be banned'
+
+    user_already_banned, = User.ban_user(forum_admin, banned_user)
+
+    assert_equal :user_already_banned, user_already_banned,
+                 'should not allow users to be banned again'
+  end
+
+  test 'ban user should fail safely' do
+    forum_admin = create(:forum_admin_user)
+
+    unauthorized_action, = User.ban_user(forum_admin, create(:forum_admin_user))
+
+    assert_equal :unauthorized_action, unauthorized_action,
+                 'should not allow other admins to be banned'
+
+    unauthorized_action, = User.ban_user(create(:user), create(:user))
+
+    assert_equal :unauthorized_action, unauthorized_action,
+                 'should not allow normal users to ban'
+  end
+
+  test 'unban user should work' do
+    forum_admin = create(:forum_admin_user)
+    user = create(:user, is_banned: true)
+
+    ok, unbanned_user = User.unban_user(forum_admin, user)
+
+    assert_equal :ok, ok,
+                 'should work'
+    assert_kind_of User, unbanned_user,
+                   'result should be a user'
+    refute unbanned_user.is_banned,
+           'user should be unbanned'
+
+    user_already_unbanned, = User.unban_user(forum_admin, unbanned_user)
+
+    assert_equal :user_already_unbanned, user_already_unbanned,
+                 'should not allow users to be unbanned again'
+  end
+
+  test 'unban user should fail safely' do
+    unauthorized_action, = User.ban_user(create(:user), create(:user))
+
+    assert_equal :unauthorized_action, unauthorized_action,
+                 'should not allow normal users to unban'
+  end
 end

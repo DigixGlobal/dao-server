@@ -6,23 +6,27 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 ruby '2.6.0'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
+gem 'dotenv-rails', '~> 2.6.0', groups: %i[development test]
 gem 'rails', '~> 5.2.1'
-# Use sqlite3 as the database for Active Record
+gem 'rake', '= 12.3.2'
 
 gem 'active_storage_validations', '~> 0.5'
 gem 'api-pagination', '>= 4.8.1'
 gem 'apipie-rails', '>= 0.5.14'
-gem 'batch-loader', '1.2.2'
+gem 'batch-loader', '1.3.0'
 gem 'cancancan', '>= 2.3.0'
 gem 'closure_tree', '>= 7.0.0 '
 gem 'data_uri', '0.1.0'
 gem 'devise'
 gem 'devise_token_auth'
 gem 'discard', '>= 1.0.0'
+gem 'faker', '>= 1.9.1', require: false
 gem 'graphiql-rails', '>= 1.5.0'
 gem 'graphql', '1.8.11'
+gem 'graphql-guard', '~> 1.2.1'
 gem 'kaminari', '>= 1.1.1'
 gem 'mysql2', '>= 0.3.18', '< 0.5'
+gem 'postmark-rails', '~> 0.19.0'
 gem 'rufus-scheduler', '>= 3.5.2'
 gem 'typhoeus', '>= 1.3.1'
 gem 'validates_timeliness', '~> 5.0.0.alpha3'

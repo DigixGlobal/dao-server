@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
+require 'faker'
+
 FactoryBot.define do
-  sequence(:comment_body) { |n| "comment-#{n}" }
+  sequence(:comment_body) { |_| Faker::Movie.quote }
   sequence(:thread_sorting) { |_| %i[oldest latest].sample }
 
   factory :comment, class: 'Comment' do

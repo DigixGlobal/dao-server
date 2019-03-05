@@ -2,7 +2,7 @@
 
 module Resolvers
   class IncomeRangesResolver < Resolvers::Base
-    type [Types::IncomeRangeType], null: false
+    type [Types::Value::IncomeRangeType], null: false
 
     def resolve
       Rails.configuration.income_ranges

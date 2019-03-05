@@ -28,3 +28,6 @@
 staging.env
 
 coverage
+
+.env.staging
+.env.production

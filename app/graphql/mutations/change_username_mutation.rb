@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Mutations
-  class ChangeUsernameMutation < Types::BaseMutation
+  class ChangeUsernameMutation < Types::Base::BaseMutation
     description <<~EOS
       Set the current user's username.
 
@@ -20,7 +20,7 @@ module Mutations
                - Must not start with `user`
              EOS
 
-    field :user, Types::AuthorizedUserType,
+    field :user, Types::User::AuthorizedUserType,
           null: true,
           description: 'User with the updated email'
     field :errors, [UserErrorType],
@@ -44,9 +44,9 @@ module Mutations
       when :username_already_set
         form_error(key, 'username', 'Username already set')
       when :invalid_data
-        model_errors(user_or_errors, key)
+        model_errors(key, user_or_errors)
       when :ok
-        model_result(user_or_errors, key)
+        model_result(key, user_or_errors)
       end
     end
 

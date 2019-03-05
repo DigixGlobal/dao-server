@@ -2,7 +2,7 @@
 
 module Resolvers
   class IndustriesResolver < Resolvers::Base
-    type [Types::IndustryType], null: false
+    type [Types::Value::IndustryType], null: false
 
     def resolve
       Rails.configuration.industries
