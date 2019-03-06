@@ -8,4 +8,4 @@ staging:
   max_block_delay: 100
 
 production:
-  max_block_delay: 20
+  max_block_delay: 100
