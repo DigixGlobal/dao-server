@@ -1,4 +1,6 @@
 # frozen_string_literal: true
+set :stage, :production
+server 'dao-production', user: 'appuser', roles: %w[app web db]
 
 set :default_env,
     histfile: '/dev/null',
