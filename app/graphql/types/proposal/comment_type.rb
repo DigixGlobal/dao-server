@@ -19,11 +19,10 @@ module Types
             EOS
       field :is_banned, Boolean,
             null: true,
-            mask: ->(context) { context.fetch(:current_user)&.is_forum_admin? },
             description: <<~EOS
               A flag indicating if the comment is banned.
 
-              Role: Forum Admin
+              Can only be seen by a `Forum Admin`, otherwise `null`
             EOS
 
       field :likes, Integer,
@@ -64,11 +63,23 @@ module Types
       end
 
       def body
-        if object.is_a?(Comment)
-          object.discarded? ? nil : object.body
+        this_body, is_discarded =
+          if object.is_a?(Comment)
+            [object.body, object.discarded?]
+          else
+            [object['body'], object['discarded_at'].nil?]
+          end
+
+        if context.fetch(:current_user)&.is_forum_admin?
+          this_body
         else
-          object['discarded_at'].nil? ? object['body'] : nil
+          is_discarded ? nil : this_body
         end
+      end
+
+      def is_banned
+        context.fetch(:current_user)&.is_forum_admin? ?
+          object.is_banned : nil
       end
 
       def liked

@@ -212,7 +212,7 @@ type Comment {
 
   # A flag indicating if the comment is banned.
   #
-  # Role: Forum Admin
+  # Can only be seen by a Forum Admin, otherwise `null`
   isBanned: Boolean
 
   # A flag to indicate if the current user liked this comment

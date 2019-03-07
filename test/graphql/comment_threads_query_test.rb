@@ -15,6 +15,7 @@ class CommentThreadsQueryTest < ActionDispatch::IntegrationTest
              liked
              createdAt
              parentId
+             isBanned
              user {
                address
                displayName
@@ -29,6 +30,7 @@ class CommentThreadsQueryTest < ActionDispatch::IntegrationTest
                    liked
                    createdAt
                    parentId
+                   isBanned
                    user {
                      address
                      displayName
@@ -43,6 +45,7 @@ class CommentThreadsQueryTest < ActionDispatch::IntegrationTest
                          liked
                          createdAt
                          parentId
+                         isBanned
                          user {
                            address
                            displayName
@@ -75,6 +78,7 @@ class CommentThreadsQueryTest < ActionDispatch::IntegrationTest
         edges {
            node {
              id
+             body
              isBanned
            }
         }
@@ -149,6 +153,8 @@ class CommentThreadsQueryTest < ActionDispatch::IntegrationTest
                            'likes field should work'
             end
 
+    Comment.update_all(is_banned: true, discarded_at: Time.now)
+
     unauthorized_result = DaoServerSchema.execute(
       AUTHORIZED_QUERY,
       context: { current_user: user },
@@ -157,8 +163,15 @@ class CommentThreadsQueryTest < ActionDispatch::IntegrationTest
       )
     )
 
-    assert_not_empty unauthorized_result['errors'],
-                     '`isBanned` should not exist'
+    unauthorized_comments = unauthorized_result['data']['commentThreads']['edges']
+                            .map { |edge| edge['node'] }
+
+    unauthorized_comments.each do |comment|
+      assert_nil comment['isBanned'],
+                 'isBanned should be nil'
+      assert_nil comment['body'],
+                 'body should be nil'
+    end
 
     authorized_result = DaoServerSchema.execute(
       AUTHORIZED_QUERY,
@@ -168,8 +181,15 @@ class CommentThreadsQueryTest < ActionDispatch::IntegrationTest
       )
     )
 
-    assert_nil authorized_result['errors'],
-               '`isBanned` should exist'
+    authorized_comments = authorized_result['data']['commentThreads']['edges']
+                          .map { |edge| edge['node'] }
+
+    authorized_comments.each do |comment|
+      assert comment['isBanned'],
+             'isBanned should have value as a forum admin'
+      assert comment['body'],
+             'body should should have value as a forum admin'
+    end
   end
 
   test 'should fail safely' do

@@ -52,8 +52,8 @@ class BanCommentMutationTest < ActiveSupport::TestCase
 
     data = result['data']['banComment']['comment']
 
-    assert_nil data['body'],
-               'body should be hidden'
+    assert data['body'],
+           'body should be visible as forum admin'
     assert data['isBanned'],
            'isBanned should be set'
 
