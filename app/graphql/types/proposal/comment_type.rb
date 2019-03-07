@@ -63,18 +63,18 @@ module Types
       end
 
       def body
-        this_body, is_discarded =
+        this_body, is_discarded, is_banned =
           if object.is_a?(Comment)
-            [object.body, object.discarded?]
+            [object.body, object.discarded?, object.is_banned]
           else
-            [object['body'], object['discarded_at'].nil?]
+            [object['body'], object['discarded_at'].nil?, object['is_banned']]
           end
 
-        if context.fetch(:current_user)&.is_forum_admin?
-          this_body
-        else
-          is_discarded ? nil : this_body
+        if context.fetch(:current_user)&.is_forum_admin? && is_banned
+          return this_body
         end
+
+        is_discarded ? nil : this_body
       end
 
       def is_banned
