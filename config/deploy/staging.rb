@@ -11,4 +11,5 @@ set :default_env,
     secret_key_base: ENV['DAO_STAGING_SECRET_KEY_BASE'],
     info_server_url: ENV['INFO_SERVER_URL'],
 
+    postmark_from: ENV['POSTMARK_FROM'],
     postmark_api_token: ENV['POSTMARK_API_TOKEN']
