@@ -11,7 +11,20 @@ module Types
 
     field :kyc_updated,
           subscription: Subscriptions::KycUpdated,
-          description: 'A KYC was updated',
-          subscription_scope: :current_user_id
+          subscription_scope: :current_user_id,
+          description: <<~EOS
+            A KYC was updated.
+
+            Only updates users of their respective KYC.
+          EOS
+
+    field :transaction_updated,
+          subscription: Subscriptions::TransactionUpdated,
+          subscription_scope: :current_user_id,
+          description: <<~EOS
+            A transaction was updated.
+
+            Only updates users who triggered the transaction.
+          EOS
   end
 end
