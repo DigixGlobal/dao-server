@@ -4,8 +4,8 @@ require 'test_helper'
 
 class SearchTransactionsQueryTest < ActiveSupport::TestCase
   QUERY = <<~EOS
-    query($status: TransactionStatusEnum) {
-      searchTransactions(status: $status) {
+    query($proposalId: String, $status: TransactionStatusEnum) {
+      searchTransactions(proposalId: $proposalId, status: $status) {
         edges {
           node {
             id
@@ -29,7 +29,7 @@ class SearchTransactionsQueryTest < ActiveSupport::TestCase
     user = create(:user)
 
     create_list(:transaction, 3)
-    create_list(:transaction, 3, user: user)
+    create_list(:transaction, 3, user: user, project: 'PROPOSAL_ID')
     create_list(:transaction_claim_result, 4, user: user)
 
     transaction_result = DaoServerSchema.execute(
@@ -65,6 +65,23 @@ class SearchTransactionsQueryTest < ActiveSupport::TestCase
 
     assert_equal 4, pending_data.size,
                  'should have 4 pending transactions'
+
+    proposal_result = DaoServerSchema.execute(
+      QUERY,
+      context: { current_user: user },
+      variables: { proposalId: 'PROPOSAL_ID' }
+    )
+
+    assert_nil proposal_result['errors'],
+               'should work with proposal id and have no errors'
+    assert_not_empty proposal_result['data']['searchTransactions'],
+                     'should have at data'
+
+    proposal_data = proposal_result['data']['searchTransactions']['edges']
+                    .map { |edge| edge['node'] }
+
+    assert_equal 3, proposal_data.size,
+                 'should have 3 proposal transactions'
   end
 
   test 'should fail safely' do
