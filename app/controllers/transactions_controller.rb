@@ -319,9 +319,9 @@ class TransactionsController < ApplicationController
     transactions.each do |transaction|
       DaoServerSchema.subscriptions.trigger(
         'transactionUpdated',
-        {},
+        { proposal_id: transaction.project },
         { transaction: transaction },
-        scope: transaction.user_id
+        {}
       )
     end
 

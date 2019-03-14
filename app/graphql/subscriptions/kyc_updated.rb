@@ -12,6 +12,8 @@ module Subscriptions
     end
 
     def update
+      return :no_update unless object[:user_id] == context[:current_user_id]
+
       { kyc: object }
     end
   end

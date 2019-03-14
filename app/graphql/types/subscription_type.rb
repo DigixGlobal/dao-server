@@ -11,7 +11,6 @@ module Types
 
     field :kyc_updated,
           subscription: Subscriptions::KycUpdated,
-          subscription_scope: :current_user_id,
           description: <<~EOS
             A KYC was updated.
 
@@ -20,7 +19,6 @@ module Types
 
     field :transaction_updated,
           subscription: Subscriptions::TransactionUpdated,
-          subscription_scope: :current_user_id,
           description: <<~EOS
             A transaction was updated.
 

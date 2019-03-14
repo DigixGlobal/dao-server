@@ -11,14 +11,21 @@ module Subscriptions
     field :transaction, Types::Transaction::TransactionType,
           null: false
 
-    def subscribe
+    def subscribe(proposal_id: nil)
+      context[:proposal_id] = proposal_id
+
       :no_response
     end
 
-    def update(proposal_id: nil)
-      return :no_update if proposal_id && (object.project != proposal_id)
+    def update(*)
+      subscription_id = context[:proposal_id]
+      transaction = object[:transaction]
+      proposal_id = object[:project]
 
-      { transaction: object }
+      return :no_update unless transaction[:user_id] == context[:current_user_id]
+      return :no_update if proposal_id && (subscription_id != proposal_id)
+
+      { transaction: transaction }
     end
   end
 end
