@@ -1,6 +1,8 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    action-cable-testing (0.5.0)
+      actioncable (>= 5.0)
     actioncable (5.2.1)
       actionpack (= 5.2.1)
       nio4r (~> 2.0)
@@ -138,7 +140,7 @@ GEM
     graphiql-rails (1.5.0)
       railties
       sprockets-rails
-    graphql (1.8.11)
+    graphql (1.9.2)
     graphql-guard (1.2.1)
       graphql (>= 1.6.0, < 2)
     hashdiff (0.3.7)
@@ -281,6 +283,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  action-cable-testing (~> 0.5.0)
   active_storage_validations (~> 0.5)
   api-pagination (>= 4.8.1)
   apipie-rails (>= 0.5.14)
@@ -307,7 +310,7 @@ DEPENDENCIES
   factory_bot_rails (>= 4.0.0)
   faker (>= 1.9.1)
   graphiql-rails (>= 1.5.0)
-  graphql (= 1.8.11)
+  graphql (= 1.9.2)
   graphql-guard (~> 1.2.1)
   kaminari (>= 1.1.1)
   listen (>= 3.0.5, < 3.2)

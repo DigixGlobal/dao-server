@@ -37,6 +37,13 @@ module Mutations
       when :not_liked
         form_error(key, '_', 'Comment not liked')
       when :ok
+        DaoServerSchema.subscriptions.trigger(
+          'commentUpdated',
+          {},
+          { comment: comment_or_errors },
+          {}
+        )
+
         model_result(key, comment_or_errors)
       end
     end

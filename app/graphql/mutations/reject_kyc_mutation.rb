@@ -46,6 +46,13 @@ module Mutations
       when :invalid_data
         model_errors(key, kyc_or_errors)
       when :ok
+        DaoServerSchema.subscriptions.trigger(
+          'kycUpdated',
+          {},
+          { kyc: kyc_or_errors },
+          scope: kyc_or_errors.user_id
+        )
+
         model_result(key, kyc_or_errors)
       end
     end

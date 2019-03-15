@@ -29,8 +29,12 @@ module Types
             null: false,
             description: 'Number of user who liked this comment'
       field :liked, Boolean,
-            null: false,
-            description: 'A flag to indicate if the current user liked this comment'
+            null: true,
+            description: <<~EOS
+              A flag to indicate if the current user liked this comment.
+
+              If there is no current user, this is `null`.
+            EOS
 
       field :created_at, GraphQL::Types::ISO8601DateTime,
             null: false,
@@ -83,7 +87,9 @@ module Types
       end
 
       def liked
-        object.liked || !object.comment_like_id.nil?
+        if context.fetch(:current_user, nil)
+          object.liked || !object.comment_like_id.nil?
+        end
       end
 
       def replies(first:)
