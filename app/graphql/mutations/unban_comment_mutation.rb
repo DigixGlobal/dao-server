@@ -42,6 +42,13 @@ module Mutations
       when :comment_already_unbanned
         form_error(key, '_', 'Comment already unbanned')
       when :ok
+        DaoServerSchema.subscriptions.trigger(
+          'commentUpdated',
+          {},
+          { comment: comment_or_errors },
+          {}
+        )
+
         model_result(key, comment_or_errors)
       end
     end

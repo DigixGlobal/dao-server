@@ -38,6 +38,13 @@ module Mutations
       when :already_liked
         form_error(key, '_', 'Comment already liked')
       when :ok
+        DaoServerSchema.subscriptions.trigger(
+          'commentUpdated',
+          {},
+          { comment: comment_or_errors },
+          {}
+        )
+
         model_result(key, comment_or_errors)
       end
     end

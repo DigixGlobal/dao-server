@@ -57,4 +57,6 @@ Rails.application.configure do
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker
 
   config.middleware.use ResponseLoggerMiddleware
+
+  config.action_cable.disable_request_forgery_protection = true
 end

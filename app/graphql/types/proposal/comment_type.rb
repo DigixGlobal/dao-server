@@ -19,19 +19,22 @@ module Types
             EOS
       field :is_banned, Boolean,
             null: true,
-            mask: ->(context) { context.fetch(:current_user)&.is_forum_admin? },
             description: <<~EOS
               A flag indicating if the comment is banned.
 
-              Role: Forum Admin
+              Can only be seen by a `Forum Admin`, otherwise `null`
             EOS
 
       field :likes, Integer,
             null: false,
             description: 'Number of user who liked this comment'
       field :liked, Boolean,
-            null: false,
-            description: 'A flag to indicate if the current user liked this comment'
+            null: true,
+            description: <<~EOS
+              A flag to indicate if the current user liked this comment.
+
+              If there is no current user, this is `null`.
+            EOS
 
       field :created_at, GraphQL::Types::ISO8601DateTime,
             null: false,
@@ -64,15 +67,29 @@ module Types
       end
 
       def body
-        if object.is_a?(Comment)
-          object.discarded? ? nil : object.body
-        else
-          object['discarded_at'].nil? ? object['body'] : nil
+        this_body, is_discarded, is_banned =
+          if object.is_a?(Comment)
+            [object.body, object.discarded?, object.is_banned]
+          else
+            [object['body'], object['discarded_at'].nil?, object['is_banned']]
+          end
+
+        if context.fetch(:current_user)&.is_forum_admin? && is_banned
+          return this_body
         end
+
+        is_discarded ? nil : this_body
+      end
+
+      def is_banned
+        context.fetch(:current_user)&.is_forum_admin? ?
+          object.is_banned : nil
       end
 
       def liked
-        object.liked || !object.comment_like_id.nil?
+        if context.fetch(:current_user, nil)
+          object.liked || !object.comment_like_id.nil?
+        end
       end
 
       def replies(first:)

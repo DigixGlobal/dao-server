@@ -54,6 +54,13 @@ module Types
             Role: Forum Admin
           EOS
 
+    field :search_transactions,
+          resolver: Resolvers::SearchTransactionsResolver,
+          connection: true,
+          description: <<~EOS
+            Search for the current user's transactions.
+          EOS
+
     field :countries,
           resolver: Resolvers::CountriesResolver,
           description: 'List of countries to determine nationality for KYC'
