@@ -22,7 +22,7 @@ gem 'devise_token_auth'
 gem 'discard', '>= 1.0.0'
 gem 'faker', '>= 1.9.1', require: false
 gem 'graphiql-rails', '>= 1.5.0'
-gem 'graphql', '1.8.11'
+gem 'graphql', '1.9.2'
 gem 'graphql-guard', '~> 1.2.1'
 gem 'kaminari', '>= 1.1.1'
 gem 'mysql2', '>= 0.3.18', '< 0.5'
@@ -76,6 +76,7 @@ group :development do
 end
 
 group :test do
+  gem 'action-cable-testing', '~> 0.5.0'
   gem 'factory_bot', '>= 4.0.0'
   gem 'factory_bot_rails', '>= 4.0.0'
   gem 'simplecov', '>= 0.16.0', require: false

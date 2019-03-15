@@ -239,6 +239,13 @@ class CommentsController < ApplicationController
     when :invalid_data, :database_error, :unauthorized_action
       render json: error_response(comment_or_error || result)
     when :ok
+      DaoServerSchema.subscriptions.trigger(
+        'commentPosted',
+        {},
+        { comment: comment_or_error },
+        {}
+      )
+
       render json: result_response(comment_or_error)
     end
   end
@@ -304,6 +311,13 @@ class CommentsController < ApplicationController
       render json: error_response(result),
              status: :not_found
     when :ok
+      DaoServerSchema.subscriptions.trigger(
+        'commentUpdated',
+        {},
+        { comment: comment_or_error },
+        {}
+      )
+
       render json: result_response(comment_or_error)
     end
   end
@@ -362,6 +376,13 @@ class CommentsController < ApplicationController
     when :database_error, :already_liked
       render json: error_response(comment_or_error || result)
     when :ok
+      DaoServerSchema.subscriptions.trigger(
+        'commentUpdated',
+        {},
+        { comment: comment_or_error },
+        {}
+      )
+
       render json: result_response(comment_or_error)
     end
   end
@@ -418,13 +439,20 @@ class CommentsController < ApplicationController
     when :database_error, :not_liked
       render json: error_response(comment_or_error || result)
     when :ok
+      DaoServerSchema.subscriptions.trigger(
+        'commentUpdated',
+        {},
+        { comment: comment_or_error },
+        {}
+      )
+
       render json: result_response(comment_or_error)
     end
   end
 
   private
 
-  def user_comment_tree_view(user, comment_trees)
+  def user_comment_tree_view(_user, comment_trees)
     comment_trees
   end
 

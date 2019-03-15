@@ -8,6 +8,7 @@ Rails.application.routes.draw do
     mount GraphiQL::Rails::Engine, at: '/graphiql', graphql_path: '/api'
   end
 
+  mount ActionCable.server => '/websocket'
   mount_devise_token_auth_for 'User', at: 'auth', controllers: {
     # confirmations:      'devise_token_auth/confirmations',
     # passwords:          'devise_token_auth/passwords',

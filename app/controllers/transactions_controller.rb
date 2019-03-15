@@ -79,10 +79,12 @@ class TransactionsController < ApplicationController
       block_number = payload.fetch(:block_number, '')
 
       unless transactions.empty?
-        seen_transactions(
+        result, transactions_or_errors = seen_transactions(
           transactions.map { |e| e.fetch(:txhash, '') },
           block_number
         )
+
+        broadcast_transactions(transactions_or_errors) if result == :ok
       end
 
       render json: result_response(:seen)
@@ -95,9 +97,17 @@ class TransactionsController < ApplicationController
                           .fetch(:failed, [])
                           .map { |e| e.fetch(:txhash, '') }
 
-      confirm_transactions(success_txn_hashes) unless success_txn_hashes.empty?
+      unless success_txn_hashes.empty?
+        result, transactions_or_errors = confirm_transactions(success_txn_hashes)
 
-      fail_transactions(failed_txn_hashes) unless failed_txn_hashes.empty?
+        broadcast_transactions(transactions_or_errors) if result == :ok
+      end
+
+      unless failed_txn_hashes.empty?
+        result, transactions_or_errors = fail_transactions(failed_txn_hashes)
+
+        broadcast_transactions(transactions_or_errors) if result == :ok
+      end
 
       render json: result_response(:confirmed)
     else
@@ -280,21 +290,42 @@ class TransactionsController < ApplicationController
   end
 
   def confirm_transactions(txn_hashes)
-    Transaction
-      .where(txhash: txn_hashes)
-      .update_all(status: 'confirmed')
+    source = Transaction.where(txhash: txn_hashes)
+
+    source.update_all(status: 'confirmed')
+
+    [:ok, source.all]
   end
 
   def fail_transactions(txn_hashes)
-    Transaction
-      .where(txhash: txn_hashes)
-      .update_all(status: 'failed')
+    source = Transaction.where(txhash: txn_hashes)
+
+    source.update_all(status: 'failed')
+
+    [:ok, source.all]
   end
 
   def seen_transactions(txn_hashes, block_number)
-    Transaction
-      .where(txhash: txn_hashes)
-      .update_all(block_number: block_number, status: 'seen')
+    source = Transaction.where(txhash: txn_hashes)
+
+    source.update_all(block_number: block_number, status: 'seen')
+
+    [:ok, source.all]
+  end
+
+  def broadcast_transactions(transactions)
+    return :ok if transactions.empty?
+
+    transactions.each do |transaction|
+      DaoServerSchema.subscriptions.trigger(
+        'transactionUpdated',
+        { proposal_id: transaction.project },
+        { transaction: transaction },
+        {}
+      )
+    end
+
+    :ok
   end
 
   def add_transactions_params
