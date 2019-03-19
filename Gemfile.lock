@@ -1,3 +1,10 @@
+GIT
+  remote: https://github.com/adam12/bcrypt-ruby
+  revision: 613daca044ce0bf2685bbf8350376e24a9f6ca18
+  ref: 613daca
+  specs:
+    bcrypt (3.1.12)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -53,7 +60,6 @@ GEM
       rails (>= 4.1)
     arel (9.0.0)
     batch-loader (1.3.0)
-    bcrypt (3.1.12)
     brakeman (4.4.0)
     builder (3.2.3)
     byebug (10.0.2)
@@ -285,6 +291,7 @@ DEPENDENCIES
   api-pagination (>= 4.8.1)
   apipie-rails (>= 0.5.14)
   batch-loader (= 1.3.0)
+  bcrypt!
   brakeman
   byebug
   cancancan (>= 2.3.0)
@@ -331,4 +338,4 @@ RUBY VERSION
    ruby 2.6.0p0
 
 BUNDLED WITH
-   1.17.2
+   1.17.3
