@@ -31,6 +31,7 @@ gem 'rufus-scheduler', '>= 3.5.2'
 gem 'typhoeus', '>= 1.3.1'
 gem 'validates_timeliness', '~> 5.0.0.alpha3'
 # Use Puma as the app server
+gem 'bcrypt', git: 'https://github.com/adam12/bcrypt-ruby', ref: '613daca'
 gem 'puma', '~> 3.11'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 # gem 'jbuilder', '~> 2.5'
