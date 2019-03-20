@@ -15,6 +15,7 @@ module Types
     field :post_comment, mutation: Mutations::PostCommentMutation
     field :like_comment, mutation: Mutations::LikeCommentMutation
     field :unlike_comment, mutation: Mutations::UnlikeCommentMutation
+    field :unpost_comment, mutation: Mutations::UnpostCommentMutation
     field :ban_comment, mutation: Mutations::BanCommentMutation
     field :unban_comment, mutation: Mutations::UnbanCommentMutation
   end

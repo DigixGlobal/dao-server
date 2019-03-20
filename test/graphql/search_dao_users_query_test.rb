@@ -2,7 +2,7 @@
 
 require 'test_helper'
 
-class SearchDaoQueryTest < ActiveSupport::TestCase
+class SearchDaoUsersQueryTest < ActiveSupport::TestCase
   QUERY = <<~EOS
     query($term: String!) {
       searchDaoUsers(term: $term) {

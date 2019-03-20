@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
 class DaoServerSchema < GraphQL::Schema
-  mutation(Types::MutationType)
-  query(Types::QueryType)
-
   use BatchLoader::GraphQL
   use GraphQL::Guard.new
+  use GraphQL::Subscriptions::ActionCableSubscriptions
+
+  subscription(Types::SubscriptionType)
+  mutation(Types::MutationType)
+  query(Types::QueryType)
 
   lazy_resolve(Types::Proposal::LazyCommentThread, :replies)
 

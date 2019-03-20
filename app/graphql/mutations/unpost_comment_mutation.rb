@@ -1,22 +1,20 @@
 # frozen_string_literal: true
 
 module Mutations
-  class BanCommentMutation < Types::Base::BaseMutation
+  class UnpostCommentMutation < Types::Base::BaseMutation
     description <<~EOS
-      As a forum admin, ban a comment so that its contents are hidden from other users.
+      Unpost/remove/delete a comment.
 
-      Role: Forum Admin
+      Can only unpost a comment you posted.
     EOS
 
     argument :comment_id, String,
              required: true,
-             description: <<~EOS
-               Comment ID
-             EOS
+             description: 'Comment ID'
 
     field :comment, Types::Proposal::CommentType,
           null: true,
-          description: 'Banned comment'
+          description: 'Unposted comment'
     field :errors, [UserErrorType],
           null: false,
           description: <<~EOS
@@ -24,26 +22,27 @@ module Mutations
 
             Operation Errors:
             - Comment not found
-            - Comment already banned
-            - Comment cannot be banned
+            - Comment already unposted
+            - Comment cannot be unposted
           EOS
 
     def resolve(comment_id:)
-      forum_admin = context.fetch(:current_user)
-
       key = :comment
 
       unless (this_comment = Comment.find_by(id: comment_id))
         return form_error(key, 'comment_id', 'Comment not found')
       end
 
-      result, comment_or_errors = Comment.ban(forum_admin, this_comment)
+      result, comment_or_errors = Comment.delete(
+        context[:current_user],
+        this_comment
+      )
 
       case result
-      when :comment_already_banned
-        form_error(key, '_', 'Comment already banned')
+      when :already_deleted
+        form_error(key, '_', 'Comment already unposted')
       when :unauthorized_action
-        form_error(key, '_', 'Comment cannot be banned')
+        form_error(key, '_', 'Comment cannot be unposted')
       when :ok
         DaoServerSchema.subscriptions.trigger(
           'commentUpdated',
@@ -59,7 +58,7 @@ module Mutations
     def self.authorized?(object, context)
       super &&
         (user = context.fetch(:current_user, nil)) &&
-        Ability.new(user).can?(:ban, Comment)
+        Ability.new(user).can?(:delete, Comment)
     end
   end
 end
