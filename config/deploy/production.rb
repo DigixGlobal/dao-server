@@ -5,7 +5,7 @@ server 'jail01.production02.digixglobal.com', user: 'appuser', roles: %w[app web
 set :default_env,
     histfile: '/dev/null',
     rails_env: 'production',
-    dao_staging_database_password: ENV['DAO_PRODUCTION_DATABASE_PASSWORD'],
+    dao_production_database_password: ENV['DAO_PRODUCTION_DATABASE_PASSWORD'],
     secret_key_base: ENV['DAO_PRODUCTION_SECRET_KEY_BASE'],
     info_server_url: ENV['INFO_SERVER_URL'],
     postmark_api_token: ENV['POSTMARK_API_TOKEN']
