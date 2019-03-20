@@ -8,6 +8,7 @@ set :default_env,
     dao_production_database_password: ENV['DAO_PRODUCTION_DATABASE_PASSWORD'],
     secret_key_base: ENV['DAO_PRODUCTION_SECRET_KEY_BASE'],
     info_server_url: ENV['INFO_SERVER_URL'],
+    postmark_from: ENV['POSTMARK_FROM'],
     postmark_api_token: ENV['POSTMARK_API_TOKEN']
 
 # server-based syntax

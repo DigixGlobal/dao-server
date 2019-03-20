@@ -4,7 +4,7 @@ lock "~> 3.11.0"
 set :application, "dao_server"
 set :repo_url, "git@github.com:DigixGlobal/dao-server.git"
 
-set :branch, "staging"
+set :branch, "production"
 
 set :linked_dirs, fetch(:linked_dirs, []).push('storage', 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'vendor/bundle', 'public/system', 'public/uploads')
 # set :linked_files, fetch(:linked_files, []).push('config/database.yml', 'config/secrets.yml')
