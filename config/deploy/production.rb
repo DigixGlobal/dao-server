@@ -7,6 +7,7 @@ set :default_env,
     rails_env: 'production',
     dao_production_database_password: ENV['DAO_PRODUCTION_DATABASE_PASSWORD'],
     secret_key_base: ENV['DAO_PRODUCTION_SECRET_KEY_BASE'],
+    dao_info_server_secret: ENV['DAO_INFO_SERVER_SECRET'],
     info_server_url: ENV['INFO_SERVER_URL'],
     postmark_from: ENV['POSTMARK_FROM'],
     postmark_api_token: ENV['POSTMARK_API_TOKEN']
