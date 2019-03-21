@@ -14,6 +14,7 @@ require 'action_view/railtie'
 require 'action_cable/engine'
 require 'sprockets/railtie'
 require 'rails/test_unit/railtie'
+require 'maxmind/db'
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -51,6 +52,10 @@ module DaoServer
     config.nonces = config_for(:nonces)
     config.proposals = config_for(:proposals)
 
+    config.ips = MaxMind::DB.new(
+      ENV.fetch('IP_DB') { 'config/GeoLite2-Country.mmdb' },
+      mode: MaxMind::DB::MODE_MEMORY
+    )
     config.countries = JSON.parse(File.read('config/countries.json'))
     config.income_ranges = JSON.parse(File.read('config/income_ranges.json'))
     config.industries = JSON.parse(File.read('config/industries.json'))
