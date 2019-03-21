@@ -53,6 +53,52 @@ class EventControllerTest < ActionDispatch::IntegrationTest
     assert_emails 1
   end
 
+  test 'project PRL paused event should be handled' do
+    path = event_path
+
+    proposal = create(:proposal)
+    payload = {
+      event_type: EventHandler::EVENT_TYPES[:project_prl_paused],
+      proposer: proposal.user.address,
+      proposal_id: proposal.proposal_id
+    }
+
+    assert_self_nonce_increased do
+      info_post path,
+                payload: payload
+    end
+
+    assert_response :success,
+                    'should work'
+    assert_match 'result', @response.body,
+                 'response should be ok'
+
+    assert_emails 1
+  end
+
+  test 'project PRL stopped event should be handled' do
+    path = event_path
+
+    proposal = create(:proposal)
+    payload = {
+      event_type: EventHandler::EVENT_TYPES[:project_prl_stopped],
+      proposer: proposal.user.address,
+      proposal_id: proposal.proposal_id
+    }
+
+    assert_self_nonce_increased do
+      info_post path,
+                payload: payload
+    end
+
+    assert_response :success,
+                    'should work'
+    assert_match 'result', @response.body,
+                 'response should be ok'
+
+    assert_emails 1
+  end
+
   test 'handle event should fail safely' do
     path = event_path
 
