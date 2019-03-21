@@ -50,7 +50,7 @@ module Mutations
           'kycUpdated',
           {},
           { kyc: kyc_or_errors },
-          scope: kyc_or_errors.user_id
+          {}
         )
 
         model_result(key, kyc_or_errors)
