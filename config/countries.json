@@ -101,7 +101,7 @@
     },
     {
         "blocked": true,
-        "value": "BELARUS",
+        "value": "BY",
         "name": "Belarus"
     },
     {
@@ -271,7 +271,7 @@
     },
     {
         "blocked": true,
-        "value": "CUBA",
+        "value": "CU",
         "name": "Cuba"
     },
     {
@@ -291,7 +291,7 @@
     },
     {
         "blocked": true,
-        "value": "DEMOCRATIC_REPUBLICOFTHE_CONGO",
+        "value": "CD",
         "name": "Democratic Republic of the Congo"
     },
     {
@@ -516,12 +516,12 @@
     },
     {
         "blocked": true,
-        "value": "IRAN",
-        "name": "Iran"
+        "value": "IR",
+        "name": "Irann"
     },
     {
         "blocked": true,
-        "value": "IRAQ",
+        "value": "IQ",
         "name": "Iraq"
     },
     {
@@ -546,7 +546,7 @@
     },
     {
         "blocked": true,
-        "value": "IVORY_COAST",
+        "value": "CI",
         "name": "Ivory Coast"
     },
     {
@@ -621,7 +621,7 @@
     },
     {
         "blocked": true,
-        "value": "LIBERIA",
+        "value": "LR",
         "name": "Liberia"
     },
     {
@@ -756,7 +756,7 @@
     },
     {
         "blocked": true,
-        "value": "MYANMAR",
+        "value": "MM",
         "name": "Myanmar"
     },
     {
@@ -816,7 +816,7 @@
     },
     {
         "blocked": true,
-        "value": "NORTH_KOREA",
+        "value": "KP",
         "name": "North Korea"
     },
     {
@@ -1046,7 +1046,7 @@
     },
     {
         "blocked": true,
-        "value": "SOUTH_SUDAN",
+        "value": "SD",
         "name": "South Sudan"
     },
     {
@@ -1246,7 +1246,7 @@
     },
     {
         "blocked": true,
-        "value": "ZIMBABWE",
+        "value": "ZW",
         "name": "Zimbabwe"
     }
 ]
