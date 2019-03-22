@@ -1274,7 +1274,7 @@
   {
     "name": "Sudan",
     "value": "SD",
-    "blocked": false,
+    "blocked": true,
     "continent_value": "AF"
   },
   {
