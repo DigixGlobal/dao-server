@@ -49,6 +49,48 @@ class EventHandlerTest < ActiveSupport::TestCase
                  'subject should be correct'
   end
 
+  test 'project PRL paused event should be handled' do
+    proposal = create(:proposal)
+    ok, = EventHandler.handle_event(
+      event_type: EventHandler::EVENT_TYPES[:project_prl_paused],
+      proposer: proposal.user.address,
+      proposal_id: proposal.proposal_id
+    )
+
+    assert_equal :ok, ok,
+                 'should work'
+
+    assert_emails 1
+
+    mail = ActionMailer::Base.deliveries.last
+
+    assert_equal proposal.user.email, mail.to.first,
+                 'email should be sent to the proposer'
+    assert_equal 'Your project funding has been paused by the PRL', mail.subject,
+                 'subject should be correct'
+  end
+
+  test 'project PRL stopped event should be handled' do
+    proposal = create(:proposal)
+    ok, = EventHandler.handle_event(
+      event_type: EventHandler::EVENT_TYPES[:project_prl_stopped],
+      proposer: proposal.user.address,
+      proposal_id: proposal.proposal_id
+    )
+
+    assert_equal :ok, ok,
+                 'should work'
+
+    assert_emails 1
+
+    mail = ActionMailer::Base.deliveries.last
+
+    assert_equal proposal.user.email, mail.to.first,
+                 'email should be sent to the proposer'
+    assert_equal 'Your project funding has been stopped by the PRL', mail.subject,
+                 'subject should be correct'
+  end
+
   test 'should fail safely' do
     invalid_event_type, = EventHandler.handle_event({})
 

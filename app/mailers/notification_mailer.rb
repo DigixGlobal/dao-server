@@ -45,4 +45,22 @@ class NotificationMailer < ApplicationMailer
       subject: 'Your project was successfully endorsed'
     )
   end
+
+  def project_prl_paused
+    @proposal = params[:proposal]
+
+    mail(
+      to: @proposal.user.email,
+      subject: 'Your project funding has been paused by the PRL'
+    )
+  end
+
+  def project_prl_stopped
+    @proposal = params[:proposal]
+
+    mail(
+      to: @proposal.user.email,
+      subject: 'Your project funding has been stopped by the PRL'
+    )
+  end
 end
