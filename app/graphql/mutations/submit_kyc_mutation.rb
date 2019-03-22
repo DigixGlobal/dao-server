@@ -189,7 +189,10 @@ module Mutations
 
       new_attrs = kyc_attrs(attrs)
 
-      result, user_or_errors = Kyc.submit_kyc(this_user, new_attrs)
+      result, user_or_errors = Kyc.submit_kyc(
+                this_user,
+                sanitize_attrs(new_attrs)
+              )
 
       key = :kyc
 

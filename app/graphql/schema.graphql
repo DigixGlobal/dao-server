@@ -1495,6 +1495,11 @@ type Query {
     last: Int
 
     """
+    Filter transaction updates by `Proposal.proposalId`
+    """
+    proposalId: String
+
+    """
     Filter transactions by their status.
     """
     status: TransactionStatusEnum
@@ -1858,7 +1863,12 @@ type Subscription {
 
   Only updates users who triggered the transaction.
   """
-  transactionUpdated: TransactionUpdatedPayload!
+  transactionUpdated(
+    """
+    Filter transaction updates by `Proposal.proposalId`
+    """
+    proposalId: String
+  ): TransactionUpdatedPayload!
 }
 
 enum ThreadSortByEnum {

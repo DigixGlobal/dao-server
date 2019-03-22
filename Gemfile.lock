@@ -185,6 +185,8 @@ GEM
     nio4r (2.3.1)
     nokogiri (1.8.5)
       mini_portile2 (~> 2.3.0)
+    nokogumbo (2.0.1)
+      nokogiri (~> 1.8, >= 1.8.4)
     orm_adapter (0.5.0)
     postmark (1.15.0)
       json
@@ -234,6 +236,10 @@ GEM
     rufus-scheduler (3.5.2)
       fugit (~> 1.1, >= 1.1.5)
     safe_yaml (1.0.4)
+    sanitize (5.0.0)
+      crass (~> 1.0.2)
+      nokogiri (>= 1.8.0)
+      nokogumbo (~> 2.0)
     scrypt (3.0.6)
       ffi-compiler (>= 1.0, < 2.0)
     simplecov (0.16.1)
@@ -322,6 +328,7 @@ DEPENDENCIES
   rails (~> 5.2.1)
   rake (= 12.3.2)
   rufus-scheduler (>= 3.5.2)
+  sanitize (~> 5.0)
   simplecov (>= 0.16.0)
   spring
   spring-watcher-listen (~> 2.0.0)
