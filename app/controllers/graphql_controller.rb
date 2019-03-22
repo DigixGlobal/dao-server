@@ -9,7 +9,8 @@ class GraphqlController < ApplicationController
     current_user&.groups&.reload
 
     context = {
-      current_user: current_user
+      current_user: current_user,
+      ip_address: request.headers['X-FORWARDED-FOR']
     }
 
     result = DaoServerSchema.execute(
