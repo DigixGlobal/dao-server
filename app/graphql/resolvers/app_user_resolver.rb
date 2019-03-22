@@ -21,7 +21,7 @@ module Resolvers
           else
             false
           end
-        rescue IPAddr::AddressFamilyError
+        rescue IPAddr::AddressFamilyError, IPAddr::InvalidAddressError
           false
         end
 
