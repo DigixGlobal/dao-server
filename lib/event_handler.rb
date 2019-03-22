@@ -3,7 +3,9 @@
 class EventHandler
   EVENT_TYPES = {
     project_created: 'EVENT_PROJECT_CREATED',
-    project_endorsed: 'EVENT_PROJECT_ENDORSED'
+    project_endorsed: 'EVENT_PROJECT_ENDORSED',
+    project_prl_paused: 'EVENT_PROJECT_PRL_PAUSED',
+    project_prl_stopped: 'EVENT_PROJECT_PRL_STOPPED'
   }.freeze
 
   class << self
@@ -27,6 +29,12 @@ class EventHandler
       when :project_endorsed
         NotificationMailer.with(proposal: proposal)
                           .project_endorsed.deliver_now
+      when :project_prl_paused
+        NotificationMailer.with(proposal: proposal)
+                          .project_prl_paused.deliver_now
+      when :project_prl_stopped
+        NotificationMailer.with(proposal: proposal)
+                          .project_prl_stopped.deliver_now
       end
 
       [:ok, nil]

@@ -19,6 +19,8 @@ class EventController < ApplicationController
             Values
             - PROJECT_CREATED
             - PROJECT_ENDORSED
+            - PROJECT_PRL_PAUSED
+            - PROJECT_PRL_STOPPED
           EOS
     param :proposal_id, String,
           desc: 'Proposal ID'
