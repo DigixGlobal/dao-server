@@ -81,5 +81,14 @@ class AppUserQueryTest < ActiveSupport::TestCase
       assert unavailable_data['isUnavailable'],
              'isUnavailable should be true with unavailable countries'
     end
+
+    empty_ip_result = DaoServerSchema.execute(
+      QUERY,
+      context: { ip_address: '' },
+      variables: {}
+    )
+
+    assert_not_empty empty_ip_result['data']['appUser'],
+                     'should work even without ip address user'
   end
 end
