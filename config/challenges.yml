@@ -1,11 +1,15 @@
 development: &defaults
   challenge_age: 7 # In days
+  challenge_prefix: I am proving ownership of this address, to be used in DigixDAO Governance Platform.
 
 test:
   challenge_age: 1
+  challenge_prefix: I am proving ownership of this address, to be used in DigixDAO Governance Platform.
 
 staging:
   challenge_age: 7
+  challenge_prefix: I am proving ownership of this address, to be used in DigixDAO Governance Platform.
 
 production:
   challenge_age: 7
+  challenge_prefix: I am proving ownership of this address, to be used in DigixDAO Governance Platform.
