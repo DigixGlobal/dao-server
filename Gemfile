@@ -89,3 +89,5 @@ gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 
 gem 'eth'
 gem 'newrelic_rpm'
+
+gem "sanitize", "~> 5.0"

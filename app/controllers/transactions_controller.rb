@@ -329,7 +329,7 @@ class TransactionsController < ApplicationController
   end
 
   def add_transactions_params
-    params.permit(:title, :txhash, :type, :project)
+    sanitize_params(params.permit(:title, :txhash, :type, :project))
   end
 
   def seen_transactions_params
