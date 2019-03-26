@@ -10,7 +10,8 @@ set :default_env,
     dao_info_server_secret: ENV['DAO_INFO_SERVER_SECRET'],
     info_server_url: ENV['INFO_SERVER_URL'],
     postmark_from: ENV['POSTMARK_FROM'],
-    postmark_api_token: ENV['POSTMARK_API_TOKEN']
+    postmark_api_token: ENV['POSTMARK_API_TOKEN'],
+    infura_server_url: ENV['INFURA_SERVER_URL']
 
 # server-based syntax
 # ======================
