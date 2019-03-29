@@ -21,6 +21,18 @@ class ApplicationController < ActionController::API
 
   private
 
+  def sanitize_params(this_params)
+    this_params
+      .transform_values do |value|
+        case value
+        when String
+          Sanitize.fragment(value)
+        else
+          value
+        end
+      end
+  end
+
   def result_response(result = :ok)
     { result: result }
   end

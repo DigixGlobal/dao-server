@@ -56,7 +56,7 @@ module Mutations
       result, comment_or_errors = Comment.comment(
         context.fetch(:current_user),
         this_comment,
-        body: body
+        body: Sanitize.fragment(body)
       )
 
       case result

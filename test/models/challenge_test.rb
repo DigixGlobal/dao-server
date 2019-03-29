@@ -3,6 +3,8 @@
 require 'test_helper'
 
 class ChallengeTest < ActiveSupport::TestCase
+  CHALLENGE_PREFIX = Rails.configuration.challenges['challenge_prefix']
+
   test 'create new challenge should work' do
     user = create(:user)
     params = { address: user.address }
@@ -11,6 +13,8 @@ class ChallengeTest < ActiveSupport::TestCase
 
     assert_equal :ok, ok,
                  'should work'
+    assert challenge.challenge.starts_with?(CHALLENGE_PREFIX),
+           'challenge should be prefixed'
     assert_not challenge.proven,
                'challenge should be initially unproven'
     assert_equal user.id, challenge.user_id,

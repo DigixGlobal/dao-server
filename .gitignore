@@ -27,7 +27,6 @@
 /config/master.key
 staging.env
 production.env
-
 coverage
 
 .env.staging
