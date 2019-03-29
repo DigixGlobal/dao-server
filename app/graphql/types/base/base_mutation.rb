@@ -28,6 +28,17 @@ module Types
               description: 'Which input final value this error came from'
       end
 
+      def sanitize_attrs(attrs)
+        attrs.transform_values do |value|
+          case value
+          when String
+            Sanitize.fragment(value)
+          else
+            value
+          end
+        end
+      end
+
       def model_result(key, model)
         result = {}
         result[key] = model

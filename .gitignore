@@ -26,7 +26,7 @@
 # Ignore master key for decrypting credentials and more.
 /config/master.key
 staging.env
-
+production.env
 coverage
 
 .env.staging
