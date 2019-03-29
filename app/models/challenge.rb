@@ -5,6 +5,9 @@ class Challenge < ApplicationRecord
                   .configuration
                   .challenges['challenge_age']
                   .to_i
+  CHALLENGE_PREFIX = Rails
+                  .configuration
+                  .challenges['challenge_prefix']
 
   belongs_to :user
 
@@ -24,8 +27,10 @@ class Challenge < ApplicationRecord
         return [:user_not_found, nil]
       end
 
+      challenge_text = "#{CHALLENGE_PREFIX} (#{SecureRandom.hex})"
+
       challenge = Challenge.new(
-        challenge: SecureRandom.hex,
+        challenge: challenge_text,
         user: user
       )
 

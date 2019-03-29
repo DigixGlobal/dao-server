@@ -18,6 +18,7 @@ module GraphiQLRailsEditorsControllerDecorator
       GraphiQL::Rails.config.headers['access-token'] = ->(context) { user_auth_token['access-token'] }
       GraphiQL::Rails.config.headers['client'] = ->(context) { user_auth_token['client'] }
       GraphiQL::Rails.config.headers['uid'] = ->(context) { user_auth_token['uid'] }
+      GraphiQL::Rails.config.headers['X-Forwarded-For'] = ->(context) { '127.0.0.1' }
 
       GraphiQL::Rails.config.logo = "Current User Address: #{user.address}"
       GraphiQL::Rails.config.title = 'DAO API GraphiQL'
@@ -25,6 +26,7 @@ module GraphiQLRailsEditorsControllerDecorator
       GraphiQL::Rails.config.headers['access-token'] = ->(context) { '' }
       GraphiQL::Rails.config.headers['client'] = ->(context) { '' }
       GraphiQL::Rails.config.headers['uid'] = ->(context) { '' }
+      GraphiQL::Rails.config.headers['X-Forwarded-For'] = ->(context) { '127.0.0.1' }
 
       GraphiQL::Rails.config.logo = 'No Current User. Add the query param `user_id` and restart if you need it.'
       GraphiQL::Rails.config.title = 'DAO GraphQL unauthorized'

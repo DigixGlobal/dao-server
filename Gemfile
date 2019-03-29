@@ -25,6 +25,7 @@ gem 'graphiql-rails', '>= 1.5.0'
 gem 'graphql', '1.9.2'
 gem 'graphql-guard', '~> 1.2.1'
 gem 'kaminari', '>= 1.1.1'
+gem 'maxmind-db', '~> 1.0'
 gem 'mysql2', '>= 0.3.18', '< 0.5'
 gem 'postmark-rails', '~> 0.19.0'
 gem 'rufus-scheduler', '>= 3.5.2'
@@ -88,3 +89,5 @@ gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 
 gem 'eth'
 gem 'newrelic_rpm'
+
+gem "sanitize", "~> 5.0"

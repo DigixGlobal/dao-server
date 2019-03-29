@@ -9,7 +9,8 @@ class GraphqlController < ApplicationController
     current_user&.groups&.reload
 
     context = {
-      current_user: current_user
+      current_user: current_user,
+      ip_address: remote_ip(request.env['HTTP_X_FORWARDED_FOR'])
     }
 
     result = DaoServerSchema.execute(
@@ -27,6 +28,14 @@ class GraphqlController < ApplicationController
   end
 
   private
+
+  def remote_ip(remote_ips)
+    if remote_ips
+      remote_ips.split(',').first&.strip
+    else
+      ''
+    end
+  end
 
   def ensure_hash(ambiguous_param)
     case ambiguous_param

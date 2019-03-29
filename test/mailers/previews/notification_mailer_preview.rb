@@ -20,4 +20,12 @@ class NotificationMailerPreview < ActionMailer::Preview
   def project_endorsed
     NotificationMailer.with(proposal: Proposal.all.sample).project_endorsed
   end
+
+  def project_prl_paused
+    NotificationMailer.with(proposal: Proposal.all.sample).project_prl_paused
+  end
+
+  def project_prl_stopped
+    NotificationMailer.with(proposal: Proposal.all.sample).project_prl_stopped
+  end
 end

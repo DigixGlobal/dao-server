@@ -457,7 +457,7 @@ class CommentsController < ApplicationController
   end
 
   def comment_params
-    params.permit(:body)
+    sanitize_params(params.permit(:body))
   end
 
   def select_thread_params

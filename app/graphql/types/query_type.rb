@@ -13,6 +13,12 @@ module Types
       context[:current_user]
     end
 
+    field :app_user, Types::User::AppUserType,
+          resolver: Resolvers::AppUserResolver,
+          description: <<~EOS
+            Get the user's application status.
+          EOS
+
     field :search_kycs,
           resolver: Resolvers::SearchKycsResolver,
           connection: false,
