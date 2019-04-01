@@ -84,10 +84,18 @@ end
 gem 'factory_bot', '>= 4.0.0'
 gem 'factory_bot_rails', '>= 4.0.0'
 
+group :staging do
+  gem 'cloudflare-rails'
+end
+
+group :production do
+  gem 'cloudflare-rails'
+end
+
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 
 gem 'eth'
 gem 'newrelic_rpm'
 
-gem "sanitize", "~> 5.0"
+gem 'sanitize', '~> 5.0'
