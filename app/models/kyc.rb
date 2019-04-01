@@ -272,6 +272,13 @@ class Kyc < ApplicationRecord
             status: :approved,
             approval_txhash: hash.fetch(:txhash, '')
           )
+
+          DaoServerSchema.subscriptions.trigger(
+            'kycUpdated',
+            {},
+            { kyc: kyc },
+            {}
+          )
         end
       end
 
