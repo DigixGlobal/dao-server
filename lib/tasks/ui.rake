@@ -5,7 +5,7 @@ require 'pathname'
 namespace :ui do
   desc 'UI tasks for DAO Governance'
   task generate_translations: :environment do
-    mapping = { 'english' => 'en', 'chinese' => 'ch' }
+    mapping = { 'english' => 'en', 'chinese' => 'cn' }
 
     source = Pathname.new(Rails.root.join('config/translations'))
     target = Pathname.new(Rails.root.join('public/translations'))
