@@ -1,0 +1,30 @@
+{
+  "title": "Projects",
+  "createButton": "Create",
+  "Timeline": {
+    "lockingPhase": "Locking Phase",
+    "mainPhase": "Main Phase",
+    "day": "Day",
+    "stake": "Stake"
+  },
+  "UserStats": {
+    "quarterPoints": "Quarter Points",
+    "reputationPoints": "Reputation Points",
+    "stake": "My Stake",
+    "dgdLocked": "DGD Locked"
+  },
+  "ProposalCard": {
+    "view": "View Project",
+    "by": "By",
+    "funding": "Funding",
+    "approval": "Approval",
+    "participants": "Participants",
+    "milestones": "Milestones",
+    "votingDeadline": "Voting Deadline",
+    "likes": "Like"
+  },
+  "sortOptions": {
+    "latest": "Latest",
+    "oldest": "Oldest"
+  }
+}

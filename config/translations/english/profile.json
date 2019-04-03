@@ -1,0 +1,146 @@
+{
+  "title": "Profile",
+  "ProfileInfo": {
+    "Labels": {
+      "username": "User",
+      "status": "Status",
+      "email": "Email",
+      "address": "Address"
+    },
+    "SetUsername": {
+      "overlayButton": "Set Username",
+      "title": "Assign Username",
+      "warning": "You can only assign a username to yourself **ONCE**",
+      "proceed": "Proceed",
+      "instructions": "Please enter your desired user name",
+      "Errors": {
+        "invalid": "Username must be between 2-20 characters, can only be composed of alphanumeric and underscore characters, and must not begin with the word 'user'.",
+        "connectionError": "Unable to update username. Please try again."
+      },
+      "submit": "Assign Username",
+      "txnSuccess": "Username Updated"
+    },
+    "SetEmail": {
+      "overlayButton": "Set Email",
+      "title": "Set Email",
+      "instructions": "Please enter the email you want to link to your address",
+      "Errors": {
+        "invalid": "Please enter a valid email address.",
+        "unchanged": "Please enter an email address that is different from your current email.",
+        "connectionError": "Unable to update email. Please try again."
+      },
+      "submit": "Change Email",
+      "txnSuccess": "Email Updated"
+    }
+  },
+  "ProfileStats": {
+    "quarterPoints": "Quarter Points",
+    "reputationPoints": "Reputation Points",
+    "stake": "My Stake",
+    "dgdLocked": "DGD Locked"
+  },
+  "Kyc": {
+    "Status": "KYC Status",
+    "setEmail": "Set Email To Submit KYC",
+    "Errors": {
+      "resubmit": {
+        "title": "Re-submit KYC",
+        "description": "Please contact us via our Zendesk widget for enquiries about changing your KYC information.",
+        "details": ""
+      }
+    },
+    "OpenKycForm": {
+      "overlayButton": "Submit KYC",
+      "instructions": "The objective of this process is to prevent Digix from being used intentionally or unintentionally, by criminal elements for money laundering activities. Related procedures also enable us to better understand our community and their financial dealings. It helps us manage our risks prudently.",
+      "submit": "Proceed to KYC"
+    },
+    "KycForm": {
+      "title": "KYC",
+      "Steps": {
+        "BasicInformation": "Basic Information",
+        "Residence": "Residence Proof",
+        "Photo": "Photo Proof"
+      },
+      "Navigation": {
+        "previous": "Previous",
+        "next": "Next",
+        "submit": "Submit KYC"
+      },
+      "Errors": {
+        "date": {
+          "format": "Please enter a valid date in the format yyyy-mm-dd.",
+          "isAdult": "Must be at least 18 years old.",
+          "invalid": "Date is invalid.",
+          "fromFuture": "Date must be set in the future."
+        },
+        "file": {
+          "missing": "Please upload a file.",
+          "isImage": "Image must be in JPEG or PNG format",
+          "size": "Filesize must be less than 10 MB."
+        },
+        "required": "This field is required."
+      },
+      "Labels": {
+        "file": "Image must be in JPEG or PNG format & filesize must be less than 10MB."
+      },
+      "Fields": {
+        "BasicInformation": {
+          "firstName": "First Name",
+          "lastName": "Last Name",
+          "birthdate": "Date of Birth",
+          "gender": "Gender",
+          "birthCountry": "Country of Birth",
+          "nationality": "Nationality",
+          "phoneNumber": "Phone Number (Including Country Code)",
+          "employmentStatus": "Employment Status",
+          "employmentIndustry": "Industry",
+          "incomeRange": "Income Range Per Annum (USD)",
+          "identificationProofType": "National I.D (Must Match Provided Nationality)",
+          "identificationProofDataUrl": "Upload National I.D.",
+          "identificationProofExpirationDate": "I.D. Expiration Date",
+          "identificationProofNumber": "I.D. Number"
+        },
+        "Residence": {
+          "country": "Country of Residence",
+          "address": "Address",
+          "addressDetails": "Address Line 2 (Optional)",
+          "city": "City",
+          "state": "State",
+          "postalCode": "Zip Code",
+          "residenceProofType": "Residence Proof",
+          "residenceProofDataUrl": "Residence Proof"
+        },
+        "Photo": {
+          "proofMethod": "Photo Proof Method",
+          "methods": {
+            "upload": "Photo Upload",
+            "webcam": "Webcam Capture"
+          },
+          "upload": {
+            "instructions": "Write the above code on a piece of paper and show it to the webcam along with your face and your identification document.",
+            "submit": "Upload Photo"
+          },
+          "webcam": {
+            "preview": "Webcam Preview",
+            "getStarted": "Get Started",
+            "takePhoto": "Take A Photo (5 Second Countdown)",
+            "countdown": "Taking Photo In",
+            "instructions": {
+              "allowActivation": "Please allow activation of your webcam. Once you allow access, you may need to refresh in order to proceed. You will also be asked to write down a verification code on a piece of paper. Please have a paper and pen handy.",
+              "continueOnPreview": "Only continue when you can see the preview above.",
+              "uploadAlternative": "If you do not have a webcam or are unable to see the preview after granting permission, you will have the option of uploading an image instead.",
+              "includeVerificationCode": "Write the above code on a piece of paper and show it to the webcam along with your face and your identification document."
+            }
+          }
+        }
+      }
+    }
+  },
+  "ModeratorRequirements": {
+    "hint": "To gain moderator status, you will need another",
+    "reputationPoints": "Reputation Points",
+    "stake": "Stake",
+    "lockDgd": "Lock More DGD",
+    "redeemBadge": "Redeem Badge"
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "phases": {
+    "locking": "Locking Phase",
+    "main": "Main Phase"
+  },
+  "projectStatus": {
+    "all": "All",
+    "idea": "Idea",
+    "draft": "Draft",
+    "proposal": "Proposal",
+    "ongoing": "Ongoing",
+    "review": "Review",
+    "archived": "Archived"
+  },
+  "userStatus": {
+    "moderator": "Moderator",
+    "participant": "Participant",
+    "pastParticipant": "Past Participant",
+    "guest": "Have not participated"
+  },
+  "proposalErrors": {
+    "blockedByPRL": {
+      "title": "Funding Is Stopped by PRL",
+      "description": "The project funding has been stopped due to Policy, Regulatory or Legal reasons.",
+      "details": "Please contact us if you have any enquiries."
+    },
+    "invalidKyc": {
+      "title": "KYC Is Not Valid",
+      "description": "It looks like you don't have a valid KYC yet. You can check your KYC status in the Profile tab.",
+      "details": "Let's try again when your KYC has been approved."
+    },
+    "inLockingPhase": {
+      "title": "Not Main Phase Yet!",
+      "description": "Looks like it's still the Locking phase now. You need to wait until the Main phase to do any governance activity.",
+      "details": "Let's try again when it's the Main phase again."
+    },
+    "insufficientCollateral": {
+      "title": "Not Enough Collateral!",
+      "description": "It looks like there is insufficient ETH in your wallet. You will need {{requiredCollateral}} ETH for your project as collateral.",
+      "details": "Let's try again when you have enough ETH."
+    },
+    "returnToDashboard": "Return to Dashboard",
+    "returnToProfile": "Return to Profile",
+    "returnToProject": "Return to Project"
+  }
+}

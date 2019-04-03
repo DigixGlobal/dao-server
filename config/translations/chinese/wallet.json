@@ -1,0 +1,33 @@
+{
+  "title": "Wallet",
+  "address": "Address",
+  "LockedDgd": {
+    "title": "Your Locked DGD",
+    "currentLockup": "Your Current Lock-Up",
+    "instructions": "You can lock more DGD to increase your voting power or unlock after a quarter to move your DGD back into your wallet.",
+    "lockDgd": "Lock DGD",
+    "UnlockDgd": {
+      "overlayButton": "Unlock DGD",
+      "title": "Unlock DGD",
+      "warning": "Amount of DGD locked in:",
+      "instructions": "Please enter the amount of DGD you wish to unlock:",
+      "fillMax": "Fill Max",
+      "Hints": {
+        "fillMax": "You will no longer continue to be a participant.",
+        "normal": "This will leave you with **{{stake}} STAKE**.",
+        "overfilled": "You can only unlock up to {{maxAmount}} DGD."
+      },
+      "submit": "Unlock DGD",
+      "txnSuccess": "Your Unlock DGD Transaction is pending confirmation. See More"
+    }
+  },
+  "ParticipationReward": {
+    "title": "DigixDAO Participation Reward",
+    "unclaimedReward": "Your Unclaimed Reward",
+    "instructions": "You can claim rewards from actively participating in the DigixDAO during a quarter.",
+    "ClaimReward": {
+      "txnButton": "Claim Reward",
+      "txnSuccess": "DGX Claimed"
+    }
+  }
+}
