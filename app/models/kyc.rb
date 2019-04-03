@@ -12,7 +12,7 @@ class Kyc < ApplicationRecord
   IMAGE_SIZE_LIMIT = 10.megabytes
   IMAGE_FILE_TYPES = ['image/jpeg', 'image/jpeg', 'image/png'].freeze
 
-  enum status: { pending: 1, rejected: 2, approved: 3 }
+  enum status: { pending: 1, rejected: 2, approving: 3, approved: 4 }
   enum gender: { male: 1, female: 2 }
   enum employment_status: { employed: 0, self_employed: 1, unemployed: 2 }
   enum identification_proof_type: { passport: 0, national_id: 1, identity_card: 2 }, _prefix: :identification
@@ -103,7 +103,7 @@ class Kyc < ApplicationRecord
             size: { less_than: IMAGE_SIZE_LIMIT },
             content_type: IMAGE_FILE_TYPES
   validates :expiration_date,
-            if: proc { |kyc| kyc.status.to_sym == :approved },
+            if: proc { |kyc| %i[approving approved].member?(kyc.status.to_sym) },
             timeliness: { on_or_after: :today }
   validates :rejection_reason,
             if: proc { |kyc| kyc.status.to_sym == :rejected },
@@ -219,9 +219,9 @@ class Kyc < ApplicationRecord
       return [:kyc_not_pending, nil] unless this_kyc.status.to_sym == :pending
 
       unless this_kyc.update_attributes(
-        status: :approved,
+        status: :approving,
         officer: this_officer,
-        **attrs
+        expiration_date: attrs.fetch(:expiration_date, nil)
       )
         return [:invalid_data, this_kyc.errors] unless this_kyc.valid?
       end
@@ -252,7 +252,7 @@ class Kyc < ApplicationRecord
       unless this_kyc.update_attributes(
         status: :rejected,
         officer: this_officer,
-        **attrs
+        rejection_reason: attrs.fetch(:rejection_reason, nil)
       )
         return [:invalid_data, this_kyc.errors] unless this_kyc.valid?
       end
@@ -265,10 +265,20 @@ class Kyc < ApplicationRecord
     def update_kyc_hashes(hashes)
       ActiveRecord::Base.transaction do
         hashes.each do |hash|
-          if (user = User.find_by(address: hash.fetch(:address, ''))) &&
-             (kyc = user.kyc)
-            kyc.update_attribute(:approval_txhash, hash.fetch(:txhash, ''))
-          end
+          next unless (user = User.find_by(address: hash.fetch(:address, ''))) &&
+                      (kyc = user.kyc)
+
+          kyc.update_attributes(
+            status: :approved,
+            approval_txhash: hash.fetch(:txhash, '')
+          )
+
+          DaoServerSchema.subscriptions.trigger(
+            'kycUpdated',
+            {},
+            { kyc: kyc },
+            {}
+          )
         end
       end
 
