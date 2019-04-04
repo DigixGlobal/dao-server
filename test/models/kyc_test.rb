@@ -3,6 +3,7 @@
 require 'test_helper'
 
 require 'ethereum_api'
+require 'webmock/minitest'
 
 class KycTest < ActiveSupport::TestCase
   setup :email_fixture
@@ -253,8 +254,8 @@ class KycTest < ActiveSupport::TestCase
     kyc = create(:pending_kyc)
     attrs = { expiration_date: generate(:future_date) }
 
-    stub_request(:any, %r{kyc/approve})
-      .to_return(body: { result: {} }.to_json)
+    request = stub_request(:any, %r{kyc/approve})
+              .to_return(body: { result: {} }.to_json)
 
     ok, approved_kyc = Kyc.approve_kyc(officer, kyc, attrs)
 
@@ -273,6 +274,8 @@ class KycTest < ActiveSupport::TestCase
                  'email should be sent to the submitter'
     assert_equal 'Your KYC submission has been approved', mail.subject,
                  'subject should be correct'
+
+    assert_requested request
 
     kyc_not_pending, = Kyc.approve_kyc(officer, kyc, attrs)
 

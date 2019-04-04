@@ -22,7 +22,7 @@ class InfoApi
     end
 
     def approve_kyc(kyc)
-      return [:kyc_not_approved, nil] unless kyc.status.to_sym == :approved
+      return [:kyc_not_approved, nil] unless kyc.status.to_sym == :approving
 
       payload = {
         address: kyc.user.address,
