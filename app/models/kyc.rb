@@ -12,7 +12,7 @@ class Kyc < ApplicationRecord
   IMAGE_SIZE_LIMIT = 10.megabytes
   IMAGE_FILE_TYPES = ['image/jpeg', 'image/jpeg', 'image/png'].freeze
 
-  enum status: { pending: 1, rejected: 2, approving: 3, approved: 4 }
+  enum status: { pending: 1, rejected: 2, approved: 3, approving: 7 }
   enum gender: { male: 1, female: 2 }
   enum employment_status: { employed: 0, self_employed: 1, unemployed: 2 }
   enum identification_proof_type: { passport: 0, national_id: 1, identity_card: 2 }, _prefix: :identification
