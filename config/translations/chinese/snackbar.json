@@ -1,65 +1,65 @@
 {
   "snackbars": {
     "createProject": {
-      "title": "Submit Project",
-      "txUiHeader": "Project",
-      "message": "Your Create Project Transaction is pending confirmation. See More"
+      "title": "提交",
+      "txUiHeader": "项目",
+      "message": "您创建的项目确认中. 更多"
     },
     "editProject": {
-      "title": "Edit Project",
-      "txUiHeader": "Project",
-      "message": "Your Edit Project Transaction is pending confirmation. See More"
+      "title": "编辑项目",
+      "txUiHeader": "项目",
+      "message": "您编辑的项目确认中. 更多"
     },
     "abortProject": {
-      "title": "Abort Project",
-      "txUiHeader": "Project",
-      "message": "Your Abort Project Transaction is pending confirmation. See More"
+      "title": "中止项目",
+      "txUiHeader": "项目",
+      "message": "您中止的项目确认中.更多"
     },
     "approveProject": {
-      "title": "Approve Project",
-      "message": "Your Moderator Vote transaction is pending confirmation. See More"
+      "title": "批准项目",
+      "message": "您的审核员投票确认中.更多"
     },
     "claimApproval": {
-      "title": "Claim Approval",
-      "txUiHeader": "Project",
-      "multiClaimMessage": "Your Claim Approval Transaction {{currentClaimStep}} of {{totalTransactions} is pending confirmation. See More",
-      "message": "Your Claim Approval Transaction is pending confirmation. See More"
+      "title": "批准声明",
+      "txUiHeader": "项目",
+      "multiClaimMessage": "您对于{{交易} 的批准声明确认中{{盖章}}.更多",
+      "message": "您的批准声明确认中. 更多"
     },
     "claimResult": {
-      "title": "Claim Voting Result",
-      "txUiHeader": "Project",
-      "multiClaimMessage": "Your Claim Voting Result Transaction {{currentClaimStep}} of {{totalTransactions} is pending confirmation. See More",
-      "message": "Your Claim Voting Result Transaction is pending confirmation. See More"
+      "title": "投票结果声明",
+      "txUiHeader": "项目",
+      "multiClaimMessage": "您对于{{交易} 的投票结果声明确认中{{盖章}}.更多",
+      "message": "您的投票结果声明确认中.更多"
     },
     "changeFunding": {
-      "title": "Change Funding",
-      "txUiHeader": "Project",
-      "message": "Your Change Funding Transaction is pending confirmation. See More"
+      "title": "更改资金",
+      "txUiHeader": "项目",
+      "message": "您的资金更改中.更多"
     },
     "endorse": {
-      "title": "Endorse Project",
-      "txUiHeader": "Project",
-      "message": "Your Endorse Project Transaction is pending confirmation. See More"
+      "title": "项目认可",
+      "txUiHeader": "项目",
+      "message": "您的项目认可确认中.更多"
     },
     "finalize": {
-      "title": "Finalize Project",
-      "txUiHeader": "Project",
-      "message": "Your Finalize Project Transaction is pending confirmation. See More"
+      "title": "完成项目",
+      "txUiHeader": "项目",
+      "message": "您的项目完成确认中.更多"
     },
     "milestoneCompleted": {
-      "title": "Finish Milestone",
-      "txUiHeader": "Project",
-      "message": "Your Milestone Completed Transaction is pending confirmation. See More"
+      "title": "完成里程碑",
+      "txUiHeader": "项目",
+      "message": "您的里程碑完成确认中.更多"
     },
     "reveal": {
-      "title": "Reveal Vote",
-      "txUiHeader": "Project",
-      "message": "Your Reveal Transaction is pending confirmation. See More"
+      "title": "公开投票",
+      "txUiHeader": "项目",
+      "message": "您的公开投票确认中.更多"
     },
     "commit": {
-      "title": "Vote on Project",
-      "txUiHeader": "Project",
-      "message": "Your Vote Transaction is pending confirmation. See More"
+      "title": "投票",
+      "txUiHeader": "项目",
+      "message": "您的投票确认中.更多"
     }
   }
 }

@@ -1,33 +1,33 @@
 {
-  "title": "Wallet",
-  "address": "Address",
+  "title": "钱包",
+  "address": "地址",
   "LockedDgd": {
-    "title": "Your Locked DGD",
-    "currentLockup": "Your Current Lock-Up",
-    "instructions": "You can lock more DGD to increase your voting power or unlock after a quarter to move your DGD back into your wallet.",
-    "lockDgd": "Lock DGD",
+    "title": "已锁定DGD",
+    "currentLockup": "当前锁定",
+    "instructions": "您可以锁定更多DGD来获取更大的投票权或者在季度末解锁DGD并把DGD转回钱包.",
+    "lockDgd": "锁定DGD",
     "UnlockDgd": {
-      "overlayButton": "Unlock DGD",
-      "title": "Unlock DGD",
-      "warning": "Amount of DGD locked in:",
-      "instructions": "Please enter the amount of DGD you wish to unlock:",
-      "fillMax": "Fill Max",
+      "overlayButton": "解锁DGD",
+      "title": "解锁DGD",
+      "warning": "锁定的DGD数量:",
+      "instructions": "输入您想锁定的DGD:",
+      "fillMax": " 所有 ",
       "Hints": {
-        "fillMax": "You will no longer continue to be a participant.",
-        "normal": "This will leave you with **{{stake}} STAKE**.",
-        "overfilled": "You can only unlock up to {{maxAmount}} DGD."
+        "fillMax": "您将不再是参与人.",
+        "normal": "您所剩 **{{权益}} 权益**.",
+        "overfilled": "您最多可以解锁 {{最多}} DGD."
       },
-      "submit": "Unlock DGD",
-      "txnSuccess": "Your Unlock DGD Transaction is pending confirmation. See More"
+      "submit": "解锁DGD",
+      "txnSuccess": "解锁DGD进行中. 更多"
     }
   },
   "ParticipationReward": {
-    "title": "DigixDAO Participation Reward",
-    "unclaimedReward": "Your Unclaimed Reward",
-    "instructions": "You can claim rewards from actively participating in the DigixDAO during a quarter.",
+    "title": "DigixDAO参与奖励",
+    "unclaimedReward": "还未认领的奖励",
+    "instructions": "您可以通过积极参与DigixDAO的活动赢得奖励.",
     "ClaimReward": {
-      "txnButton": "Claim Reward",
-      "txnSuccess": "DGX Claimed"
+      "txnButton": "认领奖励",
+      "txnSuccess": "已认领的DGX"
     }
   }
 }

@@ -36,7 +36,7 @@
   "like": "Like",
   "seePreviousVersion": "See Previous Version",
   "seeNextVersion": "See Next Version",
-  "editFundingError": "Sum of Reward Expected and Milestone Fundings must not exceed {{limit} ETH",
+  "editFundingError": "Sum of Reward Expected and Milestone Fundings must not exceed {{limit}} ETH",
   "overlays": {
     "moderatorVoteHeader": "Approving Draft",
     "modertorVoteDescription": "Approval from moderators is needed in order to move a draft to the project stage. Please make your vote here if you’re in approval for the draft.",

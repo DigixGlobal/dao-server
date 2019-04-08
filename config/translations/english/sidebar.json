@@ -1,5 +1,5 @@
 {
-  "welcome": "Welcome, {{username}}!",
+  "welcome": "**Welcome**, {{username}}!",
   "close": "Close",
   "home": "Home",
   "profile": "Profile",

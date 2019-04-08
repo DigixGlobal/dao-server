@@ -1,31 +1,31 @@
 {
-  "title": "Transaction Status",
+  "title": "交易状态",
   "common": {
-    "user": "User",
-    "contract": "Contract",
-    "details": "Details",
-    "advanced": "Advanced",
-    "gasPrice": "Gas Price",
-    "modifyInstructions": "You can modify the transaction details using the **Advanced** tab below. Once you are satisfied with the details, please click **Sign Transaction** to confirm the transaction with your ledger device.",
-    "sign": "Sign Transaction",
-    "cancelled": "Cancelled Signing"
+    "user": "用户",
+    "contract": "合同",
+    "details": "细节",
+    "advanced": "更多",
+    "gasPrice": "手续费",
+    "modifyInstructions": "您可以使用下面的**更多**选择不同手续费。确认选择后，请点击**签名**来确认交易",
+    "sign": "签名",
+    "cancelled": "取消"
   },
   "Metamask": {
-    "title": "Waiting for MetaMask Transaction Confirmation",
-    "description": "Please confirm your transaction in MetaMask. If you wish to cancel, click the 'Reject' button in MetaMask."
+    "title": "等待MetaMask 确认中",
+    "description": "请在MetaMask中确认交易. 如果想取消交易,请在MetaMask中点击'拒绝'."
   },
   "Ledger": {
-    "ready": "Ready to Sign Transaction",
-    "firmware": "Firmware {{version}} - replay protection enabled!"
+    "ready": "准备就绪",
+    "firmware": "固件 {{版本}} - 已激活重播保护!"
   },
   "Trezor": {
-    "ready": "Ready to Sign Transaction",
-    "instructions": "Please follow instructions on your Trezor Wallet",
-    "error": "Trezor Error",
-    "cancelled": "Action cancelled by user"
+    "ready": "准备就绪",
+    "instructions": "请根据Trezor指示操作",
+    "error": "Trezor错误",
+    "cancelled": "用户已取消"
   },
   "Json": {
-    "password": "Enter Password",
-    "instructions": "Enter your password to sign your transaction"
+    "password": "输入密码",
+    "instructions": "输入密码来签名"
   }
 }
