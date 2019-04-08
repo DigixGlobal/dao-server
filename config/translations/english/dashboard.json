@@ -1,17 +1,24 @@
 {
   "title": "Projects",
   "createButton": "Create",
+  "noProjects": "There are no projects to show.",
+  "terms": "Terms and Conditions",
+  "addreedTerms": "I have read and agreed",
   "Timeline": {
     "lockingPhase": "Locking Phase",
     "mainPhase": "Main Phase",
     "day": "Day",
-    "stake": "Stake"
+    "stake": "Stake",
+    "quarterPoints": "Quarter Points",
+    "reputationPoints": "Reputation Points",
+    "dgdLocked": "DGD Locked"
   },
   "UserStats": {
     "quarterPoints": "Quarter Points",
     "reputationPoints": "Reputation Points",
     "stake": "My Stake",
-    "dgdLocked": "DGD Locked"
+    "dgdLocked": "DGD Locked",
+    "moderatorPoints": "Moderator Qtr Pts"
   },
   "ProposalCard": {
     "view": "View Project",
@@ -21,7 +28,8 @@
     "participants": "Participants",
     "milestones": "Milestones",
     "votingDeadline": "Voting Deadline",
-    "likes": "Like"
+    "like": "Like",
+    "likes": "Likes"
   },
   "sortOptions": {
     "latest": "Latest",

@@ -42,6 +42,17 @@
   "Kyc": {
     "Status": "KYC状态",
     "setEmail": "设置邮件以上传KYC",
+    "Statuses": {
+      "pending": "审核中",
+      "rejected": "拒绝",
+      "expired": "过期",
+      "approving": "批准中",
+      "approved": "已批准"
+    },
+    "Submit": {
+      "error": "无法提交KYC.",
+      "success": "KYC已提交. 等待批准中."
+    },
     "Errors": {
       "resubmit": {
         "title": "重新上传KYC",

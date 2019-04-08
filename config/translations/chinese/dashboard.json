@@ -1,6 +1,9 @@
 {
   "title": "项目",
   "createButton": "创建",
+  "noProjects": "目前没有项目",
+  "terms": "条款和条件",
+  "addreedTerms": "同意",
   "Timeline": {
     "lockingPhase": "锁定期",
     "mainPhase": "表决期",
@@ -11,7 +14,8 @@
     "quarterPoints": "季度积分",
     "reputationPoints": "名誉积分",
     "stake": "我的抵押",
-    "dgdLocked": "DGD已锁定"
+    "dgdLocked": "DGD已锁定",
+    "moderatorPoints": "审核员季度积分"
   },
   "ProposalCard": {
     "view": "查看项目",
@@ -21,6 +25,7 @@
     "participants": "参与人",
     "milestones": "里程碑",
     "votingDeadline": "投票截止日期",
+    "like": "赞",
     "likes": "赞"
   },
   "sortOptions": {

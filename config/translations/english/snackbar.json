@@ -60,6 +60,11 @@
       "title": "Vote on Project",
       "txUiHeader": "Project",
       "message": "Your Vote Transaction is pending confirmation. See More"
+    },
+    "claimFunding": {
+      "title": "Claim Funding",
+      "txUiHeader": "Project",
+      "message": "Your Claim Funding Transaction is pending confirmation. See More"
     }
   }
 }

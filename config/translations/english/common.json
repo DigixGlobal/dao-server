@@ -3,6 +3,9 @@
     "locking": "Locking Phase",
     "main": "Main Phase"
   },
+  "errors": {
+    "fieldIsRequired": "This field is required."
+  },
   "projectStatus": {
     "all": "All",
     "idea": "Idea",
@@ -76,6 +79,13 @@
     "claimFunding": "Claim Funding",
     "myMilestoneIsCompleted": "My Milestone is Completed",
     "changeVote": "Change Vote",
-    "logout": "Logout"
+    "logout": "Logout",
+    "remove": "Remove",
+    "continueEditing": "Continue Editing",
+    "claiming": "Claiming",
+    "changeMyVote": "Change My Vote",
+    "editFunding": "Edit Funding",
+    "close": "Close",
+    "redeemBadge": "Redeem Badge"
   }
 }
