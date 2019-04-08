@@ -5,7 +5,7 @@
     "lockingPhase": "锁定期",
     "mainPhase": "表决期",
     "day": "天",
-    "stake": "Stake"
+    "stake": "权益"
   },
   "UserStats": {
     "quarterPoints": "季度积分",

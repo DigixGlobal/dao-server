@@ -22,13 +22,13 @@
     "claimApproval": {
       "title": "批准声明",
       "txUiHeader": "项目",
-      "multiClaimMessage": "您对于{{currentClaimStep} 的批准声明确认中{{totalTransactions}}.更多",
+      "multiClaimMessage": "您对于{{currentClaimStep}} 的批准声明确认中{{totalTransactions}}.更多",
       "message": "您的批准声明确认中. 更多"
     },
     "claimResult": {
       "title": "投票结果声明",
       "txUiHeader": "项目",
-      "multiClaimMessage": "您对于{{currentClaimStep} 的投票结果声明确认中{{totalTransactions}}.更多",
+      "multiClaimMessage": "您对于{{currentClaimStep}} 的投票结果声明确认中{{totalTransactions}}.更多",
       "message": "您的投票结果声明确认中.更多"
     },
     "changeFunding": {
