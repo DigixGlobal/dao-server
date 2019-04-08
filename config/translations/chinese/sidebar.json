@@ -1,9 +1,9 @@
 {
-  "welcome": "Welcome, {{username}}!",
-  "close": "Close",
-  "home": "Home",
-  "profile": "Profile",
-  "wallet": "Wallet",
-  "history": "Transaction History",
-  "help": "Help / DAO Tour"
+  "welcome": "欢迎, {{名字}}!",
+  "close": "关闭",
+  "home": "首页",
+  "profile": "个人主页",
+  "wallet": "钱包",
+  "history": "交易记录",
+  "help": "帮助 / DAO指南"
 }

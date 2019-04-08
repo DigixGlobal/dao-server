@@ -1,30 +1,30 @@
 {
-  "title": "Projects",
-  "createButton": "Create",
+  "title": "项目",
+  "createButton": "创建",
   "Timeline": {
-    "lockingPhase": "Locking Phase",
-    "mainPhase": "Main Phase",
-    "day": "Day",
+    "lockingPhase": "锁定期",
+    "mainPhase": "表决期",
+    "day": "天",
     "stake": "Stake"
   },
   "UserStats": {
-    "quarterPoints": "Quarter Points",
-    "reputationPoints": "Reputation Points",
-    "stake": "My Stake",
-    "dgdLocked": "DGD Locked"
+    "quarterPoints": "季度积分",
+    "reputationPoints": "名誉积分",
+    "stake": "我的抵押",
+    "dgdLocked": "DGD已锁定"
   },
   "ProposalCard": {
-    "view": "View Project",
-    "by": "By",
-    "funding": "Funding",
-    "approval": "Approval",
-    "participants": "Participants",
-    "milestones": "Milestones",
-    "votingDeadline": "Voting Deadline",
-    "likes": "Like"
+    "view": "查看项目",
+    "by": "由",
+    "funding": "资金",
+    "approval": "通过",
+    "participants": "参与人",
+    "milestones": "里程碑",
+    "votingDeadline": "投票截止日期",
+    "likes": "赞"
   },
   "sortOptions": {
-    "latest": "Latest",
-    "oldest": "Oldest"
+    "latest": "最新",
+    "oldest": "最久"
   }
 }
