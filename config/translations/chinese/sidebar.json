@@ -1,5 +1,5 @@
 {
-  "welcome": "欢迎, {{名字}}!",
+  "welcome": "**欢迎**, {{username}}!",
   "close": "关闭",
   "home": "首页",
   "profile": "个人主页",

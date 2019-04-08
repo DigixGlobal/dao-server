@@ -16,7 +16,7 @@
   },
   "Ledger": {
     "ready": "准备就绪",
-    "firmware": "固件 {{版本}} - 已激活重播保护!"
+    "firmware": "固件 {{version}} - 已激活重播保护!"
   },
   "Trezor": {
     "ready": "准备就绪",

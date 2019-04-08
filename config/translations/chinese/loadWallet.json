@@ -48,11 +48,11 @@
         "address": "地址",
         "tokens": "币种",
         "pagination": "行/页:",
-        "selected": "{{数字}}"
+        "selected": "{{number}}"
       },
       "proofOfControl": {
         "description": " “可签名“ 信息",
-        "firmware": "固件 {{版本}} - 重放攻击保护已启用!"
+        "firmware": "固件 {{version}} - 重放攻击保护已启用!"
       }
     }
   },
@@ -71,7 +71,7 @@
         "address": "地址",
         "tokens": "币种",
         "pagination": "行/页:",
-        "selected": "{{数字}}"
+        "selected": "{{number}}"
       },
       "proofOfControl": {
         "description": "“可签名“ 信息",
