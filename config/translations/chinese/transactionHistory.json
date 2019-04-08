@@ -1,0 +1,8 @@
+{
+  "title": "交易记录",
+  "Empty": {
+    "title": "无交易记录",
+    "description": "您目前没有任何交易，请锁定DGD开始交易.",
+    "pendingConfirmation": "{{actual}}/{{total}} 确认"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "title": "交易状态",
+  "common": {
+    "user": "用户",
+    "contract": "合同",
+    "details": "细节",
+    "advanced": "更多",
+    "gasPrice": "手续费",
+    "modifyInstructions": "您可以使用下面的**更多**选择不同手续费。确认选择后，请点击**签名**来确认交易",
+    "sign": "签名",
+    "cancelled": "取消"
+  },
+  "Metamask": {
+    "title": "等待MetaMask 确认中",
+    "description": "请在MetaMask中确认交易. 如果想取消交易,请在MetaMask中点击'拒绝'."
+  },
+  "Ledger": {
+    "ready": "准备就绪",
+    "firmware": "固件 {{version}} - 已激活重播保护!"
+  },
+  "Trezor": {
+    "ready": "准备就绪",
+    "instructions": "请根据Trezor指示操作",
+    "error": "Trezor错误",
+    "cancelled": "用户已取消"
+  },
+  "Json": {
+    "password": "输入密码",
+    "instructions": "输入密码来签名"
+  }
+}

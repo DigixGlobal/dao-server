@@ -11,6 +11,8 @@ module Types
             value: 'rejected'
       value 'EXPIRED', 'Kyc expired and user must resubmit',
             value: 'expired'
+      value 'APPROVING', 'Kyc is approved by an officer and is being finalized in the blockchain',
+            value: 'approving'
       value 'APPROVED', 'Kyc is approved',
             value: 'approved'
     end
