@@ -955,6 +955,11 @@ enum KycStatusEnum {
   APPROVED
 
   """
+  Kyc is approved by an officer and is being finalized in the blockchain
+  """
+  APPROVING
+
+  """
   Kyc expired and user must resubmit
   """
   EXPIRED

@@ -113,9 +113,15 @@ FactoryBot.define do
       rejection_reason { nil }
     end
 
-    factory :approved_kyc do
-      status { :approved }
+    factory :approving_kyc do
+      status { :approving }
+      expiration_date { generate(:future_date) }
       association :officer, factory: :kyc_officer_user
+
+      factory :approved_kyc do
+        status { :approved }
+        approval_txhash { generate(:txhash) }
+      end
     end
 
     factory :rejected_kyc do

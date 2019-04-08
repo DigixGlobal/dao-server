@@ -1,0 +1,50 @@
+{
+  "title": "钱包",
+  "address": "地址",
+  "LockedDgd": {
+    "title": "已锁定DGD",
+    "currentLockup": "当前锁定",
+    "instructions": "您可以锁定更多DGD来获取更大的投票权或者在季度末解锁DGD并把DGD转回钱包.",
+    "lockDgd": "锁定DGD",
+    "UnlockDgd": {
+      "overlayButton": "解锁DGD",
+      "title": "解锁DGD",
+      "warning": "锁定的DGD数量:",
+      "instructions": "输入您想锁定的DGD:",
+      "fillMax": " 所有 ",
+      "Hints": {
+        "fillMax": "您将不再是参与人.",
+        "normal": "您所剩 **{{stake}} 权益**.",
+        "overfilled": "您最多可以解锁 {{maxAmount}} DGD."
+      },
+      "submit": "解锁DGD",
+      "txnSuccess": "解锁DGD进行中. 更多"
+    }
+  },
+  "lockDgd": {
+    "warning": {
+      "unlock": "您只能在**锁定期**解锁DGD."
+    },
+    "Hints": {
+      "overfilled": "无法锁定多余 ({{balance}} 的DGD).",
+      "maxStake": "您只可以抵押 {{maxAllowance}} DGDs"
+    }
+  },
+  "ParticipationReward": {
+    "title": "DigixDAO参与奖励",
+    "unclaimedReward": "还未认领的奖励",
+    "instructions": "您可以通过积极参与DigixDAO的活动赢得奖励.",
+    "ClaimReward": {
+      "txnButton": "认领奖励",
+      "txnSuccess": "已认领的DGX",
+      "txnCaption": "领取DGX"
+    }
+  },
+  "approveInteraction": {
+    "transaction": {
+      "title": "批准",
+      "action": "批准DGD",
+      "txnSuccess": "您的DGD交易确认中. 更多"
+    }
+  }
+}
