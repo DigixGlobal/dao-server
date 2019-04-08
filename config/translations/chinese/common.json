@@ -3,6 +3,9 @@
     "locking": "锁定",
     "main": "表决"
   },
+  "errors": {
+    "fieldIsRequired": "必填项."
+  },
   "projectStatus": {
     "all": "全部",
     "idea": "构想",
@@ -76,6 +79,13 @@
     "claimFunding": "宣告募资",
     "myMilestoneIsCompleted": "里程碑已完成",
     "changeVote": "改变投票",
-    "logout": "登出"
+    "logout": "登出",
+    "remove": "删除",
+    "continueEditing": "继续",
+    "claiming": "确认中",
+    "changeMyVote": "改变我的投票",
+    "editFunding": "编辑资金",
+    "close": "关闭",
+    "redeemBadge": "换取徽章"
   }
 }

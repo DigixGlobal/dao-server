@@ -21,13 +21,30 @@
       "txnSuccess": "解锁DGD进行中. 更多"
     }
   },
+  "lockDgd": {
+    "warning": {
+      "unlock": "您只能在**锁定期**解锁DGD."
+    },
+    "Hints": {
+      "overfilled": "无法锁定多余 ({{balance}} 的DGD).",
+      "maxStake": "您只可以抵押 {{maxAllowance}} DGDs"
+    }
+  },
   "ParticipationReward": {
     "title": "DigixDAO参与奖励",
     "unclaimedReward": "还未认领的奖励",
     "instructions": "您可以通过积极参与DigixDAO的活动赢得奖励.",
     "ClaimReward": {
       "txnButton": "认领奖励",
-      "txnSuccess": "已认领的DGX"
+      "txnSuccess": "已认领的DGX",
+      "txnCaption": "领取DGX"
+    }
+  },
+  "approveInteraction": {
+    "transaction": {
+      "title": "批准",
+      "action": "批准DGD",
+      "txnSuccess": "您的DGD交易确认中. 更多"
     }
   }
 }

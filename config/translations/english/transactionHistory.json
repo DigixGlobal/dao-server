@@ -2,6 +2,7 @@
   "title": "Transaction History",
   "Empty": {
     "title": "Transaction Empty",
-    "description": "Looks like there are no transactions at the moment. Please lock your DGD to continue."
+    "description": "Looks like there are no transactions at the moment. Please lock your DGD to continue.",
+    "pendingConfirmation": "{{actual}}/{{total}} Confirmation(s)"
   }
 }

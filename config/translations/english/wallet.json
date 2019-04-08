@@ -21,13 +21,30 @@
       "txnSuccess": "Your Unlock DGD Transaction is pending confirmation. See More"
     }
   },
+  "lockDgd": {
+    "warning": {
+      "unlock": "Please note that once you lock, you can only unlock your DGDs during the **Locking Phase**."
+    },
+    "Hints": {
+      "overfilled": "Cannot lock more than your balance ({{balance}} DGD).",
+      "maxStake": "You can only stake up to {{maxAllowance}} DGDs"
+    }
+  },
   "ParticipationReward": {
     "title": "DigixDAO Participation Reward",
     "unclaimedReward": "Your Unclaimed Reward",
     "instructions": "You can claim rewards from actively participating in the DigixDAO during a quarter.",
     "ClaimReward": {
       "txnButton": "Claim Reward",
-      "txnSuccess": "DGX Claimed"
+      "txnSuccess": "DGX Claimed",
+      "txnCaption": "Claim DGX"
+    }
+  },
+  "approveInteraction": {
+    "transaction": {
+      "title": "Approve Interaction",
+      "action": "DGD Approval",
+      "txnSuccess": "Your DGD Approval Transaction is pending confirmation. See More"
     }
   }
 }

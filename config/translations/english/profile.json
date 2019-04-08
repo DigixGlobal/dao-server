@@ -41,6 +41,17 @@
   },
   "Kyc": {
     "Status": "KYC Status",
+    "Statuses": {
+      "pending": "Pending",
+      "rejected": "Rejected",
+      "expired": "Expired",
+      "approving": "Approving",
+      "approved": "Approved"
+    },
+    "Submit": {
+      "error": "Unable to submit KYC.",
+      "success": "KYC submitted. Request is pending approval."
+    },
     "setEmail": "Set Email To Submit KYC",
     "Errors": {
       "resubmit": {

@@ -60,6 +60,11 @@
       "title": "投票",
       "txUiHeader": "项目",
       "message": "您的投票确认中.更多"
+    },
+    "claimFunding": {
+      "title": "申请募资",
+      "txUiHeader": "项目",
+      "message": "您的申请募资请求确认中. 更多"
     }
   }
 }

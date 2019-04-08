@@ -37,20 +37,41 @@
   "seePreviousVersion": "查看之前版本",
   "seeNextVersion": "查看下一版本",
   "editFundingError": "总奖励金额和里程碑的募资不可超过{{limit} ETH",
+  "fundsRequiredForMilestone": "里程碑所需资金",
+  "noShortDescription": "未创建概述.",
+  "collateral": "需要 {{preProposalCollateral}} ETH以提交提案",
+  "proposalVoteResults": "投票结果",
+  "moderatorApprovalResults": "审核员审核结果",
+  "reviewVote1results": "查看投票1结果",
+  "reviewVote2results": "查看投票2结果",
+  "loadMoreComments": "更多留言...",
+  "transactions": "交易",
+  "spinner": {
+    "pleaseWait": "请稍后.",
+    "hold": "您的项目正在上载到 IPFS."
+  },
   "overlays": {
     "moderatorVoteHeader": "通过草案",
     "modertorVoteDescription": "审核员批准后才可将项目从草案阶段移到项目阶段.请在这里为项目投票",
     "claimApprovalHeader": "批准声明",
     "claimApprovalDescription": "由于参与人数过多，我们将此声明分成",
     "commitVoteHeader": "投票 (暗投)",
-    "commitVoteDescription": "在DigixDAO中，我们使用暗投加公开投票的机制，保障投票的公正性。您在投票时需要下载一个JSON文件，您的投票将在您上传此JSON文件的时候公之于众。 *此文件只可下载一次，请务必保存好.*",
+
     "DlJsonHeader": "这个Json 文件仅用于这个暗投",
     "DlJsonDescription": "一旦您更改暗投投票，这个文件将无效.",
     "DlJsonButton": "下载Json文件",
     "revealVoteHeader": "投票 (公开)",
     "revealVoteDescription": "您在上传暗投阶段收到的JSON文件后，您的投票将被公之于众\n如果您没有成功上传文件，您的投票将被视作无效.",
     "yourVoteIs": "您的投票",
-    "yourVoteIsOnlyValid": "您的投票只有在您确认后才被视作有效."
+    "yourVoteIsOnlyValid": "您的投票只有在您确认后才被视作有效.",
+    "hasVoted": "您已经对此项目暗投.此次投票将会覆盖之前的投票.",
+    "commitVoteDescription": "在DigixDAO，我们使用暗投和公开投票的方式保障您投票的公平性.您需要下载JSON文件来进行暗投，您上传JSON文件的时候您的投票将会被公开.",
+    "commitVoteNote": "*请把文件保存好，因为您只可以下载这一次.*",
+    "invalidFile": "无效文件.请确保您上传的是正确的文件.",
+    "editFundingHeader": "编辑资金",
+    "rewardExpected": "预设奖金",
+    "milestoneFundExceeds": "您的预设总奖金和里程碑资金不能超过{{limit}} ETH",
+    "milestoneFundNegative": "负数无效"
   },
   "votingResult": {
     "moderatorApproval": "审核员批准",
@@ -70,7 +91,10 @@
   "alerts": {
     "failedModeratorVoting": "鉴于投票结果，或者在截止日期之前您没有声明投票结果，您的项目没有通过。请点击取回您的项目和押金.",
     "claimModeratorApproval": "鉴于投票结果，您的项目已通过批准，请在{{dateTime}}之前点击声明投票结果，不然您的项目将被视为无效.",
-    "claimVotingresult": "鉴于投票结果，您的项目已通过批准，请在{{dateTime}}之前点击声明投票结果，不然您的项目将被视为无效."
+    "claimVotingresult": "鉴于投票结果，您的项目已通过批准，请在{{dateTime}}之前点击声明投票结果，不然您的项目将被视为无效.",
+    "prl": "此项目由于政治，法律因素暂时无法申请募资，如果您有任何疑问，请联络我们.",
+    "unclaimed": "您未在声明截止日期前对投票结果进行声明，此项目将被自动视为无效.",
+    "failedVoting": "您的项目由于未通过投票或未在截止日期前声明投票结果."
   },
   "status": {
     "all": "所有",
