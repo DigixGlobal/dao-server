@@ -29,14 +29,6 @@ class GraphqlController < ApplicationController
 
   private
 
-  def remote_ip(remote_ips)
-    if remote_ips
-      remote_ips.split(',').first&.strip
-    else
-      ''
-    end
-  end
-
   def ensure_hash(ambiguous_param)
     case ambiguous_param
     when String
