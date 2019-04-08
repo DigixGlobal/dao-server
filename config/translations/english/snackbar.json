@@ -22,13 +22,13 @@
     "claimApproval": {
       "title": "Claim Approval",
       "txUiHeader": "Project",
-      "multiClaimMessage": "Your Claim Approval Transaction {{currentClaimStep}} of {{totalTransactions} is pending confirmation. See More",
+      "multiClaimMessage": "Your Claim Approval Transaction {{currentClaimStep}} of {{totalTransactions}} is pending confirmation. See More",
       "message": "Your Claim Approval Transaction is pending confirmation. See More"
     },
     "claimResult": {
       "title": "Claim Voting Result",
       "txUiHeader": "Project",
-      "multiClaimMessage": "Your Claim Voting Result Transaction {{currentClaimStep}} of {{totalTransactions} is pending confirmation. See More",
+      "multiClaimMessage": "Your Claim Voting Result Transaction {{currentClaimStep}} of {{totalTransactions}} is pending confirmation. See More",
       "message": "Your Claim Voting Result Transaction is pending confirmation. See More"
     },
     "changeFunding": {
