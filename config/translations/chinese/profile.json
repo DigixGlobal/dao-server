@@ -11,7 +11,8 @@
       "overlayButton": "设置用户名",
       "title": "配置用户名",
       "warning": "您只可以给您配置一个用户名 **一次**",
-      "proceed": "下一步 输入用户名",
+      "proceed": "下一步",
+      "instructions": "输入用户名",
       "Errors": {
         "invalid": "用户名长度需在 2-20 个字符之间, 只可以包括字母，数字，下划线, 并且不可以以'user'开头.",
         "connectionError": "暂时无法更新用户名. 再试一次."
