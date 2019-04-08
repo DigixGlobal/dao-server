@@ -6,7 +6,7 @@
     "unlock": "您锁定的DGD只可以在 **锁定期**解锁."
   },
   "instructions": "输入您要锁定的DGD的数量:",
-  "stake": "这代表您在DigixDAO的 **{{权益}} 权益** .",
+  "stake": "这代表您在DigixDAO的 **{{stake}} 权益** .",
   "submit": "锁定 DGD",
   "txnSuccess": "DGD锁定确认中. 更多",
   "dgdApprovalSuccess": "DGD锁定确认中. 请稍后."

@@ -36,7 +36,7 @@
     },
     "insufficientCollateral": {
       "title": "押金不足!",
-      "description": "您钱包中ETH余额不足. 您的项目需要抵押 {{最少余额}} ETH.",
+      "description": "您钱包中ETH余额不足. 您的项目需要抵押 {{requiredCollateral}} ETH.",
       "details": "请抵押足够ETH之后再尝试."
     },
     "returnToDashboard": "返回面板",

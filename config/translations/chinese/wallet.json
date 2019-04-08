@@ -14,8 +14,8 @@
       "fillMax": " 所有 ",
       "Hints": {
         "fillMax": "您将不再是参与人.",
-        "normal": "您所剩 **{{权益}} 权益**.",
-        "overfilled": "您最多可以解锁 {{最多}} DGD."
+        "normal": "您所剩 **{{stake}} 权益**.",
+        "overfilled": "您最多可以解锁 {{maxAmount}} DGD."
       },
       "submit": "解锁DGD",
       "txnSuccess": "解锁DGD进行中. 更多"

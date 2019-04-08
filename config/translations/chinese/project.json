@@ -36,7 +36,7 @@
   "like": "赞",
   "seePreviousVersion": "查看之前版本",
   "seeNextVersion": "查看下一版本",
-  "editFundingError": "总奖励金额和里程碑的募资不可超过{{限额} ETH",
+  "editFundingError": "总奖励金额和里程碑的募资不可超过{{limit} ETH",
   "overlays": {
     "moderatorVoteHeader": "通过草案",
     "modertorVoteDescription": "审核员批准后才可将项目从草案阶段移到项目阶段.请在这里为项目投票",
@@ -62,15 +62,15 @@
     "minimumApproval": "所需最小支持率",
     "moderatorApprovalResults": "审核员审核结果",
     "proposalVoteResults": "项目投票结果",
-    "reviewVoteResults": "检查投票结果{{投票期间}}",
+    "reviewVoteResults": "检查投票结果{{votingRound}}",
     "reviewVote": "检查投票",
     "proposalVote": "项目投票",
     "timeLeftToCommit": "暗投所剩时间"
   },
   "alerts": {
     "failedModeratorVoting": "鉴于投票结果，或者在截止日期之前您没有声明投票结果，您的项目没有通过。请点击取回您的项目和押金.",
-    "claimModeratorApproval": "鉴于投票结果，您的项目已通过批准，请在{{日期}}之前点击声明投票结果，不然您的项目将被视为无效.",
-    "claimVotingresult": "鉴于投票结果，您的项目已通过批准，请在{{日期}}之前点击声明投票结果，不然您的项目将被视为无效."
+    "claimModeratorApproval": "鉴于投票结果，您的项目已通过批准，请在{{dateTime}}之前点击声明投票结果，不然您的项目将被视为无效.",
+    "claimVotingresult": "鉴于投票结果，您的项目已通过批准，请在{{dateTime}}之前点击声明投票结果，不然您的项目将被视为无效."
   },
   "status": {
     "all": "所有",
