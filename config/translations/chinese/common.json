@@ -1,81 +1,81 @@
 {
   "phases": {
-    "locking": "Locking Phase",
-    "main": "Main Phase"
+    "locking": "锁定",
+    "main": "表决"
   },
   "projectStatus": {
-    "all": "All",
-    "idea": "Idea",
-    "draft": "Draft",
-    "proposal": "Proposal",
-    "ongoing": "Ongoing",
-    "review": "Review",
-    "archived": "Archived"
+    "all": "全部",
+    "idea": "构想",
+    "draft": "草案",
+    "proposal": "提案",
+    "ongoing": "进行中",
+    "review": "审核",
+    "archived": "存档"
   },
   "userStatus": {
-    "moderator": "Moderator",
-    "participant": "Participant",
-    "pastParticipant": "Past Participant",
-    "guest": "Have not participated"
+    "moderator": "审核员",
+    "participant": "参与人",
+    "pastParticipant": "参与人",
+    "guest": "过客"
   },
   "proposalErrors": {
     "blockedByPRL": {
-      "title": "Funding Is Stopped by PRL",
-      "description": "The project funding has been stopped due to Policy, Regulatory or Legal reasons.",
-      "details": "Please contact us if you have any enquiries."
+      "title": "资金被中断",
+      "description": "此项目资金申请由于法规和政治因素被迫中断",
+      "details": "如您有任何疑问，请联系我们"
     },
     "invalidKyc": {
-      "title": "KYC Is Not Valid",
-      "description": "It looks like you don't have a valid KYC yet. You can check your KYC status in the Profile tab.",
-      "details": "Let's try again when your KYC has been approved."
+      "title": "KYC无效",
+      "description": "您还未上传KYC. 您可以在个人主页查看您的KYC状态",
+      "details": "请在您的KYC通过之后再尝试"
     },
     "inLockingPhase": {
-      "title": "Not Main Phase Yet!",
-      "description": "Looks like it's still the Locking phase now. You need to wait until the Main phase to do any governance activity.",
-      "details": "Let's try again when it's the Main phase again."
+      "title": "表决期还未开放",
+      "description": "目前是锁定期. 您要在表决期开放后再尝试",
+      "details": "请在表决期开放后再尝试."
     },
     "insufficientCollateral": {
-      "title": "Not Enough Collateral!",
-      "description": "It looks like there is insufficient ETH in your wallet. You will need {{requiredCollateral}} ETH for your project as collateral.",
-      "details": "Let's try again when you have enough ETH."
+      "title": "押金不足!",
+      "description": "您钱包中ETH余额不足. 您的项目需要抵押 {{最少余额}} ETH.",
+      "details": "请抵押足够ETH之后再尝试."
     },
-    "returnToDashboard": "Return to Dashboard",
-    "returnToProfile": "Return to Profile",
-    "returnToProject": "Return to Project"
+    "returnToDashboard": "返回面板",
+    "returnToProfile": "返回个人主页",
+    "returnToProject": "返回项目"
   },
 
   "buttons": {
-    "back": "Back",
-    "submit": "Submit",
-    "lockDgd": "Lock DGD",
-    "preview": "Preview",
-    "next": "Next",
-    "previous": "Previous",
-    "create": "Create",
-    "createNow": "Create Now",
-    "participate": "Participate",
-    "abort": "Abort",
-    "edit": "Edit",
-    "updateNow": "Update Now",
-    "postComment": "Post Comment",
-    "endorse": "Endorse",
-    "finalize": "Finalize",
-    "moderatorVote": "Moderator Vote",
-    "yes": "Yes",
-    "no": "No",
-    "confimVote": "Confirm my Vote",
-    "claimFailedProject": "Claim Failed Project",
-    "claimModeratorApproavl": "Claim Approval",
-    "confirmingClaim": "Confirming Claim",
-    "claimResult": "Claim Result",
-    "vote": "Vote",
-    "confirmCommit": "Confirm Commit",
-    "revealVote": "Reveal Vote",
-    "uploadJsonFile": "Upload Json file",
-    "confirmMyvote": "Confirm My Vote",
-    "claimFunding": "Claim Funding",
-    "myMilestoneIsCompleted": "My Milestone is Completed",
-    "changeVote": "Change Vote",
-    "logout": "Logout"
+    "back": "返回",
+    "submit": "提交",
+    "lockDgd": "锁定DGD",
+    "preview": "预览",
+    "next": "下一个",
+    "previous": "上一个",
+    "create": "创建",
+    "createNow": "创建",
+    "participate": "参与人",
+    "abort": "中止",
+    "edit": "编辑",
+    "updateNow": "更新",
+    "postComment": "留言",
+    "endorse": "批准",
+    "finalize": "完成",
+    "moderatorVote": "审核员投票",
+    "yes": "支持",
+    "no": "反对",
+    "confimVote": "确认我的投票",
+    "claimFailedProject": "宣告失败",
+    "claimModeratorApproavl": "审核员宣告通过",
+    "confirmingClaim": "确定宣告",
+    "claimResult": "宣告结果",
+    "vote": "投票",
+    "confirmCommit": "确认提交",
+    "revealVote": "公开投票",
+    "uploadJsonFile": "上传 Json 文件",
+    "confirmMyvote": "确认投票",
+    "claimFunding": "宣告募资",
+    "myMilestoneIsCompleted": "里程碑已完成",
+    "changeVote": "改变投票",
+    "logout": "登出"
   }
 }

@@ -1,13 +1,13 @@
 {
-  "title": "Lock DGD",
+  "title": "锁定 DGD",
   "warning": {
-    "currentPhaseLocking": "You are now locking DGD in the **Locking Phase**.",
-    "currentPhaseMain": "You are now locking DGD in the **Main Phase**.",
-    "unlock": "Please note that once you locked, you can only unlock your DGDs in a **Locking Phase**."
+    "currentPhaseLocking": "您目前正在 **锁定期**锁定DGD.",
+    "currentPhaseMain": "您目前正在 **表决期**锁定DGD.",
+    "unlock": "您锁定的DGD只可以在 **锁定期**解锁."
   },
-  "instructions": "Please enter the amount of DGD you wish to lock in:",
-  "stake": "This will give you **{{stake}} STAKE** in DigixDAO.",
-  "submit": "Lock DGD",
-  "txnSuccess": "Your Lock DGD transaction is pending confirmation. See more",
-  "dgdApprovalSuccess": "Your DGD Approval/Lock DGD transaction is pending confirmation. Please wait a while for it to be processed on the blockchain."
+  "instructions": "输入您要锁定的DGD的数量:",
+  "stake": "这代表您在DigixDAO的 **{{权益}} 权益** .",
+  "submit": "锁定 DGD",
+  "txnSuccess": "DGD锁定确认中. 更多",
+  "dgdApprovalSuccess": "DGD锁定确认中. 请稍后."
 }

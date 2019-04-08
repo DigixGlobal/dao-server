@@ -1,108 +1,108 @@
 {
   "introOverlay": {
-    "title": "Hello there!",
-    "instructions": "You will need to load a wallet and lock some DGD in before you can browse projects and vote in DigixDAO.",
-    "button": "Load Wallet"
+    "title": "您好!",
+    "instructions": "您需要加载钱包并锁定一些DGD才可以浏览我们的项目并对项目进行投票.",
+    "button": "加载钱包"
   },
   "selectWalletType": {
-    "title": "Load Wallet"
+    "title": "加载钱包"
   },
   "walletType": {
     "metamask": "MetaMask",
     "ledger": "Ledger",
     "trezor": "Trezor",
-    "json": "Json File"
+    "json": "Json 文件"
   },
   "common": {
-    "cancel": "Cancel",
-    "cancelSigning": "Cancel Signing",
-    "load": "Load",
-    "unlock": "Unlock Wallet",
-    "proofOfControl": "Sign Proof of Control"
+    "cancel": "取消",
+    "cancelSigning": "取消签署",
+    "load": "加载",
+    "unlock": "解锁钱包",
+    "proofOfControl": "签署控制证明"
   },
   "Metamask": {
     "Name": {
-      "title": "Load Metamask Wallet",
-      "instructions": "MetaMask is a bridge that allows you to visit the distributed web of tomorrow in your browser today. It allows you to run Ethereum dApps right in your browser without running a full Ethereum node.",
-      "name": "Name",
-      "addressNickname": "Address Nickname",
-      "error": "You must provide a name.",
+      "title": "加载 Metamask 钱包",
+      "instructions": "MetaMask 让您在当下的浏览器中访问未来的分布式网页. 让您无需运行完整的以太坊节点就可以在以太坊上运行去中心化应用程序.",
+      "name": "名称",
+      "addressNickname": "昵称",
+      "error": "名字是必填项目",
       "proofOfControl": {
-        "description": "Waiting for Metamask Sign Confirmation",
-        "instructions": "Please confirm your signature in MetaMask. If you wish to cancel, click the 'Cancel' button in MetaMask."
+        "description": "等待 Metamask 签名中",
+        "instructions": "请确认您 MetaMask的签名. 点击“取消”来取消签名."
       }
     }
   },
   "Ledger": {
     "chooseAddress": {
-      "title": "Load Ledger Wallet",
-      "description": "Ethereum hardware wallet, based on robust safety features for storing cryptographic assets and securing digital payments. It connects to any computer via USB.",
+      "title": "加载 Ledger 钱包",
+      "description": "Ethereum硬件钱包，基于强大的安全功能，可以存储任何加密资产。它可以通过USB连接到任何一台电脑.",
       "selectPath": {
-        "instructions": "Select HD Derivation Path",
-        "default": "Ledger (Default)",
-        "account": "Account",
-        "custom": "Ledger Live/Custom Wallet HD path"
+        "instructions": "选择硬件钱包衍生路径",
+        "default": "Ledger (默认)",
+        "account": "账户",
+        "custom": "Ledger Live/更改硬件钱包路径"
       },
       "selectAddress": {
-        "instructions": "Select addresses to enable",
-        "address": "Address",
-        "tokens": "Tokens",
-        "pagination": "Rows per page:",
-        "selected": "{{number}} selected"
+        "instructions": "选择要激活的地址",
+        "address": "地址",
+        "tokens": "币种",
+        "pagination": "行/页:",
+        "selected": "{{数字}}"
       },
       "proofOfControl": {
-        "description": "Ready to Sign Message",
-        "firmware": "Firmware {{version}} - replay protection enabled!"
+        "description": " “可签名“ 信息",
+        "firmware": "固件 {{版本}} - 重放攻击保护已启用!"
       }
     }
   },
   "Trezor": {
     "chooseAddress": {
-      "title": "Load Trezor Wallet",
-      "description": "Trezor is a bridge that allows you to visit the distributed web of tomorrow in your browser today. It allows you to run Ethereum dApps right in your browser without running a full Ethereum node.",
+      "title": "加载 Trezor 钱包",
+      "description": "Trezor 让您在当下的浏览器中访问未来的分布式网页. 让您无需运行完整的以太坊节点就可以在以太坊上运行去中心化应用程序.",
       "selectPath": {
-        "instructions": "Select HD Derivation Path",
-        "default": "Trezor (Default)",
-        "account": "Account",
-        "custom": "Custom Wallet HD path"
+        "instructions": "选择硬件钱包衍生路径",
+        "default": "Trezor (默认)",
+        "account": "账户",
+        "custom": "更改硬件钱包路径"
       },
       "selectAddress": {
-        "instructions": "Select addresses to enable",
-        "address": "Address",
-        "tokens": "Tokens",
-        "pagination": "Rows per page:",
-        "selected": "{{number}} selected"
+        "instructions": "选择要激活的地址",
+        "address": "地址",
+        "tokens": "币种",
+        "pagination": "行/页:",
+        "selected": "{{数字}}"
       },
       "proofOfControl": {
-        "description": "Ready to Sign Message",
-        "instructions": "Trezor Popup window is loading. Please follow instructions from the popup and your Trezor Wallet to continue."
+        "description": "“可签名“ 信息",
+        "instructions": "正在加载Trezor 跳出窗口. 请根据跳出窗口指示进行下一步操作."
       }
     }
   },
   "Json": {
-    "title": "Import Wallet",
-    "password": "Enter Password",
-    "unlockInstructions": "Enter your password to unlock your wallet",
-    "signInstructions": "Enter your password to sign message",
-    "error": "Key derivation failed - possibly wrong passphrase",
+    "title": "载入Wallet",
+    "password": "密码",
+    "unlockInstructions": "输入密码解锁钱包",
+    "signInstructions": "输入密码来签名",
+    "error": "密码输入错误",
     "proofOfControl": {
-      "description": "This signing is to prove to our server that you are in control of the Ethereum account that was loaded. By signing this message, you are proving that you control the selected account for use on DigixDAO."
+      "description": "这个签名用来证明您拥有此以太坊地址. 签名代表您同意您对 DigixDAO上的此地址有使用权."
     }
   },
   "connectedWallet": {
-    "title": "Connected Wallet",
-    "yourAddress": "Your Address",
+    "title": "连接钱包",
+    "yourAddress": "您的地址",
     "lockDgd": {
-      "title": "Lock DGD",
-      "description": "Locking your DGD in DigixDAO helps us know you are committed to the growth of the community and of course gives you voting power on the projects you love to support.",
-      "button": "Lock DGD"
+      "title": "锁定DGD",
+      "description": "在平台锁定您的DGD代表您愿意为社区发展贡献力量，并对您支持的项目投票.",
+      "button": "锁定DGD"
     },
     "notes": {
-      "title": "Note:",
-      "note1": "DO NOT use a wallet for which you do not have access to the private key.",
-      "note2": "Please note that your wallet needs to hold ETH to pay for gas transaction costs.",
-      "note3": "Your locked DGD cannot be traded. You will not be able to see the balance of your locked DGD in your wallet. Locked DGD are only visible on this interface as long as your wallet is connected.",
-      "note4": "You can lock more (other) DGD anytime."
+      "title": "提示:",
+      "note1": "不要使用您没有私钥所有权的钱包.",
+      "note2": "您的钱包需要拥有少量ETH用以支付手续费.",
+      "note3": "您不能交易已锁定的DGD，也不能查看已锁定DGD的余额.连接钱包之后，您只可以在此页面查看已锁定DGD的信息.",
+      "note4": "您随时都可以锁定更多的DGD."
     }
   }
 }
