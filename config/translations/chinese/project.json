@@ -36,7 +36,7 @@
   "like": "赞",
   "seePreviousVersion": "查看之前版本",
   "seeNextVersion": "查看下一版本",
-  "editFundingError": "总奖励金额和里程碑的募资不可超过{{limit} ETH",
+  "editFundingError": "总奖励金额和里程碑的募资不可超过{{limit}} ETH",
   "fundsRequiredForMilestone": "里程碑所需资金",
   "noShortDescription": "未创建概述.",
   "collateral": "需要 {{preProposalCollateral}} ETH以提交提案",
