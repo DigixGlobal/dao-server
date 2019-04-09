@@ -3,6 +3,7 @@
 require 'test_helper'
 
 require 'ethereum_api'
+require 'webmock/minitest'
 
 class KycTest < ActiveSupport::TestCase
   setup :email_fixture
@@ -253,15 +254,15 @@ class KycTest < ActiveSupport::TestCase
     kyc = create(:pending_kyc)
     attrs = { expiration_date: generate(:future_date) }
 
-    stub_request(:any, %r{kyc/approve})
-      .to_return(body: { result: {} }.to_json)
+    request = stub_request(:any, %r{kyc/approve})
+              .to_return(body: { result: {} }.to_json)
 
     ok, approved_kyc = Kyc.approve_kyc(officer, kyc, attrs)
 
     assert_equal :ok, ok,
                  'should work'
-    assert_equal :approved, approved_kyc.status.to_sym,
-                 'kyc should be approved'
+    assert_equal :approving, approved_kyc.status.to_sym,
+                 'kyc should be approving state'
     assert_equal officer.id, approved_kyc.officer.id,
                  'approving officer should be marked '
 
@@ -273,6 +274,8 @@ class KycTest < ActiveSupport::TestCase
                  'email should be sent to the submitter'
     assert_equal 'Your KYC submission has been approved', mail.subject,
                  'subject should be correct'
+
+    assert_requested request
 
     kyc_not_pending, = Kyc.approve_kyc(officer, kyc, attrs)
 
@@ -391,6 +394,9 @@ class KycTest < ActiveSupport::TestCase
       assert_equal hash.fetch(:txhash),
                    User.find_by(address: hash.fetch(:address)).kyc.approval_txhash,
                    'approval hash should be updated'
+      assert_equal :approved,
+                   Kyc.find_by(approval_txhash: hash.fetch(:txhash)).status.to_sym,
+                   'kycs should be approved'
     end
   end
 

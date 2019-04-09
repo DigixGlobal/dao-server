@@ -43,8 +43,8 @@ class ApproveKycMutationTest < ActiveSupport::TestCase
 
     data = result['data']['approveKyc']['kyc']
 
-    assert_equal 'APPROVED', data['status'],
-                 'should be approved'
+    assert_equal 'APPROVING', data['status'],
+                 'should be approving'
 
     repeat_result = DaoServerSchema.execute(
       QUERY,

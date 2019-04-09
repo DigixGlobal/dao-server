@@ -1,0 +1,13 @@
+{
+  "title": "Lock DGD",
+  "warning": {
+    "currentPhaseLocking": "You are now locking DGD in the **Locking Phase**.",
+    "currentPhaseMain": "You are now locking DGD in the **Main Phase**.",
+    "unlock": "Please note that once you locked, you can only unlock your DGDs in a **Locking Phase**."
+  },
+  "instructions": "Please enter the amount of DGD you wish to lock in:",
+  "stake": "This will give you **{{stake}} STAKE** in DigixDAO.",
+  "submit": "Lock DGD",
+  "txnSuccess": "Your Lock DGD transaction is pending confirmation. See more",
+  "dgdApprovalSuccess": "Your DGD Approval/Lock DGD transaction is pending confirmation. Please wait a while for it to be processed on the blockchain."
+}
