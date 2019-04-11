@@ -28,6 +28,17 @@ class AppUserQueryTest < ActiveSupport::TestCase
     refute data['isUnavailable'],
            'isUnavailable should default to false'
 
+    empty_ip_result = DaoServerSchema.execute(
+      QUERY,
+      context: { ip_address: '' },
+      variables: {}
+    )
+
+    assert_not_empty empty_ip_result['data']['appUser'],
+                     'should work even without ip address user'
+  end
+
+  test 'isUnavailable country ips should work' do
     [
       '10.0.0.0',
       '172.16.0.0',
@@ -81,14 +92,54 @@ class AppUserQueryTest < ActiveSupport::TestCase
       assert unavailable_data['isUnavailable'],
              'isUnavailable should be true with unavailable countries'
     end
+  end
 
-    empty_ip_result = DaoServerSchema.execute(
+  test 'isUnavailable whitelist ips should work' do
+    valid_ip = '1.208.104.202'
+    invalid_ip = '23.31.255.254'
+
+    valid_result = DaoServerSchema.execute(
       QUERY,
-      context: { ip_address: '' },
+      context: { ip_address: valid_ip },
       variables: {}
     )
 
-    assert_not_empty empty_ip_result['data']['appUser'],
-                     'should work even without ip address user'
+    refute valid_result['data']['appUser']['isUnavailable'],
+           'valid ip should be available'
+
+    invalid_result = DaoServerSchema.execute(
+      QUERY,
+      context: { ip_address: invalid_ip },
+      variables: {}
+    )
+
+    assert invalid_result['data']['appUser']['isUnavailable'],
+           'invalid ip should be unavailable'
+
+    ['23.31.255.253',
+     '96.69.193.162',
+     '96.69.193.160',
+     '96.69.193.167'].each do |invalid_whitelisted_ip|
+      whitelisted_result = DaoServerSchema.execute(
+        QUERY,
+        context: { ip_address: invalid_whitelisted_ip },
+        variables: {}
+      )
+
+      refute whitelisted_result['data']['appUser']['isUnavailable'],
+             'invalid ip that is whitelisted should be available'
+    end
+
+    ['96.69.193.159',
+     '96.69.193.168'].each do |outside_whitelisted_ip|
+      outside_result = DaoServerSchema.execute(
+        QUERY,
+        context: { ip_address: outside_whitelisted_ip },
+        variables: {}
+      )
+
+      assert outside_result['data']['appUser']['isUnavailable'],
+             'invalid ip that is outside the whitelist ranges should be unavailable'
+    end
   end
 end

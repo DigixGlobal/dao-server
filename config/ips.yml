@@ -1,0 +1,22 @@
+development: &defaults
+  whitelist_ips:
+    - 127.0.0.1
+    - 127.0.0.0/24
+
+test:
+  whitelist_ips:
+    - 127.0.0.1
+    - 127.0.0.0/24
+    - 96.69.193.162/29
+    - 123.123.123.123/26
+    - 23.31.255.253
+
+staging:
+  whitelist_ips:
+    - 127.0.0.1
+    - 127.0.0.0/24
+
+production:
+  whitelist_ips:
+    - 127.0.0.1
+    - 127.0.0.0/24

@@ -6,7 +6,8 @@ set :default_env,
     dao_staging_database_password: ENV['DAO_STAGING_DATABASE_PASSWORD'],
     dao_staging_secret_key_base: ENV['DAO_STAGING_SECRET_KEY_BASE'],
     info_server_url: ENV['INFO_SERVER_URL'],
-    postmark_api_token: ENV['POSTMARK_API_TOKEN']
+    postmark_api_token: ENV['POSTMARK_API_TOKEN'],
+    whitelist_ips: ENV['WHITELIST_IPS']
 
 # server-based syntax
 # ======================
