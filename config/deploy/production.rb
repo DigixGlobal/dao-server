@@ -1,12 +1,19 @@
 # frozen_string_literal: true
+set :stage, :production
+server 'jail01.production02.digixglobal.com', user: 'appuser', roles: %w[app web db]
 
 set :default_env,
     histfile: '/dev/null',
-    rails_env: 'staging',
-    dao_staging_database_password: ENV['DAO_STAGING_DATABASE_PASSWORD'],
-    dao_staging_secret_key_base: ENV['DAO_STAGING_SECRET_KEY_BASE'],
+    rails_env: 'production',
+    dao_production_database_password: ENV['DAO_PRODUCTION_DATABASE_PASSWORD'],
+    secret_key_base: ENV['DAO_PRODUCTION_SECRET_KEY_BASE'],
+    dao_info_server_secret: ENV['DAO_INFO_SERVER_SECRET'],
     info_server_url: ENV['INFO_SERVER_URL'],
-    postmark_api_token: ENV['POSTMARK_API_TOKEN']
+    postmark_from: ENV['POSTMARK_FROM'],
+    postmark_api_token: ENV['POSTMARK_API_TOKEN'],
+    infura_server_url: ENV['INFURA_SERVER_URL'],
+    whitelist_ips: ENV['WHITELIST_IPS']
+    
 
 # server-based syntax
 # ======================
