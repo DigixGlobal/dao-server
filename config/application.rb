@@ -46,13 +46,14 @@ module DaoServer
     config.action_mailer.delivery_method = :postmark
     config.action_mailer.postmark_settings = { api_token: ENV['POSTMARK_API_TOKEN'] }
 
-    config.ethereum = config_for(:ethereums)
     config.challenges = config_for(:challenges)
     config.comments = config_for(:comments)
+    config.ethereum = config_for(:ethereums)
+    config.ips = config_for(:ips)
     config.nonces = config_for(:nonces)
     config.proposals = config_for(:proposals)
 
-    config.ips = MaxMind::DB.new(
+    config.country_ips = MaxMind::DB.new(
       ENV.fetch('IP_DB') { 'config/GeoLite2-Country.mmdb' },
       mode: MaxMind::DB::MODE_MEMORY
     )

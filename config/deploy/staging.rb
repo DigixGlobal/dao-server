@@ -12,4 +12,5 @@ set :default_env,
     info_server_url: ENV['INFO_SERVER_URL'],
 
     postmark_from: ENV['POSTMARK_FROM'],
-    postmark_api_token: ENV['POSTMARK_API_TOKEN']
+    postmark_api_token: ENV['POSTMARK_API_TOKEN'],
+    whitelist_ips: ENV['WHITELIST_IPS']

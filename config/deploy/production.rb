@@ -11,7 +11,8 @@ set :default_env,
     info_server_url: ENV['INFO_SERVER_URL'],
     postmark_from: ENV['POSTMARK_FROM'],
     postmark_api_token: ENV['POSTMARK_API_TOKEN'],
-    infura_server_url: ENV['INFURA_SERVER_URL']
+    infura_server_url: ENV['INFURA_SERVER_URL'],
+    whitelist_ips: ENV['WHITELIST_IPS']
 
 # server-based syntax
 # ======================
