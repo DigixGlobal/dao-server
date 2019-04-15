@@ -179,7 +179,7 @@ class Comment < ApplicationRecord
 
       query =
         Comment
-        .joins("LEFT OUTER JOIN comment_likes ON comment_likes.comment_id = comments.id AND comment_likes.user_id = #{user.id}")
+        .joins("LEFT OUTER JOIN comment_likes ON comment_likes.comment_id = comments.id AND comment_likes.user_id = #{user ? user.id : -1}")
         .joins("INNER JOIN (SELECT @prev := '', @n := 0) AS init")
         .select(
           '@n := IF(parent_id != @prev, 1, @n + 1) AS n',
@@ -218,13 +218,9 @@ class Comment < ApplicationRecord
     end
 
     def comment(user, parent_comment, attrs)
-      if parent_comment.depth >= COMMENT_MAX_DEPTH
-        return [:maximum_comment_depth, nil]
-      end
+      return [:maximum_comment_depth, nil] if parent_comment.depth >= COMMENT_MAX_DEPTH
 
-      unless Ability.new(user).can?(:comment, parent_comment)
-        return [:unauthorized_action, nil]
-      end
+      return [:unauthorized_action, nil] unless Ability.new(user).can?(:comment, parent_comment)
 
       unless (proposal = Proposal.find_by(comment_id: parent_comment.root.id))
         return %i[database_error comment_not_linked]
@@ -244,9 +240,7 @@ class Comment < ApplicationRecord
     end
 
     def delete(user, comment)
-      unless Ability.new(user).can?(:delete, comment)
-        return [:unauthorized_action, nil]
-      end
+      return [:unauthorized_action, nil] unless Ability.new(user).can?(:delete, comment)
 
       return [:already_deleted, nil] if comment.discarded?
 
@@ -286,9 +280,7 @@ class Comment < ApplicationRecord
 
       return [:comment_already_banned, nil] if updated_comment.is_banned
 
-      unless Ability.new(admin).can?(:ban, updated_comment)
-        return [:unauthorized_action, nil]
-      end
+      return [:unauthorized_action, nil] unless Ability.new(admin).can?(:ban, updated_comment)
 
       ActiveRecord::Base.transaction do
         updated_comment.update_attribute(:is_banned, true)
@@ -303,9 +295,7 @@ class Comment < ApplicationRecord
 
       return [:comment_already_unbanned, nil] unless updated_comment.is_banned
 
-      unless Ability.new(admin).can?(:unban, updated_comment)
-        return [:unauthorized_action, nil]
-      end
+      return [:unauthorized_action, nil] unless Ability.new(admin).can?(:unban, updated_comment)
 
       ActiveRecord::Base.transaction do
         updated_comment.update_attribute(:is_banned, false)
