@@ -56,7 +56,7 @@ module Mutations
       result, comment_or_errors = Comment.comment(
         context.fetch(:current_user),
         this_comment,
-        body: Sanitize.fragment(body)
+        body: sanitize(body)
       )
 
       case result
@@ -74,6 +74,20 @@ module Mutations
 
         model_result(key, comment_or_errors)
       end
+    end
+
+    def sanitize(text)
+      Sanitize.fragment(
+        text,
+        elements: %w[p strong em u h1 h2 h3 a ol ul li],
+        attributes: {
+          'a' => %w[href title target],
+          'li' => ['class']
+        },
+        protocols: {
+          'a' => { 'href' => %w[http https mailto] }
+        }
+      )
     end
 
     def self.authorized?(object, context)

@@ -26,11 +26,25 @@ class ApplicationController < ActionController::API
       .transform_values do |value|
         case value
         when String
-          Sanitize.fragment(value)
+          sanitize(value)
         else
           value
         end
       end
+  end
+
+  def sanitize(text)
+    Sanitize.fragment(
+      text,
+      elements: %w[p strong em u h1 h2 h3 a ol ul li],
+      attributes: {
+        'a' => %w[href title target],
+        'li' => ['class']
+      },
+      protocols: {
+        'a' => { 'href' => %w[http https mailto] }
+      }
+    )
   end
 
   def result_response(result = :ok)
@@ -50,21 +64,15 @@ class ApplicationController < ActionController::API
       raise InfoServer::InvalidRequest, :missing_access_signature
     end
 
-    unless request.params.key?('payload')
-      raise InfoServer::InvalidRequest, :missing_payload
-    end
+    raise InfoServer::InvalidRequest, :missing_payload unless request.params.key?('payload')
 
     valid_signature = InfoServer.request_signature(request)
 
-    unless request_signature == valid_signature
-      raise InfoServer::InvalidRequest, :invalid_signature
-    end
+    raise InfoServer::InvalidRequest, :invalid_signature unless request_signature == valid_signature
 
     valid_nonce = InfoServer.current_nonce
 
-    unless request_nonce > valid_nonce
-      raise InfoServer::InvalidRequest, :invalid_nonce
-    end
+    raise InfoServer::InvalidRequest, :invalid_nonce unless request_nonce > valid_nonce
   end
 
   def update_info_server_nonce
