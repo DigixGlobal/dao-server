@@ -86,6 +86,37 @@ class CommentThreadsQueryTest < ActionDispatch::IntegrationTest
     }
   EOS
 
+  POINT_QUERY = <<~EOS
+    query($proposalId: String, $commentId: String, $stage: ProposalStageEnum, $after: String) {
+      commentThreads(first: 10, proposalId: $proposalId, commentId: $commentId, after: $after, stage: $stage) {
+        edges {
+           node {
+             id
+             body
+             user {
+               address
+               reputationPoint
+               quarterPoint
+             }
+             replies {
+               edges {
+                 node {
+                   id
+                   body
+                   user {
+                     address
+                     reputationPoint
+                     quarterPoint
+                   }
+                 }
+               }
+             }
+           }
+        }
+      }
+    }
+  EOS
+
   test 'comment threads query should work' do
     user = create(:user)
     proposal = FactoryBot.create(:proposal_with_comments)
@@ -116,6 +147,75 @@ class CommentThreadsQueryTest < ActionDispatch::IntegrationTest
 
     assert_nil comment_result['errors'],
                'should work with comment id and have no errors'
+  end
+
+  test 'quarter and reputation points should work' do
+    user = create(:user)
+    proposal = FactoryBot.create(:proposal_with_comments)
+
+    point_map = {}
+
+    User.all.each do |this_user|
+      point_map[this_user.address] = {
+        'quarter_points' => SecureRandom.rand,
+        'reputation' => SecureRandom.rand
+      }
+    end
+
+    stub_request(:any, /points/)
+      .to_return(body: {
+        result: point_map
+      }.to_json)
+
+    result = DaoServerSchema.execute(
+      POINT_QUERY,
+      context: { current_user: user },
+      variables: normalize_attributes(
+        proposal_id: proposal.proposal_id
+      )
+    )
+
+    assert_nil result['errors'],
+               'should work with proposal id and have no errors'
+    assert_not_empty result['data']['commentThreads']['edges'],
+                     'should have data'
+
+    user_data = result['data']['commentThreads']['edges'].map { |edge| edge['node']['user'] }
+
+    user_data.each do |this_user|
+      address = this_user['address']
+
+      assert_not_empty point_map[address],
+                       'address should have points'
+      assert_equal this_user['quarterPoint'], point_map[address]['quarter_points'],
+                   'address should have quarter points'
+      assert_equal this_user['reputationPoint'], point_map[address]['reputation'],
+                   'address should have reputation points'
+    end
+  end
+
+  test 'should still work without a current user' do
+    proposal = FactoryBot.create(:proposal_with_comments)
+
+    result = DaoServerSchema.execute(
+      QUERY,
+      context: { current_user: nil },
+      variables: normalize_attributes(
+        proposal_id: proposal.proposal_id
+      )
+    )
+
+    assert_nil result['errors'],
+               'should still work'
+    assert_not_empty result['data']['commentThreads']['edges'],
+                     'should have data'
+
+    data = result['data']['commentThreads']['edges'][0]['node']
+
+    assert_nil data['liked'],
+               'liked should be nil'
+    assert_nil data['likes'],
+               'likes should be nil'
   end
 
   test 'fields should work' do

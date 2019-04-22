@@ -101,6 +101,17 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test 'select proposal should work without a current user' do
+    create(:proposal_with_comments)
+
+    get proposals_path
+
+    assert_response :success,
+                    'should still work'
+    assert_match '"liked":null', @response.body,
+                 'response should contain null liked'
+  end
+
   test 'find proposal should work' do
     user, auth_headers, _key = create_auth_user
     proposal = create(:proposal_with_comments, user: user)
@@ -120,6 +131,17 @@ class ProposalsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :not_found,
                     'should not find proposal'
+  end
+
+  test 'find proposal should work without a current user' do
+    proposal = create(:proposal_with_comments)
+
+    get proposal_path(proposal.proposal_id)
+
+    assert_response :success,
+                    'should work'
+    assert_match '"liked":null', @response.body,
+                 'response should contain null liked'
   end
 
   test 'liking a proposal should work' do
