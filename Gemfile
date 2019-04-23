@@ -78,11 +78,11 @@ end
 
 group :test do
   gem 'action-cable-testing', '~> 0.5.0'
-  gem 'factory_bot', '>= 4.0.0'
-  gem 'factory_bot_rails', '>= 4.0.0'
   gem 'simplecov', '>= 0.16.0', require: false
   gem 'webmock', '>= 3.4.2'
 end
+gem 'factory_bot', '>= 4.0.0'
+gem 'factory_bot_rails', '>= 4.0.0'
 
 group :staging do
   gem 'cloudflare-rails'
