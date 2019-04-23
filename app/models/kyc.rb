@@ -174,9 +174,7 @@ class Kyc < ApplicationRecord
     end
 
     def verify_code(verification_code)
-      unless verification_code&.match?(VERIFICATION_PATTERN)
-        return :invalid_format
-      end
+      return :invalid_format unless verification_code&.match?(VERIFICATION_PATTERN)
 
       block_number, first_two, last_two =
         verification_code.match(VERIFICATION_PATTERN).captures
@@ -185,7 +183,6 @@ class Kyc < ApplicationRecord
       block_hash = "0x#{block_number.to_s(16)}"
 
       ok_latest, latest_block = EthereumApi.get_latest_block
-      puts 'latest_block = ', latest_block
 
       return :latest_block_not_found unless ok_latest == :ok && latest_block
 
@@ -213,9 +210,7 @@ class Kyc < ApplicationRecord
 
       return [:unauthorized_action, nil] if this_kyc.discarded?
 
-      unless Ability.new(this_officer).can?(:approve, Kyc, kyc)
-        return [:unauthorized_action, nil]
-      end
+      return [:unauthorized_action, nil] unless Ability.new(this_officer).can?(:approve, Kyc, kyc)
 
       return [:kyc_not_pending, nil] unless this_kyc.status.to_sym == :pending
 
@@ -244,9 +239,7 @@ class Kyc < ApplicationRecord
 
       return [:unauthorized_action, nil] if this_kyc.discarded?
 
-      unless Ability.new(this_officer).can?(:reject, Kyc, kyc)
-        return [:unauthorized_action, nil]
-      end
+      return [:unauthorized_action, nil] unless Ability.new(this_officer).can?(:reject, Kyc, kyc)
 
       return [:kyc_not_pending, nil] unless this_kyc.status.to_sym == :pending
 

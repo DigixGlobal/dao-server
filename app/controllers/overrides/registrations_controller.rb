@@ -1,10 +1,10 @@
+# frozen_string_literal: true
+
 module Overrides
   class RegistrationsController < DeviseTokenAuth::RegistrationsController
     # skip_before_action :validate_sign_up_params
 
     def create
-      puts 'whatsupp'
-      puts 'hello, sign_up_params', sign_up_params
       build_resource
 
       unless @resource.present?
@@ -63,7 +63,5 @@ module Overrides
         render_create_error_email_already_exists
       end
     end
-
-
   end
 end
