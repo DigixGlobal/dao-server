@@ -148,6 +148,16 @@ type AuthorizedUser {
   kyc: Kyc
 
   """
+  The user's accumulated points in the quarter.
+  """
+  quarterPoint: BigNumber!
+
+  """
+  The user's reputation in participating in the system.
+  """
+  reputationPoint: BigNumber!
+
+  """
   User's username
   """
   username: String
@@ -537,6 +547,16 @@ type DaoUser {
   Current KYC submission of the user
   """
   kyc: Kyc
+
+  """
+  The user's accumulated points in the quarter.
+  """
+  quarterPoint: BigNumber!
+
+  """
+  The user's reputation in participating in the system.
+  """
+  reputationPoint: BigNumber!
 
   """
   User's username
