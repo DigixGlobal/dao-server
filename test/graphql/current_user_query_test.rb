@@ -32,6 +32,16 @@ class CurrentUserQueryTest < ActiveSupport::TestCase
     }
   EOS
 
+  POINT_QUERY = <<~EOS
+    query {
+      currentUser {
+        address
+        reputationPoint
+        quarterPoint
+      }
+    }
+  EOS
+
   test 'current user query should work' do
     user = create(:user)
 
@@ -229,5 +239,43 @@ class CurrentUserQueryTest < ActiveSupport::TestCase
 
     assert_equal 'EXPIRED', expired_result['data']['currentUser']['kyc']['status'],
                  'kyc should be expired'
+  end
+
+  test 'quarter and reputation points should work' do
+    user = create(:user)
+
+    point_map = {}
+
+    User.all.each do |this_user|
+      point_map[this_user.address] = {
+        'quarter_points' => SecureRandom.rand,
+        'reputation' => SecureRandom.rand
+      }
+    end
+
+    stub_request(:any, /points\?address/)
+      .to_return(body: {
+        result: point_map
+      }.to_json)
+
+    result = DaoServerSchema.execute(
+      POINT_QUERY,
+      context: { current_user: user },
+      variables: {}
+    )
+
+    assert_nil result['errors'],
+               'should work with points'
+
+    data = result['data']['currentUser']
+
+    address = data['address']
+
+    assert_not_empty point_map[address],
+                     'address should have points'
+    assert_equal data['quarterPoint'], point_map[address]['quarter_points'],
+                 'address should have quarter points'
+    assert_equal data['reputationPoint'], point_map[address]['reputation'],
+                 'address should have reputation points'
   end
 end
