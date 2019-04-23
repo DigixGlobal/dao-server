@@ -10,6 +10,7 @@ class DaoServerSchema < GraphQL::Schema
   query(Types::QueryType)
 
   lazy_resolve(Types::Proposal::LazyCommentThread, :replies)
+  lazy_resolve(Types::Proposal::LazyPoints, :points)
 
   def self.unauthorized_object(error)
     raise GraphQL::ExecutionError,

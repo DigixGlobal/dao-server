@@ -26,14 +26,12 @@ module Types
             EOS
 
       field :likes, Integer,
-            null: false,
-            description: 'Number of user who liked this comment'
+            null: true,
+            description: 'Number of user who liked this comment. Also, `null` if no current user.'
       field :liked, Boolean,
             null: true,
             description: <<~EOS
-              A flag to indicate if the current user liked this comment.
-
-              If there is no current user, this is `null`.
+              A flag to indicate if the current user liked this comment. Also, `null` if no current user.
             EOS
 
       field :created_at, GraphQL::Types::ISO8601DateTime,
@@ -74,9 +72,7 @@ module Types
             [object['body'], object['discarded_at'].nil?, object['is_banned']]
           end
 
-        if context.fetch(:current_user)&.is_forum_admin? && is_banned
-          return this_body
-        end
+        return this_body if context.fetch(:current_user)&.is_forum_admin? && is_banned
 
         is_discarded ? nil : this_body
       end
@@ -86,18 +82,16 @@ module Types
           object.is_banned : nil
       end
 
+      def likes
+        object.likes if context.fetch(:current_user, nil)
+      end
+
       def liked
-        if context.fetch(:current_user, nil)
-          object.liked || !object.comment_like_id.nil?
-        end
+        object.liked || !object.comment_like_id.nil? if context.fetch(:current_user, nil)
       end
 
       def replies(first:)
         Types::Proposal::LazyCommentThread.new(context, object, first)
-      end
-
-      def self.authorized?(object, context)
-        super && context.fetch(:current_user, nil)
       end
     end
   end

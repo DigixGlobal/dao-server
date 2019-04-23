@@ -88,7 +88,7 @@ class InfoServer
                         return [:invalid_method, nil]
                       end
 
-      req = request_class.new(uri.path,
+      req = request_class.new("#{uri.path}#{uri.query.blank? ? '' : '?' + uri.query}",
                               'Content-Type' => 'application/json',
                               'ACCESS-SIGN' => signature,
                               'ACCESS-NONCE' => new_nonce.to_s)
@@ -96,8 +96,9 @@ class InfoServer
 
       begin
         res = https.request(req)
+        body = JSON.parse(res.body)
 
-        result = JSON.parse(res.body).dig('result')
+        result = body.dig('result')
 
         [:ok, result]
       rescue StandardError

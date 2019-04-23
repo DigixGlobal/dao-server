@@ -1,9 +1,0 @@
-{
-  "welcome": "**Welcome**, {{username}}!",
-  "close": "Close",
-  "home": "Home",
-  "profile": "Profile",
-  "wallet": "Wallet",
-  "history": "Transaction History",
-  "help": "Help / DAO Tour"
-}
