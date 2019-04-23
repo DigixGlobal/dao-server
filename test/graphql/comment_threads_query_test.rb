@@ -162,7 +162,7 @@ class CommentThreadsQueryTest < ActionDispatch::IntegrationTest
       }
     end
 
-    stub_request(:any, /points/)
+    stub_request(:any, /points\?address/)
       .to_return(body: {
         result: point_map
       }.to_json)

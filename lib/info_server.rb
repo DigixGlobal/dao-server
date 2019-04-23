@@ -87,7 +87,7 @@ class InfoServer
                         return [:invalid_method, nil]
                       end
 
-      req = request_class.new("#{uri.path}?#{uri.query || '_'}",
+      req = request_class.new("#{uri.path}#{uri.query.blank? ? '' : '?' + uri.query}",
                               'Content-Type' => 'application/json',
                               'ACCESS-SIGN' => signature,
                               'ACCESS-NONCE' => new_nonce.to_s)
