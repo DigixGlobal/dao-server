@@ -72,9 +72,10 @@ class Proposal < ApplicationRecord
       query
         .all
         .map do |proposal|
-          proposal.liked = !proposal.liked.nil?
-          proposal
-        end
+        proposal.liked = user ? !proposal.liked.nil? : nil
+
+        proposal
+      end
     end
 
     def create_proposal(attrs)
@@ -97,9 +98,7 @@ class Proposal < ApplicationRecord
     end
 
     def like(user, proposal)
-      unless Ability.new(user).can?(:like, proposal)
-        return [:already_liked, nil]
-      end
+      return [:already_liked, nil] unless Ability.new(user).can?(:like, proposal)
 
       ActiveRecord::Base.transaction do
         ProposalLike.new(user_id: user.id, proposal_id: proposal.id).save!

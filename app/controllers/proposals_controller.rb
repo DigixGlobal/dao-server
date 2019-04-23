@@ -4,7 +4,7 @@ class ProposalsController < ApplicationController
   around_action :check_and_update_info_server_request,
                 only: %i[create]
   before_action :authenticate_user!,
-                only: %i[find show]
+                only: %i[]
   before_action :throttle_commenting!,
                 only: %i[comment reply]
 
@@ -25,9 +25,11 @@ class ProposalsController < ApplicationController
     end
     property :stage, Proposal.stages.keys,
              desc: 'Current stage/phase of the proposal'
-    property :likes, Integer, desc: 'Number of likes'
+    property :likes, Integer, desc: 'Number of likes.'
     property :liked, [true, false], desc: <<~EOS
-      True if the current use liked this proposal.
+      True if the current use liked this proposal. Null if no current user.
+
+
 
       Not present if request comes from the info server.
     EOS
@@ -170,7 +172,6 @@ class ProposalsController < ApplicationController
   returns desc: 'Proposals satisfying the criteria' do
     property :result, Array, of: Proposal, desc: 'List of proposals'
   end
-  meta authorization: :access_token
   example <<~EOS
     {
       "result": [
@@ -333,6 +334,6 @@ class ProposalsController < ApplicationController
   def user_proposal_view(user, proposal)
     proposal
       .as_json
-      .merge(liked: proposal.user_liked?(user))
+      .merge(liked: user ? proposal.user_liked?(user) : nil)
   end
 end

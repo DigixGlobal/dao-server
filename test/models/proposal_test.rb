@@ -91,4 +91,13 @@ class ProposalTest < ActiveSupport::TestCase
     assert_not unliked_proposals.as_json({}).dig(0, 'liked'),
                'should be not liked'
   end
+
+  test 'select user proposals liked should be nil without a current user' do
+    create(:proposal)
+
+    proposals = Proposal.select_user_proposals(nil, {})
+
+    assert_nil proposals.as_json({}).dig(0, 'liked'),
+               'liked should be nil'
+  end
 end

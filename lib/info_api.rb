@@ -12,13 +12,24 @@ class InfoApi
       return [ok, records_or_error] unless ok == :ok
 
       new_records = records_or_error.map do |record|
-        latest_version = record.fetch('proposal_versions').last
-        proposal = latest_version.fetch('dijix_object')
+        if (versions = record.fetch('proposal_versions', nil))
+          latest_version = versions.last
+          proposal = latest_version.fetch('dijix_object')
 
-        record.merge(proposal.slice('title', 'description', 'details', 'milestones'))
+          record.merge(proposal.slice('title', 'description', 'details', 'milestones'))
+        else
+          record
+        end
       end
 
       [ok, new_records]
+    end
+
+    def fetch_points(addresses)
+      query = addresses
+              .map { |address| "address=#{address}" }
+              .join('&')
+      unwrap_result(InfoServer.request_info_server('GET', "/points?#{query}", address: addresses))
     end
 
     def approve_kyc(kyc)

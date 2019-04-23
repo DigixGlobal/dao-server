@@ -2,7 +2,8 @@
 
 module Resolvers
   class ProposalsResolver < Resolvers::Base
-    type [Types::Proposal::ProposalType], null: false
+    type [Types::Proposal::ProposalType],
+         null: false
 
     argument :proposal_ids, [String],
              required: false,
@@ -32,13 +33,17 @@ module Resolvers
         .map do |merged|
           dao_proposal, info_proposal = merged
 
-          dao_proposal
-            .attributes
-            .merge(info_proposal.except('stage'))
-            .deep_merge(
-              'proposer' => dao_proposal.user,
-              'current_voting_round' => info_proposal.fetch('draft_voting', nil)
-            )
+          if info_proposal
+            dao_proposal
+              .attributes
+              .merge(info_proposal.except('stage'))
+              .deep_merge(
+                'proposer' => dao_proposal.user,
+                'current_voting_round' => info_proposal.fetch('draft_voting', nil)
+              )
+          else
+            dao_proposal.attributes
+          end
         end
     end
 

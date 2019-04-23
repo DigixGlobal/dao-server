@@ -25,10 +25,10 @@ module Types
             description: 'Total funding for the proposal'
       field :likes, Integer,
             null: false,
-            description: 'Number of user who liked this proposal'
+            description: 'Number of user who liked this proposal.'
       field :liked, Boolean,
-            null: false,
-            description: 'A flag to indicate if the current user liked this proposal'
+            null: true,
+            description: 'A flag to indicate if the current user liked this proposal. Null if no current user.'
       field :created_at, GraphQL::Types::ISO8601DateTime,
             null: false,
             description: 'Date when the proposal was published'
@@ -49,8 +49,8 @@ module Types
             null: false,
             description: 'Milestones for this proposal'
 
-      def self.authorized?(object, context)
-        super && context.fetch(:current_user, nil)
+      def liked
+        object['liked'] if context.fetch(:current_user, nil)
       end
     end
   end
