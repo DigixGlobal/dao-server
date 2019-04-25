@@ -27,6 +27,13 @@ module Types
 
             Role: KYC Officer
           EOS
+    field :kyc,
+          resolver: Resolvers::KycResolver,
+          description: <<~EOS
+            Find a KYC by id.
+
+            Role: KYC Officer
+          EOS
 
     field :user,
           resolver: Resolvers::UserResolver,
