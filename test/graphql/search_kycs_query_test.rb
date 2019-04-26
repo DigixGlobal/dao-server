@@ -4,8 +4,8 @@ require 'test_helper'
 
 class SearchKycsQueryTest < ActiveSupport::TestCase
   QUERY = <<~EOS
-    query($page: PositiveInteger, $pageSize: PositiveInteger, $status: KycStatusEnum) {
-      searchKycs(page: $page pageSize: $pageSize, status: $status) {
+    query($page: PositiveInteger, $pageSize: PositiveInteger, $status: KycStatusEnum, $sort: SearchKycFieldEnum, $sortBy: SortByEnum) {
+      searchKycs(page: $page pageSize: $pageSize, status: $status, sort: $sort, sortBy: $sortBy) {
         edges {
           node {
             id
@@ -102,6 +102,56 @@ class SearchKycsQueryTest < ActiveSupport::TestCase
                  'should be empty'
   end
 
+  test 'search kycs sorting options should work' do
+    officer = create(:kyc_officer_user)
+
+    Kyc.statuses.keys.each do |status|
+      create_list(:kyc, 10, status: status.to_sym)
+    end
+
+    status = generate(:kyc_status)
+    sort = generate(:search_kyc_field)
+
+    result = DaoServerSchema.execute(
+      QUERY,
+      context: { current_user: officer },
+      variables: normalize_variables(
+        attributes_for(:search_kycs,
+                       status: status,
+                       sort: sort,
+                       sort_by: 'ASC',
+                       page: 1,
+                       page_size: 10)
+      )
+    )
+
+    assert_nil result['errors'],
+               'should work and have no errors'
+
+    data = result['data']['searchKycs']['edges'].map { |edge| edge['node'] }
+
+    assert_not_empty data,
+                     'should not be empty'
+
+    reverse_result = DaoServerSchema.execute(
+      QUERY,
+      context: { current_user: officer },
+      variables: normalize_variables(
+        attributes_for(:search_kycs,
+                       status: status,
+                       sort: sort,
+                       sort_by: 'DESC',
+                       page: 1,
+                       page_size: 10)
+      )
+    )
+
+    reverse_data = reverse_result['data']['searchKycs']['edges'].map { |edge| edge['node'] }
+
+    assert_equal data.map { |kyc| kyc['id'] }, reverse_data.map { |kyc| kyc['id'] }.reverse,
+                 'sorting should work'
+  end
+
   test 'should fail safely' do
     unauthorized_result = DaoServerSchema.execute(
       QUERY,
@@ -125,7 +175,7 @@ class SearchKycsQueryTest < ActiveSupport::TestCase
   private
 
   def normalize_variables(vars)
-    vars[:status] = vars[:status].upcase
+    vars[:status] = vars[:status]&.upcase
 
     vars.to_h.deep_transform_keys! { |key| key.to_s.camelize(:lower) }
   end
