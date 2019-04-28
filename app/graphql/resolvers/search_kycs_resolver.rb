@@ -19,15 +19,29 @@ module Resolvers
     argument :page_size, Types::Scalar::PositiveInteger,
              required: false,
              default_value: 30,
-             description: 'Number of records to fetch per page'
+             description: 'Number of records to fetch per page. Default is 30 records per page.'
     argument :status, Types::Enum::KycStatusEnum,
              required: false,
+             default_value: nil,
              description: 'Filter KYCs by their status'
+    argument :sort, Types::Enum::SearchKycFieldEnum,
+             required: false,
+             default_value: 'updated_at',
+             description: <<~EOS
+               Sort by field for KYC. Default is `LAST_UPDATED`.
+             EOS
+    argument :sort_by, Types::Enum::SortByEnum,
+             required: false,
+             default_value: 'desc',
+             description: <<~EOS
+               Sort order of sort by for KYC. Default is `DESC`.
+             EOS
 
-    def resolve(page:, page_size:, status: nil)
+    def resolve(page: 1, page_size: 30, status: nil, sort: 'updated_at', sort_by: 'desc')
       source = Kyc
                .kept
-               .order(created_at: :asc)
+               .select('*', "CONCAT(first_name, ' ', last_name) AS name")
+               .order("#{sort} #{sort_by}")
                .preload(:user)
                .with_attached_identification_proof_image
                .with_attached_residence_proof_image

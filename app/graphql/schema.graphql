@@ -1419,6 +1419,18 @@ type Query {
   industries: [Industry!]!
 
   """
+  Find a KYC by id.
+
+  Role: KYC Officer
+  """
+  kyc(
+    """
+    Search KYC by their ID
+    """
+    id: String!
+  ): Kyc
+
+  """
   Search for proposals/projects
   """
   proposals(
