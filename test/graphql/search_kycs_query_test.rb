@@ -107,6 +107,7 @@ class SearchKycsQueryTest < ActiveSupport::TestCase
 
     Kyc.statuses.keys.each do |status|
       create_list(:kyc, 10, status: status.to_sym)
+      Kyc.connection.execute('UPDATE `kycs` SET `updated_at` = FROM_DAYS(id), `created_at` = FROM_DAYS(id)')
     end
 
     status = generate(:kyc_status)

@@ -43,9 +43,6 @@ module Resolvers
                .select('*', "CONCAT(first_name, ' ', last_name) AS name")
                .order("#{sort} #{sort_by}")
                .preload(:user)
-               .with_attached_identification_proof_image
-               .with_attached_residence_proof_image
-               .with_attached_identification_pose_image
 
       query = status ? source.where(status: status) : source
 
