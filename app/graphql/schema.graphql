@@ -722,11 +722,11 @@ enum IdentificationProofTypeEnum {
 }
 
 """
-Image used for KYC such as jpegs or pngs
+Image used for KYC such as jpegs or pngs or pdfs
 """
 type Image {
   """
-  Content type of the image such as `application/png`
+  Content type of the image such as `image/png` or `application/pdf`
   """
   contentType: String!
 

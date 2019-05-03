@@ -10,7 +10,7 @@ class Kyc < ApplicationRecord
   MINIMUM_AGE = 18
   VERIFICATION_PATTERN = /\A(\d+)-(\h{2})-(\h{2})\Z/.freeze
   IMAGE_SIZE_LIMIT = 10.megabytes
-  IMAGE_FILE_TYPES = ['image/jpeg', 'image/jpeg', 'image/png'].freeze
+  IMAGE_FILE_TYPES = ['image/jpeg', 'image/jpeg', 'image/png', 'application/pdf'].freeze
 
   enum status: { pending: 1, rejected: 2, approved: 3, approving: 7 }
   enum gender: { male: 1, female: 2 }

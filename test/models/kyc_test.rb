@@ -29,6 +29,18 @@ class KycTest < ActiveSupport::TestCase
            'should work with an image slightly below the limit'
   end
 
+  test 'image validation should work with pdf' do
+    image = TestImage.new
+    image.data.attach(
+      io: File.open('./test/sample.pdf'),
+      content_type: 'application/pdf',
+      filename: 'sample.pdf'
+    )
+
+    assert image.valid?,
+           'should work with an pdf'
+  end
+
   test 'image validation should fail safely' do
     image = TestImage.new
     image.data.attach(
