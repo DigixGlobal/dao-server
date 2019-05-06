@@ -7,6 +7,21 @@ class KycQueryTest < ActiveSupport::TestCase
     query($id: String!) {
       kyc(id: $id) {
         id
+        identificationProof {
+          image {
+            dataUrl
+            }
+          }
+        residenceProof {
+          image {
+            dataUrl
+          }
+        }
+        identificationPose {
+          image {
+            dataUrl
+          }
+        }
       }
     }
   EOS

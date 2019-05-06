@@ -12,6 +12,12 @@ module Types
             description: <<~EOS
               A flag indicating if the application cannot be used by the user.
             EOS
+      field :is_under_maintenance, Boolean,
+            null: false,
+            description: <<~EOS
+              A flag indicating if the application is undergoing maintenance
+               and should not be used by the user for the meantime.
+            EOS
     end
   end
 end
