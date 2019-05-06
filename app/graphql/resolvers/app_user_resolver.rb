@@ -17,7 +17,10 @@ module Resolvers
                          check_country?(ip_address)
                        end
 
-      { is_unavailable: is_unavailable }
+      {
+        is_unavailable: is_unavailable,
+        is_under_maintenance: ENV.fetch('IS_UNDER_MAINTENANCE') { '' } == 'true'
+      }
     end
 
     private
