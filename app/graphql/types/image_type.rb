@@ -2,7 +2,7 @@
 
 module Types
   class ImageType < Types::Base::BaseObject
-    description 'Image used for KYC such as jpegs or pngs'
+    description 'Image used for KYC such as jpegs or pngs or pdfs'
 
     field :filename, String,
           null: false,
@@ -12,7 +12,7 @@ module Types
           description: 'File size of the image in bytes'
     field :content_type, String,
           null: false,
-          description: 'Content type of the image such as `application/png`'
+          description: 'Content type of the image such as `image/png` or `application/pdf`'
     field :data_url, String,
           null: false,
           description: 'Base64 encoded string for the data itself'

@@ -7,6 +7,7 @@ class AppUserQueryTest < ActiveSupport::TestCase
     query {
       appUser {
         isUnavailable
+        isUnderMaintenance
       }
     }
   EOS
@@ -141,5 +142,27 @@ class AppUserQueryTest < ActiveSupport::TestCase
       assert outside_result['data']['appUser']['isUnavailable'],
              'invalid ip that is outside the whitelist ranges should be unavailable'
     end
+  end
+
+  test 'isUnderMaintenance should work' do
+    default_result = DaoServerSchema.execute(
+      QUERY,
+      context: {},
+      variables: {}
+    )
+
+    refute default_result['data']['appUser']['isUnderMaintenance'],
+           'isUnderMaintenance should be false by default'
+
+    ENV['IS_UNDER_MAINTENANCE'] = 'true'
+
+    set_result = DaoServerSchema.execute(
+      QUERY,
+      context: {},
+      variables: {}
+    )
+
+    assert set_result['data']['appUser']['isUnderMaintenance'],
+           'isUnderMaintenance should be true when set:'
   end
 end

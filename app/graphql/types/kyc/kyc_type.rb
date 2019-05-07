@@ -127,7 +127,7 @@ module Types
           number: object['identification_proof_number'],
           type: object['identification_proof_type'],
           expiration_date: object['identification_proof_expiration_date'],
-          image: encode_attachment(object.identification_proof_image.attachment)
+          image: object.identification_proof_image
         }
       end
 
@@ -142,14 +142,14 @@ module Types
             postal_code: object['postal_code']
           },
           type: object['residence_proof_type'],
-          image: encode_attachment(object.residence_proof_image.attachment)
+          image: object.residence_proof_image
         }
       end
 
       def identification_pose
         {
           verification_code: object['verification_code'],
-          image: encode_attachment(object.identification_pose_image.attachment)
+          image: object.identification_pose_image
         }
       end
 

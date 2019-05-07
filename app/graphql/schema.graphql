@@ -722,11 +722,11 @@ enum IdentificationProofTypeEnum {
 }
 
 """
-Image used for KYC such as jpegs or pngs
+Image used for KYC such as jpegs or pngs or pdfs
 """
 type Image {
   """
-  Content type of the image such as `application/png`
+  Content type of the image such as `image/png` or `application/pdf`
   """
   contentType: String!
 
@@ -1515,14 +1515,24 @@ type Query {
     page: PositiveInteger = 1
 
     """
-    Number of records to fetch per page
+    Number of records to fetch per page. Default is 30 records per page.
     """
     pageSize: PositiveInteger = 30
 
     """
+    Sort by field for KYC. Default is `LAST_UPDATED`.
+    """
+    sort: SearchKycFieldEnum = LAST_UPDATED
+
+    """
+    Sort order of sort by for KYC. Default is `DESC`.
+    """
+    sortBy: SortByEnum = DESC
+
+    """
     Filter KYCs by their status
     """
-    status: KycStatusEnum
+    status: KycStatusEnum = null
   ): KycPaginatedConnection!
 
   """
@@ -1672,6 +1682,41 @@ enum ResidenceProofTypeEnum {
   Utility bill such as electricity or water
   """
   UTILITY_BILL
+}
+
+"""
+Fields to be sorted on for `searchKycs` query`
+"""
+enum SearchKycFieldEnum {
+  """
+  Client's country of residence
+  """
+  COUNTRY_OF_RESIDENCE
+
+  """
+  KYC update timestamp
+  """
+  LAST_UPDATED
+
+  """
+  Client's full name
+  """
+  NAME
+
+  """
+  Client's country of residence
+  """
+  NATIONALITY
+
+  """
+  KYC status
+  """
+  STATUS
+
+  """
+  Client's user ID
+  """
+  USER_ID
 }
 
 enum SortByEnum {
