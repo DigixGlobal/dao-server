@@ -58,41 +58,5 @@ module Resolvers
         IPAddr.new(raw_ip).include?(client_ip)
       end
     end
-
-    private
-
-    def check_country?(ip_address)
-      data = Rails.configuration.country_ips.get(ip_address)
-
-      if data
-        code = data.dig('country', 'iso_code') ||
-               data.dig('continent', 'code') ||
-               ''
-
-        Rails.configuration.countries
-             .select { |country| country['blocked'] }
-             .map { |country| country['value'] }
-             .member?(code)
-      else
-        false
-      end
-    rescue IPAddr::AddressFamilyError, IPAddr::InvalidAddressError
-      false
-    end
-
-    def check_whitelist?(ip_address)
-      return false unless ip_address && !ip_address.empty?
-
-      client_ip = IPAddr.new(ip_address)
-
-      whitelist_ips = Rails.configuration.ips['whitelist_ips'] +
-                      WHITELIST_IPS.strip.split(',')
-
-      whitelist_ips
-        .map(&:strip)
-        .any? do |raw_ip|
-        IPAddr.new(raw_ip).include?(client_ip)
-      end
-    end
   end
 end
