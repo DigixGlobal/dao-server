@@ -1,5 +1,5 @@
 #! /bin/bash
-sleep 10
+sleep 30
 
 bundle exec rake db:drop
 bundle exec rake db:create
