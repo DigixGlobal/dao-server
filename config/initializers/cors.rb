@@ -2,11 +2,10 @@
 
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins '*' if Rails.env.development?
-
+    origins '*'
     resource '*',
              headers: :any,
-             expose: ['X-Page', 'X-Per-Page', 'X-Total'],
+             expose: ['access-token', 'expiry', 'token-type', 'uid', 'client', 'X-Page', 'X-Per-Page', 'X-Total'],
              methods: %i[get post put patch delete options head]
   end
 end
