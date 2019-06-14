@@ -2,7 +2,6 @@
 set :stage, :production
 server 'jail01.production02.digixglobal.com', user: 'appuser', roles: %w[app web db]
 
-
 set :stage, :production
 server 'jail01.production02.digixglobal.com', user: 'appuser', roles: %w[app web db]
 
