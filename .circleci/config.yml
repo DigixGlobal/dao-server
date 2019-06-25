@@ -23,7 +23,11 @@ jobs:
         type: cache-restore
         key: dao-server-{{ checksum "Gemfile.lock" }}
       - run:
-          name: Install dependencies
+          name: Install system dependencies
+          command: |
+            sudo ln -sf /usr/lib/x86_64-linux-gnu/libssl.so.1.0.2 /usr/lib/x86_64-linux-gnu/libssl.so.1.0.0
+      - run:
+          name: Install app dependencies
           command: bundle install --path vendor/bundle
       - name: Store bundle cache
         type: cache-save
