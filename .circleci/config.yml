@@ -19,18 +19,12 @@ jobs:
           MYSQL_PASSWORD: digixtest
     steps:
       - checkout
-      - run:
-          name: Install dependencies
-          command: |
-            sudo apt-get update && \
-            sudo apt-get install mysql-client libssl1.0.2 && \
-            sudo ln -sf /usr/lib/x86_64-linux-gnu/libssl.so.1.0.2 /usr/lib/x86_64-linux-gnu/libssl.so.1.0.0
-      - type: cache-restore
-        name: Restore bundle cache
+      - name: Restore bundle cache
+        type: cache-restore
         key: dao-server-{{ checksum "Gemfile.lock" }}
       - run: bundle install --path vendor/bundle
-      - type: cache-save
-        name: Store bundle cache
+      - name: Store bundle cache
+        type: cache-save
         key: dao-server-{{ checksum "Gemfile.lock" }}
         paths:
           - vendor/bundle
@@ -44,6 +38,9 @@ jobs:
               sleep 1
             done
             echo Failed waiting for MySQL && exit 1
-      - run: bundle exec rake db:drop db:create db:migrate db:seed
-      - run: bundle exec rake test
-      - run: bundle exec brakeman
+      - name: Setup database
+        run: bundle exec rake db:drop db:create db:migrate db:seed
+      - name: Run tests
+        run: bundle exec rake test
+      - name: Run security checks
+        run: bundle exec brakeman
