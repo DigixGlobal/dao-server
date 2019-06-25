@@ -23,7 +23,8 @@ jobs:
           name: Install dependencies
           command: |
             sudo apt-get update && \
-            sudo apt-get install mysql-client libssl1.0.0
+            sudo apt-get install mysql-client libssl1.0.2 && \
+            sudo ln -sf /usr/lib/x86_64-linux-gnu/libssl.so.1.0.2 /usr/lib/x86_64-linux-gnu/libssl.so.1.0.0
       - type: cache-restore
         name: Restore bundle cache
         key: dao-server-{{ checksum "Gemfile.lock" }}
