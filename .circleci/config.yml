@@ -9,7 +9,14 @@ jobs:
     working_directory: ~/dao-server
     docker:
       - image: circleci/ruby:2.6.0-stretch
+        environment:
+          RAILS_ENV: test
       - image: circleci/mysql:5.7.26
+        environment:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: dao_test
+          MYSQL_USER: dao_user
+          MYSQL_PASSWORD: digixtest
     steps:
       - checkout
       - name: Restore bundle cache
