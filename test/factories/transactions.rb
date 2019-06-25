@@ -3,7 +3,7 @@
 require 'faker'
 
 FactoryBot.define do
-  sequence(:title) { |_| Faker::StarWars.quote }
+  sequence(:title) { |_| Faker::SiliconValley.invention }
   sequence(:txhash) { |_| Faker::Ethereum.address }
   sequence(:block_number) { |_| SecureRandom.random_number(10_000) }
   sequence(:type) { |_| Transaction.types.keys.sample }

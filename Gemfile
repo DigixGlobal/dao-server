@@ -21,7 +21,6 @@ gem 'data_uri', '0.1.0'
 gem 'devise', '>= 4.6.0'
 gem 'devise_token_auth'
 gem 'discard', '>= 1.0.0'
-gem 'faker', '>= 1.9.1', require: false
 gem 'graphiql-rails', '>= 1.5.0'
 gem 'graphql', '1.9.2'
 gem 'graphql-guard', '~> 1.2.1'
@@ -61,6 +60,7 @@ gem 'rack-cors', require: 'rack/cors'
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
+  gem 'faker', '>= 1.9.1', require: false
 end
 
 group :development do
@@ -82,6 +82,7 @@ end
 
 group :test do
   gem 'action-cable-testing', '~> 0.5.0'
+  gem 'faker', '>= 1.9.1'
   gem 'simplecov', '>= 0.16.0', require: false
   gem 'webmock', '>= 3.4.2'
 end

@@ -19,7 +19,11 @@ jobs:
           MYSQL_PASSWORD: digixtest
     steps:
       - checkout
-      - run: sudo apt-get install mysql-client
+      - run:
+          name: Install dependencies
+          command: |
+            sudo apt-get update && \
+            sudo apt-get install mysql-client libssl-dev
       - type: cache-restore
         name: Restore bundle cache
         key: dao-server-{{ checksum "Gemfile.lock" }}
