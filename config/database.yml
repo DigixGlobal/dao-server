@@ -1,6 +1,7 @@
 default: &default
   adapter: mysql2
   encoding: utf8
+  host: <%= ENV.fetch('DB_HOST') { '127.0.0.1' } %>
   pool: <%= ENV.fetch('RAILS_MAX_THREADS') { 5 } %>
   username: dao_user
 
@@ -29,3 +30,4 @@ production:
   password: <%= ENV['DAO_PRODUCTION_DATABASE_PASSWORD'] %>
   pool: 128
   timeout: 10000
+

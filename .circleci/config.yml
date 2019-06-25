@@ -1,7 +1,11 @@
----
 version: 2
 jobs:
   build:
+    branches:
+      only:
+        - master
+        - develop
+        - /feature\/.*/
     working_directory: ~/dao-server
     docker:
       - image: circleci/ruby:2.6.0-stretch
