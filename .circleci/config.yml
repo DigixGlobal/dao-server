@@ -11,7 +11,7 @@ jobs:
       - image: circleci/ruby:2.6.0-stretch
         environment:
           RAILS_ENV: test
-      - image: circleci/mysql:8.0.16
+      - image: circleci/mysql:5.7
         environment:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: dao_test
