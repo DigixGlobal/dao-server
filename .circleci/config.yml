@@ -11,7 +11,7 @@ jobs:
       - image: circleci/ruby:2.6.0-stretch
         environment:
           RAILS_ENV: test
-      - image: circleci/mysql:5.7
+      - image: circleci/mysql:5.7.26
         environment:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: dao_test
@@ -19,6 +19,7 @@ jobs:
           MYSQL_PASSWORD: digixtest
     steps:
       - checkout
+      - run: sudo apt-get install mysql-client
       - type: cache-restore
         name: Restore bundle cache
         key: dao-server-{{ checksum "Gemfile.lock" }}

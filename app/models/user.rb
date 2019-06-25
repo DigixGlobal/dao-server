@@ -3,6 +3,8 @@
 require 'cancancan'
 
 class User < ApplicationRecord
+  extend Devise::Models
+
   devise :rememberable, :trackable
   include DeviseTokenAuth::Concerns::User
 
@@ -136,9 +138,7 @@ class User < ApplicationRecord
 
       return [:user_already_banned, nil] if updated_user.is_banned
 
-      unless Ability.new(admin).can?(:ban, user)
-        return [:unauthorized_action, nil]
-      end
+      return [:unauthorized_action, nil] unless Ability.new(admin).can?(:ban, user)
 
       updated_user.update_attribute(:is_banned, true)
 
@@ -150,9 +150,7 @@ class User < ApplicationRecord
 
       return [:user_already_unbanned, nil] unless updated_user.is_banned
 
-      unless Ability.new(admin).can?(:unban, user)
-        return [:unauthorized_action, nil]
-      end
+      return [:unauthorized_action, nil] unless Ability.new(admin).can?(:unban, user)
 
       updated_user.update_attribute(:is_banned, false)
 
