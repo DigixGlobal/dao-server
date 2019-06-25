@@ -53,3 +53,9 @@ jobs:
       - run:
           name: Run security checks
           command: bundle exec brakeman
+      - store_test_results:
+          name: Store Test Report
+          path: ~/dao-server/coverage
+          destination: test
+      - store_artifacts:
+          path: ~/dao-server/
