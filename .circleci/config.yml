@@ -22,7 +22,8 @@ jobs:
       - name: Restore bundle cache
         type: cache-restore
         key: dao-server-{{ checksum "Gemfile.lock" }}
-      - run: bundle install --path vendor/bundle
+      - name: Install dependencies
+        run: bundle install --path vendor/bundle
       - name: Store bundle cache
         type: cache-save
         key: dao-server-{{ checksum "Gemfile.lock" }}
