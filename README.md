@@ -23,7 +23,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 This is a standard [Ruby on Rails](https://rubyonrails.org/ "Ruby on
 Rails") API only server with a [MySQL](https://www.mysql.com/ "MySQL")
-database.
+database. (Database version should be around `5.7.26` to be safe.)
 
 The databases `dao_dev` and `dao_test` are used for development and test
 respectively. Both have a user called `dao_user` with a password
