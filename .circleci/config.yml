@@ -50,6 +50,10 @@ jobs:
       - run:
           name: Run tests
           command: bundle exec rake test
+      - store_test_results:
+          name: Store Test Report
+          path: ~/dao-server/coverage
+          destination: test
       - run:
           name: Run security checks
           command: bundle exec brakeman
@@ -57,3 +61,5 @@ jobs:
           name: Store Test Report
           path: ~/dao-server/coverage
           destination: test
+      - store_artifacts:
+          path: ~/dao-server/coverage  
