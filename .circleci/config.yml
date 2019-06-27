@@ -57,5 +57,3 @@ jobs:
           name: Store Test Report
           path: ~/dao-server/coverage
           destination: test
-      - store_artifacts:
-          path: ~/dao-server/
