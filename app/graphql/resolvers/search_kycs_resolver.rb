@@ -41,7 +41,7 @@ module Resolvers
       source = Kyc
                .kept
                .select('*', "CONCAT(first_name, ' ', last_name) AS name")
-               .order("#{sort} #{sort_by}")
+               .order("#{sort} #{sort_by}, id #{sort_by}")
                .preload(:user)
 
       query = status ? source.where(status: status) : source
