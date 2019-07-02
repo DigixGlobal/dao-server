@@ -10,6 +10,7 @@ gem 'dotenv-rails', '~> 2.6.0', groups: %i[development test]
 gem 'rails', '~> 5.2.1'
 gem 'rake', '= 12.3.2'
 
+gem 'actionview', '>= 5.2.2.1'
 gem 'active_storage_validations', '~> 0.5'
 gem 'api-pagination', '>= 4.8.1'
 gem 'apipie-rails', '>= 0.5.14'
@@ -17,7 +18,7 @@ gem 'batch-loader', '1.3.0'
 gem 'cancancan', '>= 2.3.0'
 gem 'closure_tree', '>= 7.0.0 '
 gem 'data_uri', '0.1.0'
-gem 'devise'
+gem 'devise', '>= 4.6.0'
 gem 'devise_token_auth'
 gem 'discard', '>= 1.0.0'
 gem 'faker', '>= 1.9.1', require: false
@@ -25,9 +26,11 @@ gem 'graphiql-rails', '>= 1.5.0'
 gem 'graphql', '1.9.2'
 gem 'graphql-guard', '~> 1.2.1'
 gem 'kaminari', '>= 1.1.1'
+gem 'loofah', '>= 2.2.3'
 gem 'maxmind-db', '~> 1.0'
 gem 'mysql2', '>= 0.3.18', '< 0.5'
 gem 'postmark-rails', '~> 0.19.0'
+gem 'railties', '>= 5.2.2.1'
 gem 'rufus-scheduler', '>= 3.5.2'
 gem 'typhoeus', '>= 1.3.1'
 gem 'validates_timeliness', '~> 5.0.0.alpha3'
@@ -46,6 +49,7 @@ gem 'puma', '~> 3.11'
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 
+gem 'rack', '>= 2.0.6'
 gem 'rack-cors', require: 'rack/cors'
 
 # Reduces boot times through caching; required in config/boot.rb

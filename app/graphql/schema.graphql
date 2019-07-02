@@ -41,6 +41,12 @@ type AppUser {
   A flag indicating if the application cannot be used by the user.
   """
   isUnavailable: Boolean!
+
+  """
+  A flag indicating if the application is undergoing maintenance
+   and should not be used by the user for the meantime.
+  """
+  isUnderMaintenance: Boolean!
 }
 
 """

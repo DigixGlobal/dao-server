@@ -6,7 +6,7 @@ FactoryBot.define do
   sequence(:uid) { |_| SecureRandom.random_number(1_000_000) }
   sequence(:address) { |_| Eth::Key.new.address.downcase }
   sequence(:username) { |_| Faker::Internet.username.tr('.', '_').slice(0, 20) }
-  sequence(:email) { |_| Faker::Internet.safe_email }
+  sequence(:email) { |n| "#{Faker::Internet.safe_email}#{n}" }
 
   factory :user, class: 'User' do
     uid { generate(:uid) }

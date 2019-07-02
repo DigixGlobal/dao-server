@@ -1,0 +1,65 @@
+version: 2
+jobs:
+  build:
+    branches:
+      only:
+        - master
+        - develop
+        - /feature\/.*/
+    working_directory: ~/dao-server
+    docker:
+      - image: circleci/ruby:2.6.0-stretch
+        environment:
+          RAILS_ENV: test
+      - image: circleci/mysql:5.7.26
+        environment:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: dao_test
+          MYSQL_USER: dao_user
+          MYSQL_PASSWORD: digixtest
+    steps:
+      - checkout
+      - name: Restore bundle cache
+        type: cache-restore
+        key: dao-server-{{ checksum "Gemfile.lock" }}
+      - run:
+          name: Install system dependencies
+          command: |
+            sudo ln -sf /usr/lib/x86_64-linux-gnu/libssl.so.1.0.2 /usr/lib/x86_64-linux-gnu/libssl.so.1.0.0
+      - run:
+          name: Install app dependencies
+          command: bundle install --path vendor/bundle
+      - name: Store bundle cache
+        type: cache-save
+        key: dao-server-{{ checksum "Gemfile.lock" }}
+        paths:
+          - vendor/bundle
+      - run:
+          name: Waiting for MySQL to be ready
+          command: |
+            for i in `seq 1 10`;
+            do
+              nc -z 127.0.0.1 3306 && echo Success && exit 0
+              echo -n .
+              sleep 1
+            done
+            echo Failed waiting for MySQL && exit 1
+      - run:
+          name: Setup database
+          command: bundle exec rake db:drop db:create db:migrate db:seed
+      - run:
+          name: Run tests
+          command: bundle exec rake test
+      - store_test_results:
+          name: Store Test Report
+          path: ~/dao-server/coverage
+          destination: test
+      - run:
+          name: Run security checks
+          command: bundle exec brakeman
+      - store_test_results:
+          name: Store Test Report
+          path: ~/dao-server/coverage
+          destination: test
+      - store_artifacts:
+          path: ~/dao-server/coverage

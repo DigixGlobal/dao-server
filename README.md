@@ -1,129 +1,91 @@
-### SETUP INSTRUCTIONS
-Please refer [HERE](https://gist.github.com/roynalnaruto/52f2be795f256ed7b0f156666108f8fc). The DAO-server runs together with [DigixDAO contracts](https://github.com/DigixGlobal/dao-contracts/tree/dev-info-server) and [Info-server](https://github.com/DigixGlobal/info-server/tree/dev)
+# DAO Server
 
-### API Documentation
+Within the governance project, this humble Ruby on Rails server handles
+the centralized aspects of the site such as:
 
-    Similar to Swagger, you can check the API documentation with `apipie` via `http://localhost:3005/apipie`
+- Authorization and authentication
+- Proposal comments
+- Proposal and comment likes
+- KYC
+- Transaction history
 
-### Proposals
-[link](PROPOSALS.md)
+Along with [info-server](https://github.com/DigixGlobal/info-server
+"info-server"), they provide the data for the frontend. When running as
+a whole, this must run before
+[info-server](https://github.com/DigixGlobal/info-server "info-server")` 
+since that will broadcast changes that this server must sync.
 
-### Endpoints:
-* `/authorization?address=<address>`(**POST**): To get an authentication token, first get a challenge which you must prove
+## Getting Started
 
-``` json
-{
-  "result": {
-    "id": 2,
-    "challenge": "239",
-    "proven": false,
-    "user_id": 1,
-    "created_at": "2018-11-28T14:26:39.000+08:00",
-    "updated_at": "2018-11-28T14:26:39.000+08:00"
-  }
-}
-```
-* `/authorization?address=<address>&challenge_id=<challenge_id>&message=<message>&signature=<signature>`(**PUT**):
-    Using your ethereum account, sign the `challenge` with your signature to get the tokens
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
-``` json
-{
-  "result": {
-    "access-token": "ld7LvGgwNfPWYWb8FjojHQ",
-    "token-type": "Bearer",
-    "client": "7vZsAGdmbrD8aPMQRiwZjw",
-    "expiry": "1544596721",
-    "uid": "96949"
-  }
-}
-```
+### Prerequisites
 
-These info should be put into the headers for subsequent APIs to Dao Server. As an example:
+This is a standard [Ruby on Rails](https://rubyonrails.org/ "Ruby on
+Rails") API only server with a [MySQL](https://www.mysql.com/ "MySQL")
+database. (Database version should be around `5.7.26` to be safe.)
 
-``` shell
-curl -i -H UID\:\ 96949 -H CLIENT\:\ 7vZsAGdmbrD8aPMQRiwZjw -H ACCESS-TOKEN\:\ ld7LvGgwNfPWYWb8FjojHQ -XGET http\://127.0.0.1\:3005/user
+The databases `dao_dev` and `dao_test` are used for development and test
+respectively. Both have a user called `dao_user` with a password
+`digixtest`. To create them, run this snippet within your `mysql`
+client as `root`:
+
+```sql
+create database dao_dev;
+create database dao_test;
+create user 'dao_user'@'localhost' identified by 'digixtest';
+grant all privileges on dao_dev.* to 'dao_user'@'localhost';
+grant all privileges on dao_test.* to 'dao_user'@'localhost';
 ```
 
-* `/user`(**GET**): [authenticated] Get current user details. Use this to test if token authentication works
+Also, this uses `ruby` `2.6.0`. Use [rvm](https://rvm.io/rvm/install
+"rvm") or [asdf](https://github.com/asdf-vm/asdf "asdf") for version
+management.
 
-``` json
-{
-  "result": {
-    "id": 1,
-    "provider": "address",
-    "uid": "96949",
-    "address": "0x22e8422744054e07f15a4d634747e5bed53b043d",
-    "created_at": "2018-11-28T14:25:12.000+08:00",
-    "updated_at": "2018-11-28T14:38:41.000+08:00"
-  }
-}
+### Installing
+
+Since this is a standard Rails server, we can get started by running
+this snippet:
+
+```bash
+bundle
+bin/rake db:create db:migrate db:seed
 ```
 
-* `/transactions/seen?txhash=<>&title=<>`(**POST**): [authenticated] Notify the server that a transaction is executed
+To start the server, run the default rails serve command:
 
-``` json
-{
-  "result": {
-    "id": 3,
-    "title": "Lock DGD",
-    "txhash": "0x510c47f843bdcc21891b10def3f12a575b2b2e73889228f0ac75a45e22eab5cd",
-    "status": "pending",
-    "blockNumber": null,
-    "user_id": 1,
-    "created_at": "2018-11-28T15:07:50.000+08:00",
-    "updated_at": "2018-11-28T15:07:50.000+08:00"
-  }
-}
+```bash
+bin/rails serve
 ```
 
-* `/transactions`(**GET**): [authenticated] Get all transaction details of the current user
+Visit the [landing page](http://localhost:3005/apipie "landing page") to
+check if the server works. Now if you want to read more about the API,
+you can checkout the following:
 
-```json
-{
-  "result": [
-    {
-      "id": 1,
-      "title": "Lock DGD",
-      "txhash": "0x500c47f843bdcc21891b10def3f12a575b2b2e73889228f0ac75a45e22eab5cd",
-      "status": "pending",
-      "blockNumber": null,
-      "user_id": 1,
-      "created_at": "2018-11-28T14:47:35.000+08:00",
-      "updated_at": "2018-11-28T14:47:35.000+08:00"
-    }
-  ]
-}
+- [Apipie Documentation](http://localhost:3005/apipie "apipie
+  Documentation")
+- [GraphQL Endpoint](http://localhost:3005/api "GraphQL Endpoint")
+  -  [GraphiQL Playground](http://localhost:3005/graphiql "GraphiQL Playground")
+
+## Running the tests
+
+We use the [default Rails testing](https://guides.rubyonrails.org/testing.html "default Rails
+testing") framework, to run the test:
+
+```bash
+bin/rake test
 ```
 
-* `/transactions?txhash=<txhash>`(**GET**): [authenticated] Get a specific transaction detail given an hash
+It goes without saying that all test should pass.
 
-``` json
-{
-  "result": {
-    "id": 4,
-    "title": "Lock DGD",
-    "txhash": "0x520c47f843bdcc21891b10def3f12a575b2b2e73889228f0ac75a45e22eab5cd",
-    "status": "pending",
-    "blockNumber": null,
-    "user_id": 1,
-    "created_at": "2018-11-28T15:09:39.000+08:00",
-    "updated_at": "2018-11-28T15:09:39.000+08:00"
-  }
-}
-```
+## Contributing
 
-# Setup
-* Install mysql2, set the password for root user to be `digixtest` https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-16-04
-* Add these lines to `/etc/mysql/my.cnf`:
-```
-[mysqld]
-socket          = /tmp/mysql.sock
-```
-* Install rvm, following instructions at https://rvm.io/rvm/install
-* `bash --login`
-* `gem install bundler`
-* `bundle install`
-* `rails db:create`
-* `rails db:migrate`
-* `rails db:seed`
-* `rails server`
+Consult [CONTRIBUTING.md](./CONTRIBUTING.md "CONTRIBUTING.md") for the
+process for submitting pull requests to us.
+
+## License
+
+Copyright DIGIXGLOBAL PRIVATE LIMITED
+
+The code in this repository is licensed under the [BSD-3 Clause](https://opensource.org/licenses/BSD-3-Clause)
+BSD-3-clause, 2017
