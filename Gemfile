@@ -9,6 +9,7 @@ ruby '2.6.0'
 gem 'dotenv-rails', '~> 2.6.0', groups: %i[development test]
 gem 'rails', '~> 5.2.1'
 gem 'rake', '= 12.3.2'
+gem 'awesome_print'
 
 gem 'active_storage_validations', '~> 0.5'
 gem 'api-pagination', '>= 4.8.1'

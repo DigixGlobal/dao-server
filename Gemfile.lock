@@ -61,6 +61,7 @@ GEM
     apipie-rails (0.5.14)
       rails (>= 4.1)
     arel (9.0.0)
+    awesome_print (1.8.0)
     batch-loader (1.3.0)
     brakeman (4.4.0)
     builder (3.2.3)
@@ -310,6 +311,7 @@ DEPENDENCIES
   active_storage_validations (~> 0.5)
   api-pagination (>= 4.8.1)
   apipie-rails (>= 0.5.14)
+  awesome_print
   batch-loader (= 1.3.0)
   bcrypt!
   brakeman
