@@ -23,7 +23,7 @@ gem 'devise_token_auth'
 gem 'discard', '>= 1.0.0'
 gem 'faker', '>= 1.9.1', require: false
 gem 'graphiql-rails', '>= 1.5.0'
-gem 'graphql', '1.9.2'
+gem 'graphql', '1.9.5'
 gem 'graphql-guard', '~> 1.2.1'
 gem 'kaminari', '>= 1.1.1'
 gem 'loofah', '>= 2.2.3'

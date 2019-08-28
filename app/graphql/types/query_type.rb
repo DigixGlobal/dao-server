@@ -74,6 +74,12 @@ module Types
             Search for the current user's transactions.
           EOS
 
+    field :watched_transaction,
+          resolver: Resolvers::WatchedTransactionResolver,
+          description: <<~EOS
+            Given a transaction txhash, find the last watched transaction in the group with that txhash.
+          EOS
+
     field :countries,
           resolver: Resolvers::CountriesResolver,
           description: 'List of countries to determine nationality for KYC'

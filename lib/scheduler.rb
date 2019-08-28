@@ -48,4 +48,11 @@ rescue Rufus::Scheduler::TimeoutError
   puts 'Cleaning up old challenges took too long.'
 end
 
+scheduler.every '5m' do
+  puts 'Watching transactions'
+  WatchingTransaction.resend_transactions
+rescue Rufus::Scheduler::TimeoutError
+  puts 'Watching transactions took too long.'
+end
+
 scheduler.join
