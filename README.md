@@ -52,10 +52,10 @@ bundle
 bin/rake db:create db:migrate db:seed
 ```
 
-To start the server, run the default rails serve command:
+To start the server, run the default rails server command:
 
 ```bash
-bin/rails serve
+bin/rails server
 ```
 
 Visit the [landing page](http://localhost:3005/apipie "landing page") to
