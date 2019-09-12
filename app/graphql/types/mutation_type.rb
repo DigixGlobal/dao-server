@@ -18,5 +18,8 @@ module Types
     field :unpost_comment, mutation: Mutations::UnpostCommentMutation
     field :ban_comment, mutation: Mutations::BanCommentMutation
     field :unban_comment, mutation: Mutations::UnbanCommentMutation
+
+    field :watch_transaction, mutation: Mutations::WatchTransactionMutation
+    field :resend_transaction, mutation: Mutations::ResendTransactionMutation
   end
 end

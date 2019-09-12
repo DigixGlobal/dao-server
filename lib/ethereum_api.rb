@@ -16,6 +16,14 @@ class EthereumApi
       unwrap_result(request_ethereum_server('eth_getBlockByNumber', [block_number, false]))
     end
 
+    def get_transaction_by_hash(txhash)
+      unwrap_result(request_ethereum_server('eth_getTransactionByHash', [txhash]))
+    end
+
+    def send_raw_transaction(data)
+      unwrap_result(request_ethereum_server('eth_sendRawTransaction', [data]))
+    end
+
     private
 
     def request_ethereum_server(method_name, method_args)
