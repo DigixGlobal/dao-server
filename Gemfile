@@ -8,7 +8,7 @@ ruby '2.6.0'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'dotenv-rails', '~> 2.6.0', groups: %i[development test]
 gem 'rails', '~> 5.2.1'
-gem 'rake', '= 12.3.2'
+gem 'rake', '12.3.3'
 
 gem 'actionview', '>= 5.2.2.1'
 gem 'active_storage_validations', '~> 0.5'
