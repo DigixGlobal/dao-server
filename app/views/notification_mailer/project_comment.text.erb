@@ -1,0 +1,5 @@
+Hello <%= @proposal.user.display_name %>,
+
+<%= @comment.user.display_name %> commented on your project (<%= @proposal_title %>) at <%= @comment.created_at.utc.iso8601 %>:
+
+<%= @comment_body %>

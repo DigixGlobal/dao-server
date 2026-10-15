@@ -33,6 +33,8 @@ class Comment < ApplicationRecord
   validates :user,
             presence: true
 
+  after_commit :enqueue_proposer_notification, on: :create
+
   def user_stage_comments(user, stage, criteria)
     last_seen_child_id = criteria.fetch(:last_seen_id, '').to_i
 
@@ -87,6 +89,18 @@ class Comment < ApplicationRecord
   end
 
   private
+
+  def enqueue_proposer_notification
+    return if parent_id.nil?
+
+    proposal = Proposal.find_by(comment_id: root.id)
+    return unless proposal
+    return if proposal.user_id == user_id || proposal.user.email.blank?
+
+    CommentNotificationJob.perform_later(id, proposal.id)
+  rescue StandardError => error
+    Rails.logger.error("Unable to enqueue proposer comment notification (#{error.class})")
+  end
 
   def comment_sorting(comment, sort_by)
     return 'comments.created_at ASC' if comment.depth > 0
