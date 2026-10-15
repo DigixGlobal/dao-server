@@ -63,4 +63,30 @@ class NotificationMailer < ApplicationMailer
       subject: 'Your project funding has been stopped by the PRL'
     )
   end
+
+  def project_comment
+    @proposal = params[:proposal]
+    @proposal_title = params[:proposal_title] || @proposal.proposal_id
+    @comment = params[:comment]
+    @comment_body = ActionController::Base.helpers.strip_tags(@comment.body)
+
+    mail(
+      to: @proposal.user.email,
+      subject: 'New comment on your DigixDAO project'
+    )
+  end
+
+  private
+
+  def log_error(error)
+    raise error if action_name == 'project_comment'
+
+    super
+  end
+
+  def log_mail_error(error)
+    raise error if action_name == 'project_comment'
+
+    super
+  end
 end
